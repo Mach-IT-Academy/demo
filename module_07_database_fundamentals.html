@@ -1,0 +1,1580 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mach IT Training | Mod 7 – Database Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Exo+2:wght@400;600;700;800&family=Barlow:wght@300;400;600;700;800&family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#6366f1; --accent-secondary:#8b5cf6;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+            /* Rein tab vars */
+            --rein-bg-deep:#0b0f1a; --rein-bg-panel:#111827; --rein-bg-card:#1a2235;
+            --rein-bg-input:#0f1620; --rein-accent:#00d4ff; --rein-accent2:#7c3aed;
+            --rein-success:#10b981; --rein-error:#f43f5e; --rein-warning:#f59e0b;
+            --rein-text-hi:#f0f4ff; --rein-text-mid:#94a3b8; --rein-text-lo:#475569;
+            --rein-border:#1e3a5f;
+            /* MySQL Lab vars */
+            --mach-blue:#1a6fd4; --mach-orange:#e87b1e;
+            --mach-dark:#0d1117; --mach-panel:#161b22; --mach-border:#30363d;
+            --wb-bg:#1e1e1e; --wb-panel:#252526; --wb-sidebar:#252526;
+            --wb-tab:#2d2d2d; --wb-tab-active:#1e1e1e;
+            --wb-border:#3e3e42; --wb-output:#1e1e1e;
+            --wb-text:#cccccc; --wb-dim:#858585;
+            --kw:#569cd6; --type-c:#4ec9b0; --str-c:#ce9178; --num-c:#b5cea8;
+            --cmt-c:#6a9955; --col-c:#9cdcfe; --punc-c:#cccccc; --fn-c:#dcdcaa;
+            --lab-green:#4caf50; --lab-red:#f44747; --lab-yellow:#ffcc02;
+            /* Quiz tab vars */
+            --sq-bg-primary:#0f1117; --sq-bg-secondary:#181c27;
+            --sq-bg-tertiary:#1e2436; --sq-bg-card:#232840;
+            --sq-accent-primary:#00c2ff; --sq-accent-secondary:#7c5cfc;
+            --sq-accent-teal:#00e5b0; --sq-accent-success:#00e5b0;
+            --sq-accent-warning:#ffb830; --sq-accent-error:#ff4d6d;
+            --sq-text-primary:#eef0f8; --sq-text-secondary:#8b92b3;
+            --sq-border-color:#2a3050;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn    { from{opacity:0;transform:translateY(10px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn   { from{opacity:0;transform:translateY(-8px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes popIn     { from{opacity:0;transform:scale(0.95)}       to{opacity:1;transform:scale(1)} }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        }
+        .page-header h1 { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:0.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px;
+            border-radius:8px; font-weight:600; cursor:pointer;
+            transition:all .2s; font-family:'Inter',sans-serif; font-size:.88em;
+            white-space:nowrap;
+        }
+        .tab-btn:hover { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION (base Module 3 styles)
+        ═══════════════════════════════════════════ */
+        .container { max-width:960px; margin:0 auto; padding:20px; }
+        .main-content { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .lesson h2 { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+        .problem-scenario { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+        .visual-demo { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .visual-demo h3 { margin-bottom:12px; }
+        .key-concept { background:rgba(99,102,241,.1); padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid var(--accent-primary); }
+        .key-concept strong { color:var(--accent-primary); }
+        .interactive-section { background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th,td { padding:11px; text-align:left; border-bottom:1px solid var(--border-color); }
+        th { background:var(--accent-primary); color:#fff; font-weight:600; }
+        tr:hover { background:var(--bg-tertiary); }
+        .badge { display:inline-block; padding:3px 9px; border-radius:10px; font-size:.78em; font-weight:700; margin-left:6px; }
+        .badge.pk { background:var(--accent-success); color:#fff; }
+        .concept-check { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .check-option { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .check-option:hover { border-color:var(--accent-primary); }
+        .explanation { background:rgba(139,92,246,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-secondary); display:none; }
+        .explanation.show { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT (scoped .rein-wrapper)
+        ═══════════════════════════════════════════ */
+        .rein-wrapper { font-family:'Exo 2',sans-serif; background:var(--rein-bg-deep); color:var(--rein-text-hi); min-height:60vh; position:relative; }
+        .rein-wrapper::before {
+            content:''; position:absolute; inset:0;
+            background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);
+            background-size:40px 40px; pointer-events:none; z-index:0;
+        }
+        .rein-inner { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:24px 20px 60px; }
+        .rein-wrapper .rein-task-card { background:var(--rein-bg-panel); border:1px solid var(--rein-border); border-radius:16px; margin-bottom:28px; overflow:hidden; }
+        .rein-wrapper .rein-task-header { display:flex; align-items:center; gap:14px; padding:18px 22px; background:rgba(0,212,255,0.04); border-bottom:1px solid var(--rein-border); flex-wrap:wrap; }
+        .rein-wrapper .rein-task-num { font-family:'Share Tech Mono',monospace; font-size:0.78em; color:var(--rein-accent); background:rgba(0,212,255,0.10); border:1px solid var(--rein-accent); padding:3px 10px; border-radius:6px; white-space:nowrap; }
+        .rein-wrapper .rein-task-title { font-size:1.05em; font-weight:700; color:var(--rein-text-hi); }
+        .rein-wrapper .rein-task-type { margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:0.72em; color:var(--rein-text-lo); border:1px solid var(--rein-border); padding:3px 10px; border-radius:6px; white-space:nowrap; }
+        .rein-wrapper .rein-task-body { padding:22px 24px; }
+        .rein-wrapper .rein-scenario-box { background:rgba(245,158,11,0.07); border-left:4px solid var(--rein-warning); border-radius:0 8px 8px 0; padding:14px 16px; margin-bottom:20px; }
+        .rein-wrapper .rein-sc-label { font-family:'Share Tech Mono',monospace; font-size:0.75em; color:var(--rein-warning); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+        .rein-wrapper .rein-sc-label-p { font-size:0.93em; color:var(--rein-text-mid); }
+        .rein-wrapper .rein-task-instructions { font-size:0.95em; color:var(--rein-text-mid); margin-bottom:18px; }
+        .rein-wrapper .rein-task-instructions strong { color:var(--rein-accent); }
+        .rein-wrapper .rein-dnd-workspace { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:16px; }
+        .rein-wrapper .rein-dnd-sources,.rein-wrapper .rein-dnd-targets { display:flex; flex-direction:column; gap:10px; }
+        .rein-wrapper .rein-dnd-column-label { font-family:'Share Tech Mono',monospace; font-size:0.75em; color:var(--rein-text-lo); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px; }
+        .rein-wrapper .rein-drag-chip { background:var(--rein-bg-card); border:1px solid var(--rein-border); border-radius:8px; padding:10px 14px; cursor:grab; font-size:0.88em; color:var(--rein-text-hi); transition:border-color 0.2s,transform 0.15s,box-shadow 0.2s; user-select:none; }
+        .rein-wrapper .rein-drag-chip:hover { border-color:var(--rein-accent); transform:translateX(3px); box-shadow:0 0 10px rgba(0,212,255,0.15); }
+        .rein-wrapper .rein-drag-chip.dragging { opacity:0.4; cursor:grabbing; }
+        .rein-wrapper .rein-drop-target { background:var(--rein-bg-input); border:2px dashed var(--rein-border); border-radius:10px; padding:12px 14px; min-height:58px; transition:border-color 0.2s,background 0.2s; }
+        .rein-wrapper .rein-drop-target-label { font-size:0.82em; font-weight:700; color:var(--rein-accent2); margin-bottom:6px; }
+        .rein-wrapper .rein-drop-target.drag-over { border-color:var(--rein-accent); background:rgba(0,212,255,0.06); }
+        .rein-wrapper .rein-drop-target.correct-zone { border-color:var(--rein-success); background:rgba(16,185,129,0.07); }
+        .rein-wrapper .rein-drop-target.incorrect-zone { border-color:var(--rein-error); background:rgba(244,63,94,0.07); }
+        .rein-wrapper .rein-btn-submit { background:linear-gradient(135deg,var(--rein-accent2),var(--rein-accent)); color:#fff; border:none; border-radius:8px; padding:11px 26px; font-family:'Exo 2',sans-serif; font-size:0.92em; font-weight:700; cursor:pointer; transition:opacity 0.2s,transform 0.15s; }
+        .rein-wrapper .rein-btn-submit:hover:not(:disabled) { opacity:0.88; transform:translateY(-1px); }
+        .rein-wrapper .rein-btn-submit:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+        .rein-wrapper .rein-btn-reset { background:transparent; color:var(--rein-text-mid); border:1px solid var(--rein-border); border-radius:8px; padding:10px 20px; font-family:'Exo 2',sans-serif; font-size:0.85em; cursor:pointer; transition:border-color 0.2s,color 0.2s; margin-left:10px; }
+        .rein-wrapper .rein-btn-reset:hover { border-color:var(--rein-accent); color:var(--rein-text-hi); }
+        .rein-wrapper .rein-task-actions { display:flex; align-items:center; gap:8px; margin-top:16px; }
+        .rein-wrapper .rein-feedback-panel { display:none; margin-top:16px; border-radius:10px; overflow:hidden; }
+        .rein-wrapper .rein-feedback-panel.show { display:block; animation:slideUp 0.35s ease; }
+        .rein-wrapper .rein-fb-header { display:flex; align-items:center; gap:10px; padding:13px 18px; }
+        .rein-wrapper .rein-fb-header.success { background:rgba(16,185,129,0.15); border-bottom:1px solid rgba(16,185,129,0.3); }
+        .rein-wrapper .rein-fb-header.error   { background:rgba(244,63,94,0.12);  border-bottom:1px solid rgba(244,63,94,0.3); }
+        .rein-wrapper .rein-fb-icon { font-size:1.3em; }
+        .rein-wrapper .rein-fb-verdict { font-weight:700; font-size:0.95em; }
+        .rein-wrapper .rein-fb-header.success .rein-fb-verdict { color:var(--rein-success); }
+        .rein-wrapper .rein-fb-header.error   .rein-fb-verdict { color:var(--rein-error); }
+        .rein-wrapper .rein-fb-body { background:var(--rein-bg-card); padding:18px; }
+        .rein-wrapper .rein-fb-section { margin-bottom:14px; }
+        .rein-wrapper .rein-fb-section:last-child { margin-bottom:0; }
+        .rein-wrapper .rein-fb-section-title { font-family:'Share Tech Mono',monospace; font-size:0.72em; color:var(--rein-accent); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:6px; }
+        .rein-wrapper .rein-fb-section-body  { font-size:0.88em; color:var(--rein-text-mid); line-height:1.6; }
+        .rein-wrapper .rein-fb-section-body strong { color:var(--rein-text-hi); }
+        .rein-wrapper .rein-fb-tip { background:rgba(124,58,237,0.10); border-left:3px solid var(--rein-accent2); padding:10px 14px; border-radius:0 6px 6px 0; font-size:0.87em; color:var(--rein-text-mid); margin-top:10px; }
+        .rein-wrapper .rein-fb-tip strong { color:var(--rein-accent2); }
+        @media(max-width:700px) { .rein-wrapper .rein-dnd-workspace { grid-template-columns:1fr; } }
+
+        /* ═══════════════════════════════════════════
+           TAB 3 — SQL EXERCISE
+        ═══════════════════════════════════════════ */
+        .sql-exer-wrapper { max-width:1200px; margin:0 auto; padding:20px; }
+        .sql-exer-wrapper .sql-quiz-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
+        .sql-exer-wrapper .sql-scenario-col { display:flex; flex-direction:column; gap:16px; }
+        .sql-exer-wrapper .sql-scenario-card { background:var(--bg-secondary); border-radius:12px; padding:26px; border:2px solid var(--border-color); animation:fadeIn .4s ease; }
+        .sql-exer-wrapper .sql-scenario-tag { display:inline-flex; align-items:center; gap:7px; background:rgba(99,102,241,.15); color:var(--accent-primary); font-size:.82em; font-weight:600; padding:4px 11px; border-radius:20px; margin-bottom:14px; width:fit-content; }
+        .sql-exer-wrapper .sql-scenario-tag .dot { width:7px; height:7px; border-radius:50%; background:var(--accent-primary); }
+        .sql-exer-wrapper .sql-scenario-title { color:var(--accent-warning); font-weight:700; font-size:1.05em; margin-bottom:10px; }
+        .sql-exer-wrapper .sql-scenario-desc  { color:var(--text-secondary); font-size:.95em; line-height:1.7; }
+        .sql-exer-wrapper .sql-hint-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,.15); border:2px solid var(--accent-warning); color:var(--accent-warning); font-size:.85em; font-weight:600; padding:8px 14px; border-radius:6px; cursor:pointer; transition:all .2s; margin-top:12px; }
+        .sql-exer-wrapper .sql-hint-btn:hover { background:rgba(245,158,11,.25); transform:translateY(-1px); }
+        .sql-exer-wrapper .sql-hint-reveal { background:var(--bg-tertiary); border-radius:8px; padding:14px 16px; border-left:4px solid var(--accent-warning); margin-top:0; max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease,opacity .3s ease,margin-top .4s ease; }
+        .sql-exer-wrapper .sql-hint-reveal.show { max-height:120px; opacity:1; margin-top:12px; }
+        .sql-exer-wrapper .sql-hint-reveal strong { color:var(--accent-warning); }
+        .sql-exer-wrapper .sql-reveal { background:var(--bg-primary); border:2px solid var(--border-color); border-radius:10px; overflow:hidden; margin-top:14px; max-height:0; transition:max-height .5s cubic-bezier(.4,0,.2,1),opacity .35s ease; opacity:0; }
+        .sql-exer-wrapper .sql-reveal.show { max-height:380px; opacity:1; }
+        .sql-exer-wrapper .sql-reveal-header { display:flex; align-items:center; gap:10px; padding:11px 16px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); }
+        .sql-exer-wrapper .sql-reveal-header span { font-size:.88em; font-weight:600; color:var(--accent-primary); }
+        .sql-exer-wrapper .sql-block { padding:16px; font-family:'JetBrains Mono',monospace; font-size:.84em; line-height:1.75; white-space:pre-wrap; color:var(--text-secondary); overflow-y:auto; max-height:280px; }
+        .sql-exer-wrapper .sql-block .kw  { color:var(--accent-primary);   font-weight:600; }
+        .sql-exer-wrapper .sql-block .cm  { color:#4b5563; font-style:italic; }
+        .sql-exer-wrapper .sql-block .val { color:var(--accent-success); }
+        .sql-exer-wrapper .sql-feedback-strip { display:flex; align-items:flex-start; gap:12px; padding:13px 18px; border-radius:8px; font-size:.93em; font-weight:600; margin-top:14px; animation:slideIn .3s ease; }
+        .sql-exer-wrapper .sql-feedback-strip.correct   { background:rgba(16,185,129,.18); border:1px solid rgba(16,185,129,.35); color:var(--accent-success); }
+        .sql-exer-wrapper .sql-feedback-strip.incorrect { background:rgba(239,68,68,.18);  border:1px solid rgba(239,68,68,.35);  color:var(--accent-error); }
+        .sql-exer-wrapper .sql-feedback-strip .icon { font-size:1.3em; flex-shrink:0; padding-top:2px; }
+        .sql-exer-wrapper .sql-feedback-strip .explain { color:var(--text-secondary); font-weight:400; font-size:.92em; margin-top:3px; }
+        .sql-exer-wrapper .sql-reset-strip { margin-top:14px; }
+        .sql-exer-wrapper .btn-reset-inline { display:inline-flex; align-items:center; gap:6px; background:var(--bg-tertiary); border:2px solid var(--accent-warning); color:var(--accent-warning); font-size:.85em; font-weight:600; padding:8px 14px; border-radius:6px; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; }
+        .sql-exer-wrapper .btn-reset-inline:hover { background:rgba(245,158,11,.12); transform:translateY(-1px); }
+        .sql-exer-wrapper .sql-commands-col { background:var(--bg-secondary); border-radius:12px; padding:20px; border:2px solid var(--border-color); height:fit-content; position:sticky; top:80px; }
+        .sql-exer-wrapper .sql-commands-header { font-size:.88em; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.08em; padding-bottom:12px; border-bottom:2px solid var(--border-color); margin-bottom:14px; text-align:center; }
+        .sql-exer-wrapper .sql-cmd-btn { display:block; width:100%; text-align:left; background:var(--bg-tertiary); border:2px solid var(--border-color); color:var(--text-primary); font-family:'JetBrains Mono',monospace; font-size:.9em; font-weight:600; padding:11px 16px; border-radius:7px; cursor:pointer; transition:all .2s; margin-bottom:8px; letter-spacing:.02em; }
+        .sql-exer-wrapper .sql-cmd-btn:last-child { margin-bottom:0; }
+        .sql-exer-wrapper .sql-cmd-btn:hover:not(:disabled) { border-color:var(--accent-primary); background:rgba(99,102,241,.1); color:#fff; }
+        .sql-exer-wrapper .sql-cmd-btn.correct   { border-color:var(--accent-success)!important; background:rgba(16,185,129,.18)!important; color:var(--accent-success)!important; }
+        .sql-exer-wrapper .sql-cmd-btn.incorrect { border-color:var(--accent-error)!important;   background:rgba(239,68,68,.15)!important;   color:var(--accent-error)!important; }
+        .sql-exer-wrapper .sql-cmd-btn:disabled { pointer-events:none; opacity:.4; }
+        .sql-exer-wrapper .sql-cmd-btn.correct:disabled,.sql-exer-wrapper .sql-cmd-btn.incorrect:disabled { opacity:1; }
+        @media(max-width:820px){ .sql-exer-wrapper .sql-quiz-grid { grid-template-columns:1fr; } .sql-exer-wrapper .sql-commands-col { position:static; } }
+
+        /* ═══════════════════════════════════════════
+           TAB 4 — MYSQL LAB (scoped .mysql-lab-wrapper)
+        ═══════════════════════════════════════════ */
+        .mysql-lab-wrapper { font-family:'Barlow',sans-serif; background:var(--mach-dark); color:#e6edf3; }
+        .mysql-lab-wrapper .lab-header { background:linear-gradient(135deg,#0d1117 0%,#0f1f3d 50%,#0d1117 100%); border-bottom:2px solid var(--mach-blue); padding:0; position:relative; overflow:hidden; }
+        .mysql-lab-wrapper .lab-header::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(26,111,212,0.04) 40px,rgba(26,111,212,0.04) 41px); }
+        .mysql-lab-wrapper .lab-header-top { display:flex; align-items:center; gap:16px; padding:18px 32px 14px; border-bottom:1px solid rgba(48,54,61,0.6); position:relative; }
+        .mysql-lab-wrapper .lab-mach-logo { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; letter-spacing:1px; color:#fff; }
+        .mysql-lab-wrapper .lab-mach-logo span { color:var(--mach-orange); }
+        .mysql-lab-wrapper .lab-header-divider { width:1px; height:24px; background:var(--mach-border); }
+        .mysql-lab-wrapper .lab-module-badge { background:var(--mach-blue); color:#fff; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px; border-radius:3px; }
+        .mysql-lab-wrapper .lab-title-text { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:700; color:#e6edf3; letter-spacing:0.5px; }
+        .mysql-lab-wrapper .lab-part-badge { margin-left:auto; background:rgba(232,123,30,0.15); border:1px solid rgba(232,123,30,0.4); color:var(--mach-orange); font-size:11px; font-weight:700; letter-spacing:1px; padding:4px 12px; border-radius:3px; text-transform:uppercase; }
+        .mysql-lab-wrapper .lab-scenario-box { margin:0 32px; padding:18px 24px 18px 20px; display:flex; gap:18px; align-items:flex-start; position:relative; }
+        .mysql-lab-wrapper .lab-scenario-icon { font-size:28px; flex-shrink:0; margin-top:2px; }
+        .mysql-lab-wrapper .lab-scenario-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--mach-orange); margin-bottom:6px; }
+        .mysql-lab-wrapper .lab-scenario-text { font-size:14.5px; font-weight:400; color:#c9d1d9; line-height:1.65; }
+        .mysql-lab-wrapper .lab-scenario-text strong { color:#e6edf3; font-weight:600; }
+        .mysql-lab-wrapper .lab-progress-section { padding:16px 32px 20px; position:relative; }
+        .mysql-lab-wrapper .lab-progress-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--wb-dim); margin-bottom:12px; }
+        .mysql-lab-wrapper .lab-steps-track { display:flex; align-items:center; }
+        .mysql-lab-wrapper .lab-step-item { display:flex; align-items:center; gap:10px; }
+        .mysql-lab-wrapper .lab-step-bubble { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; border:2px solid var(--mach-border); background:var(--mach-panel); color:var(--wb-dim); flex-shrink:0; transition:all 0.3s; }
+        .mysql-lab-wrapper .lab-step-bubble.done   { background:var(--mach-blue); border-color:var(--mach-blue); color:#fff; }
+        .mysql-lab-wrapper .lab-step-bubble.active { background:var(--mach-panel); border-color:var(--mach-orange); color:var(--mach-orange); box-shadow:0 0 12px rgba(232,123,30,0.4); }
+        .mysql-lab-wrapper .lab-step-info { display:flex; flex-direction:column; }
+        .mysql-lab-wrapper .lab-step-number { font-size:10px; color:var(--wb-dim); font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+        .mysql-lab-wrapper .lab-step-name { font-size:12px; font-weight:700; color:var(--wb-text); }
+        .mysql-lab-wrapper .lab-step-name.active { color:var(--mach-orange); }
+        .mysql-lab-wrapper .lab-step-name.done   { color:var(--mach-blue); }
+        .mysql-lab-wrapper .lab-main-content { padding:24px 32px 40px; }
+        /* Intro Screen */
+        .mysql-lab-wrapper .lab-intro-screen { display:none; }
+        .mysql-lab-wrapper .lab-intro-screen.visible { display:block; }
+        .mysql-lab-wrapper .lab-intro-section { background:var(--mach-panel); border:1px solid var(--mach-border); border-radius:8px; overflow:hidden; margin-bottom:24px; }
+        .mysql-lab-wrapper .lab-intro-section-header { display:flex; align-items:center; gap:12px; padding:16px 22px; background:#1c2128; border-bottom:1px solid var(--mach-border); }
+        .mysql-lab-wrapper .lab-intro-section-icon { font-size:22px; }
+        .mysql-lab-wrapper .lab-intro-section-title { font-family:'Barlow Condensed',sans-serif; font-size:19px; font-weight:700; color:#e6edf3; }
+        .mysql-lab-wrapper .lab-intro-section-body { padding:22px 24px; }
+        .mysql-lab-wrapper .lab-intro-lead { font-size:14.5px; color:#c9d1d9; line-height:1.7; margin-bottom:20px; }
+        .mysql-lab-wrapper .lab-intro-lead strong { color:#e6edf3; font-weight:600; }
+        .mysql-lab-wrapper .lab-db-compare-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-bottom:20px; }
+        .mysql-lab-wrapper .lab-db-card { border:1px solid var(--mach-border); border-radius:6px; overflow:hidden; transition:transform 0.2s; }
+        .mysql-lab-wrapper .lab-db-card:hover { transform:translateY(-2px); }
+        .mysql-lab-wrapper .lab-db-card.mysql { border-color:rgba(26,111,212,0.5); }
+        .mysql-lab-wrapper .lab-db-card-header { padding:10px 14px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--mach-border); }
+        .mysql-lab-wrapper .lab-db-card.mysql .lab-db-card-header { background:rgba(26,111,212,0.15); color:var(--mach-blue); }
+        .mysql-lab-wrapper .lab-db-card:not(.mysql) .lab-db-card-header { background:rgba(255,255,255,0.04); color:#8b949e; }
+        .mysql-lab-wrapper .lab-db-card-body { padding:12px 14px; }
+        .mysql-lab-wrapper .lab-db-attr { display:flex; align-items:flex-start; gap:8px; margin-bottom:8px; font-size:12px; color:#8b949e; line-height:1.4; }
+        .mysql-lab-wrapper .lab-db-attr:last-child { margin-bottom:0; }
+        .mysql-lab-wrapper .lab-db-attr-icon { flex-shrink:0; font-size:13px; margin-top:1px; }
+        .mysql-lab-wrapper .lab-db-attr.good .lab-db-attr-icon { color:var(--lab-green); }
+        .mysql-lab-wrapper .lab-db-attr.bad  .lab-db-attr-icon { color:var(--lab-red); }
+        .mysql-lab-wrapper .lab-db-attr.warn .lab-db-attr-icon { color:var(--lab-yellow); }
+        .mysql-lab-wrapper .lab-db-card.mysql .lab-db-attr { color:#c9d1d9; }
+        .mysql-lab-wrapper .lab-why-mysql-box { background:rgba(26,111,212,0.08); border:1px solid rgba(26,111,212,0.3); border-left:3px solid var(--mach-blue); border-radius:6px; padding:16px 20px; }
+        .mysql-lab-wrapper .lab-why-mysql-title { font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--mach-blue); margin-bottom:10px; }
+        .mysql-lab-wrapper .lab-why-mysql-list { display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; list-style:none; }
+        .mysql-lab-wrapper .lab-why-mysql-list li { font-size:13px; color:#c9d1d9; display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
+        .mysql-lab-wrapper .lab-why-mysql-list li::before { content:'✓'; color:var(--mach-blue); font-weight:700; flex-shrink:0; }
+        /* Enterprise schema */
+        .mysql-lab-wrapper .lab-ent-schema-wrap { overflow-x:auto; padding:8px 0; }
+        .mysql-lab-wrapper .lab-ent-schema { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; min-width:860px; }
+        .mysql-lab-wrapper .lab-ent-domain { border:1px solid var(--mach-border); border-radius:6px; overflow:hidden; }
+        .mysql-lab-wrapper .lab-ent-domain-header { padding:7px 10px; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-align:center; border-bottom:1px solid var(--mach-border); }
+        .mysql-lab-wrapper .lab-ent-domain-tables { padding:8px; }
+        .mysql-lab-wrapper .lab-ent-table-chip { font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 7px; border-radius:3px; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid transparent; }
+        .mysql-lab-wrapper .lab-ent-table-chip:last-child { margin-bottom:0; }
+        .mysql-lab-wrapper .lab-ent-domain.crm .lab-ent-domain-header { background:rgba(86,156,214,.15); color:#569cd6; }
+        .mysql-lab-wrapper .lab-ent-domain.crm .lab-ent-table-chip    { background:rgba(86,156,214,.08); border-color:rgba(86,156,214,.2); color:#9cdcfe; }
+        .mysql-lab-wrapper .lab-ent-domain.hr  .lab-ent-domain-header { background:rgba(76,175,80,.15);  color:#4caf50; }
+        .mysql-lab-wrapper .lab-ent-domain.hr  .lab-ent-table-chip    { background:rgba(76,175,80,.08);  border-color:rgba(76,175,80,.2);  color:#a8d5a9; }
+        .mysql-lab-wrapper .lab-ent-domain.fin .lab-ent-domain-header { background:rgba(232,123,30,.15); color:#e87b1e; }
+        .mysql-lab-wrapper .lab-ent-domain.fin .lab-ent-table-chip    { background:rgba(232,123,30,.08); border-color:rgba(232,123,30,.2); color:#f0b87a; }
+        .mysql-lab-wrapper .lab-ent-domain.ops .lab-ent-domain-header { background:rgba(197,134,192,.15);color:#c586c0; }
+        .mysql-lab-wrapper .lab-ent-domain.ops .lab-ent-table-chip    { background:rgba(197,134,192,.08);border-color:rgba(197,134,192,.2);color:#d9acdc; }
+        .mysql-lab-wrapper .lab-ent-domain.it  .lab-ent-domain-header { background:rgba(78,201,176,.15); color:#4ec9b0; }
+        .mysql-lab-wrapper .lab-ent-domain.it  .lab-ent-table-chip    { background:rgba(78,201,176,.08); border-color:rgba(78,201,176,.2); color:#97dfd2; }
+        .mysql-lab-wrapper .lab-ent-domain.sec .lab-ent-domain-header { background:rgba(244,71,71,.15);  color:#f44747; }
+        .mysql-lab-wrapper .lab-ent-domain.sec .lab-ent-table-chip    { background:rgba(244,71,71,.08);  border-color:rgba(244,71,71,.2);  color:#f49393; }
+        .mysql-lab-wrapper .lab-ent-compare-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }
+        .mysql-lab-wrapper .lab-ent-stat-box { background:rgba(255,255,255,0.03); border:1px solid var(--mach-border); border-radius:6px; padding:14px 18px; display:flex; align-items:center; gap:14px; }
+        .mysql-lab-wrapper .lab-ent-stat-num { font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:800; line-height:1; flex-shrink:0; }
+        .mysql-lab-wrapper .lab-ent-stat-label { font-size:13px; color:#8b949e; line-height:1.5; }
+        .mysql-lab-wrapper .lab-ent-stat-label strong { color:#c9d1d9; font-weight:600; }
+        .mysql-lab-wrapper .lab-begin-btn-wrap { text-align:center; padding:8px 0 4px; }
+        .mysql-lab-wrapper .lab-begin-btn { display:inline-flex; align-items:center; gap:10px; background:var(--mach-blue); color:#fff; border:none; padding:14px 48px; border-radius:6px; font-family:'Barlow',sans-serif; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 4px 18px rgba(26,111,212,0.45); transition:all 0.2s; }
+        .mysql-lab-wrapper .lab-begin-btn:hover { background:#1d7fe3; transform:translateY(-2px); }
+        .mysql-lab-wrapper .lab-begin-btn-sub { font-size:13px; color:#8b949e; margin-top:10px; }
+        /* Task card */
+        .mysql-lab-wrapper .lab-task-card { background:var(--mach-panel); border:1px solid var(--mach-border); border-left:3px solid var(--mach-orange); border-radius:6px; padding:18px 22px; margin-bottom:20px; }
+        .mysql-lab-wrapper .lab-task-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+        .mysql-lab-wrapper .lab-task-step-num { background:var(--mach-orange); color:#fff; font-size:11px; font-weight:800; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .mysql-lab-wrapper .lab-task-title { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:700; color:#e6edf3; letter-spacing:0.3px; }
+        .mysql-lab-wrapper .lab-task-subtitle { font-size:13px; color:#8b949e; font-weight:400; margin-top:1px; }
+        .mysql-lab-wrapper .lab-task-instructions { font-size:13.5px; color:#c9d1d9; line-height:1.7; border-top:1px solid var(--mach-border); padding-top:12px; margin-top:2px; }
+        .mysql-lab-wrapper .lab-task-instructions ol { padding-left:18px; }
+        .mysql-lab-wrapper .lab-task-instructions li { margin-bottom:6px; }
+        .mysql-lab-wrapper .lab-task-instructions li strong { color:var(--mach-orange); }
+        .mysql-lab-wrapper .lab-kbd { display:inline-block; background:#21262d; border:1px solid #444c56; border-bottom:2px solid #444c56; border-radius:4px; padding:1px 7px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#e6edf3; }
+        /* Script card */
+        .mysql-lab-wrapper .lab-script-card { background:var(--mach-panel); border:1px solid var(--mach-border); border-radius:6px; margin-bottom:20px; overflow:hidden; }
+        .mysql-lab-wrapper .lab-script-card-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:#1c2128; border-bottom:1px solid var(--mach-border); }
+        .mysql-lab-wrapper .lab-script-card-title { font-size:12px; font-weight:700; color:var(--wb-dim); letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+        .mysql-lab-wrapper .lab-script-card-title::before { content:''; width:8px; height:8px; border-radius:50%; background:var(--mach-orange); display:inline-block; }
+        .mysql-lab-wrapper .lab-copy-btn { display:flex; align-items:center; gap:7px; background:var(--mach-blue); color:#fff; border:none; border-radius:5px; padding:7px 16px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .mysql-lab-wrapper .lab-copy-btn:hover { background:#1d7fe3; transform:translateY(-1px); }
+        .mysql-lab-wrapper .lab-copy-btn.copied { background:#238636; }
+        .mysql-lab-wrapper .lab-copy-btn svg { width:14px; height:14px; }
+        .mysql-lab-wrapper .lab-script-body { background:#0d1117; padding:18px 20px; overflow-x:auto; }
+        .mysql-lab-wrapper .lab-code-block { font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.8; white-space:pre; color:var(--punc-c); }
+        .mysql-lab-wrapper .lab-code-block .kw   { color:var(--kw); }
+        .mysql-lab-wrapper .lab-code-block .type  { color:var(--type-c); }
+        .mysql-lab-wrapper .lab-code-block .str   { color:var(--str-c); }
+        .mysql-lab-wrapper .lab-code-block .num   { color:var(--num-c); }
+        .mysql-lab-wrapper .lab-code-block .col   { color:var(--col-c); }
+        .mysql-lab-wrapper .lab-code-block .cmt   { color:var(--cmt-c); font-style:italic; }
+        /* Workbench replica */
+        .mysql-lab-wrapper .wb-container { border:1px solid #555; border-radius:4px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.6); margin-bottom:24px; font-family:'Barlow',sans-serif; }
+        .mysql-lab-wrapper .wb-titlebar { background:#3c3c3c; display:flex; align-items:center; padding:6px 12px; gap:10px; border-bottom:1px solid #2a2a2a; user-select:none; }
+        .mysql-lab-wrapper .wb-traffic { display:flex; gap:6px; }
+        .mysql-lab-wrapper .wb-dot { width:12px; height:12px; border-radius:50%; }
+        .mysql-lab-wrapper .wb-dot.red    { background:#ff5f57; }
+        .mysql-lab-wrapper .wb-dot.yellow { background:#ffbd2e; }
+        .mysql-lab-wrapper .wb-dot.green  { background:#28ca41; }
+        .mysql-lab-wrapper .wb-title-text { font-size:12px; color:#ccc; margin:0 auto; letter-spacing:0.3px; }
+        .mysql-lab-wrapper .wb-menubar { background:#3c3c3c; display:flex; padding:0 8px; border-bottom:1px solid #2a2a2a; }
+        .mysql-lab-wrapper .wb-menu-item { font-size:12px; color:#ccc; padding:5px 10px; cursor:default; border-radius:3px; }
+        .mysql-lab-wrapper .wb-menu-item:hover { background:rgba(255,255,255,0.08); }
+        .mysql-lab-wrapper .wb-toolbar { background:#2d2d2d; display:flex; align-items:center; padding:4px 8px; gap:2px; border-bottom:1px solid var(--wb-border); }
+        .mysql-lab-wrapper .wb-tool-btn { width:28px; height:28px; border:none; background:transparent; border-radius:3px; color:#ccc; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; position:relative; }
+        .mysql-lab-wrapper .wb-tool-btn:hover { background:rgba(255,255,255,0.1); }
+        .mysql-lab-wrapper .wb-tool-btn.exec-btn { color:#ffd700; font-size:16px; }
+        .mysql-lab-wrapper .wb-tool-btn.exec-btn:hover { background:rgba(255,215,0,0.15); }
+        .mysql-lab-wrapper .wb-tool-separator { width:1px; height:20px; background:var(--wb-border); margin:0 4px; }
+        .mysql-lab-wrapper .wb-tool-label { font-size:11px; color:var(--wb-dim); padding:0 6px; }
+        .mysql-lab-wrapper .wb-tabbar { background:var(--wb-tab); display:flex; border-bottom:1px solid var(--wb-border); padding:0 8px; padding-top:4px; }
+        .mysql-lab-wrapper .wb-tab { background:var(--wb-bg); border:1px solid var(--wb-border); border-bottom:none; border-radius:4px 4px 0 0; padding:5px 16px; font-size:12px; color:#ccc; cursor:default; display:flex; align-items:center; gap:8px; }
+        .mysql-lab-wrapper .wb-tab-dot { width:7px; height:7px; border-radius:50%; background:var(--mach-blue); }
+        .mysql-lab-wrapper .wb-tab-close { font-size:14px; color:var(--wb-dim); line-height:1; cursor:default; }
+        .mysql-lab-wrapper .wb-layout { display:flex; height:360px; background:var(--wb-bg); }
+        .mysql-lab-wrapper .wb-nav { width:190px; min-width:190px; background:var(--wb-sidebar); border-right:1px solid var(--wb-border); overflow-y:auto; flex-shrink:0; }
+        .mysql-lab-wrapper .wb-nav-header { padding:8px 10px 4px; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--wb-dim); border-bottom:1px solid var(--wb-border); margin-bottom:4px; }
+        .mysql-lab-wrapper .wb-nav-section { padding:2px 0; }
+        .mysql-lab-wrapper .wb-nav-item { display:flex; align-items:center; gap:6px; padding:3px 10px; font-size:12px; color:var(--wb-text); cursor:default; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .mysql-lab-wrapper .wb-nav-item:hover { background:rgba(255,255,255,0.06); }
+        .mysql-lab-wrapper .wb-nav-item.schema { font-weight:600; color:var(--kw); }
+        .mysql-lab-wrapper .wb-nav-item.group  { color:var(--wb-dim); padding-left:18px; }
+        .mysql-lab-wrapper .wb-nav-item.table  { padding-left:28px; color:var(--col-c); }
+        .mysql-lab-wrapper .wb-nav-item.table.new { animation:fadeIn 0.4s ease; }
+        .mysql-lab-wrapper .wb-nav-arrow { margin-right:2px; font-size:9px; color:var(--wb-dim); }
+        .mysql-lab-wrapper .wb-editor-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+        .mysql-lab-wrapper .wb-editor-wrap { flex:1; display:flex; overflow:hidden; position:relative; }
+        .mysql-lab-wrapper .wb-line-numbers { width:42px; min-width:42px; background:var(--wb-bg); color:var(--wb-dim); font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.8; padding:10px 0; text-align:right; padding-right:10px; border-right:1px solid #333; user-select:none; overflow:hidden; }
+        .mysql-lab-wrapper .wb-editor { flex:1; background:var(--wb-bg); color:var(--wb-text); font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.8; padding:10px 14px; border:none; outline:none; resize:none; overflow-y:auto; white-space:pre; overflow-x:auto; }
+        .mysql-lab-wrapper .wb-editor::placeholder { color:#444; font-style:italic; }
+        .mysql-lab-wrapper .wb-output { height:130px; border-top:1px solid var(--wb-border); background:var(--wb-output); display:flex; flex-direction:column; }
+        .mysql-lab-wrapper .wb-output-tabs { display:flex; background:#2d2d2d; border-bottom:1px solid var(--wb-border); }
+        .mysql-lab-wrapper .wb-output-tab { font-size:11px; padding:5px 14px; color:var(--wb-dim); cursor:default; border-right:1px solid var(--wb-border); }
+        .mysql-lab-wrapper .wb-output-tab.active { background:var(--wb-output); color:var(--wb-text); border-bottom:2px solid var(--mach-blue); margin-bottom:-1px; }
+        .mysql-lab-wrapper .wb-output-body { flex:1; overflow-y:auto; padding:6px 0; }
+        .mysql-lab-wrapper .wb-output-row { display:flex; align-items:center; gap:10px; padding:3px 12px; font-size:12px; color:var(--wb-dim); font-family:'JetBrains Mono',monospace; }
+        .mysql-lab-wrapper .wb-output-row.result { color:var(--wb-text); animation:slideIn 0.3s ease; }
+        .mysql-lab-wrapper .wb-output-icon { font-size:13px; flex-shrink:0; }
+        .mysql-lab-wrapper .wb-output-msg { flex:1; }
+        .mysql-lab-wrapper .wb-output-time { color:var(--wb-dim); font-size:11px; flex-shrink:0; }
+        .mysql-lab-wrapper .wb-statusbar { background:var(--mach-blue); display:flex; align-items:center; gap:16px; padding:3px 12px; font-size:11px; color:rgba(255,255,255,0.85); font-family:'JetBrains Mono',monospace; }
+        .mysql-lab-wrapper .wb-status-sep { opacity:0.4; }
+        /* Explanation panel */
+        .mysql-lab-wrapper .lab-explanation-panel { background:var(--mach-panel); border:1px solid var(--mach-border); border-top:3px solid var(--mach-blue); border-radius:6px; margin-bottom:24px; overflow:hidden; display:none; animation:slideUp 0.4s ease; }
+        .mysql-lab-wrapper .lab-explanation-panel.visible { display:block; }
+        .mysql-lab-wrapper .lab-exp-header { display:flex; align-items:center; gap:10px; padding:14px 20px; background:#1c2128; border-bottom:1px solid var(--mach-border); }
+        .mysql-lab-wrapper .lab-exp-header-icon { font-size:18px; }
+        .mysql-lab-wrapper .lab-exp-header-title { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:700; color:#e6edf3; }
+        .mysql-lab-wrapper .lab-exp-header-sub { font-size:12px; color:#8b949e; margin-left:auto; }
+        .mysql-lab-wrapper .lab-exp-table { width:100%; border-collapse:collapse; }
+        .mysql-lab-wrapper .lab-exp-table th { background:#1c2128; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--wb-dim); padding:8px 16px; text-align:left; border-bottom:1px solid var(--mach-border); }
+        .mysql-lab-wrapper .lab-exp-table th:first-child { width:38px; text-align:center; }
+        .mysql-lab-wrapper .lab-exp-table th:nth-child(2) { width:42%; }
+        .mysql-lab-wrapper .lab-exp-table td { padding:9px 16px; font-size:13px; border-bottom:1px solid rgba(48,54,61,0.5); vertical-align:top; }
+        .mysql-lab-wrapper .lab-exp-table tr:last-child td { border-bottom:none; }
+        .mysql-lab-wrapper .lab-exp-table tr:hover td { background:rgba(255,255,255,0.02); }
+        .mysql-lab-wrapper .lab-exp-linenum { text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--wb-dim); background:#1c2128; }
+        .mysql-lab-wrapper .lab-exp-code { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--col-c); line-height:1.5; }
+        .mysql-lab-wrapper .lab-exp-code .kw   { color:var(--kw); }
+        .mysql-lab-wrapper .lab-exp-code .type  { color:var(--type-c); }
+        .mysql-lab-wrapper .lab-exp-code .str   { color:var(--str-c); }
+        .mysql-lab-wrapper .lab-exp-code .num   { color:var(--num-c); }
+        .mysql-lab-wrapper .lab-exp-text { font-size:13px; color:#c9d1d9; line-height:1.6; }
+        .mysql-lab-wrapper .lab-exp-text strong { color:var(--mach-orange); font-weight:600; }
+        .mysql-lab-wrapper .lab-exp-text .exp-badge { display:inline-block; background:rgba(26,111,212,0.2); border:1px solid rgba(26,111,212,0.4); color:var(--kw); font-size:10px; font-weight:700; padding:1px 6px; border-radius:3px; letter-spacing:0.5px; margin:0 2px; vertical-align:middle; }
+        .mysql-lab-wrapper .lab-exp-text .exp-badge.orange { background:rgba(232,123,30,0.15); border-color:rgba(232,123,30,0.4); color:var(--mach-orange); }
+        .mysql-lab-wrapper .lab-exp-text .exp-badge.green  { background:rgba(76,175,80,0.15);  border-color:rgba(76,175,80,0.4);  color:#4caf50; }
+        .mysql-lab-wrapper .lab-exp-text .exp-badge.teal   { background:rgba(78,201,176,0.15); border-color:rgba(78,201,176,0.4); color:var(--type-c); }
+        /* Nav buttons */
+        .mysql-lab-wrapper .lab-nav-buttons { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+        .mysql-lab-wrapper .lab-btn-finish { display:flex; align-items:center; gap:8px; padding:10px 28px; border-radius:6px; font-family:'Barlow',sans-serif; font-size:14px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; background:#238636; color:#fff; box-shadow:0 3px 12px rgba(35,134,54,0.4); margin-left:auto; }
+        .mysql-lab-wrapper .lab-btn-finish:hover:not(:disabled) { background:#2ea043; transform:translateY(-1px); }
+        .mysql-lab-wrapper .lab-btn-finish:disabled { background:#21262d; border:1px solid var(--mach-border); color:#555; cursor:default; box-shadow:none; transform:none; }
+        .mysql-lab-wrapper .lab-btn-execute-hint { font-size:12px; color:var(--wb-dim); display:flex; align-items:center; gap:6px; }
+        .mysql-lab-wrapper .lab-hint-arrow { color:var(--mach-orange); font-size:16px; }
+        /* Tooltip */
+        .mysql-lab-wrapper [data-tip] { position:relative; }
+        .mysql-lab-wrapper [data-tip]::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1c2128; border:1px solid var(--mach-border); color:var(--wb-text); font-size:11px; padding:4px 8px; border-radius:4px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:10; }
+        .mysql-lab-wrapper [data-tip]:hover::after { opacity:1; }
+        /* Complete screen */
+        .mysql-lab-wrapper .lab-complete-screen { display:none; text-align:center; padding:60px 40px; }
+        .mysql-lab-wrapper .lab-complete-screen.visible { display:block; }
+        .mysql-lab-wrapper .lab-complete-icon { font-size:64px; margin-bottom:20px; }
+        .mysql-lab-wrapper .lab-complete-title { font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:800; color:#4caf50; margin-bottom:10px; }
+        .mysql-lab-wrapper .lab-complete-sub { font-size:16px; color:#8b949e; margin-bottom:28px; }
+        .mysql-lab-wrapper .lab-complete-detail { background:var(--mach-panel); border:1px solid var(--mach-border); border-radius:8px; padding:22px 28px; max-width:560px; margin:0 auto 32px; text-align:left; }
+        .mysql-lab-wrapper .lab-complete-detail-title { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--mach-blue); margin-bottom:12px; }
+        .mysql-lab-wrapper .lab-complete-col-list { list-style:none; }
+        .mysql-lab-wrapper .lab-complete-col-list li { display:flex; align-items:flex-start; gap:10px; padding:5px 0; border-bottom:1px solid rgba(48,54,61,0.5); font-size:13px; color:#c9d1d9; }
+        .mysql-lab-wrapper .lab-complete-col-list li:last-child { border-bottom:none; }
+        .mysql-lab-wrapper .lab-complete-col-name { font-family:'JetBrains Mono',monospace; color:var(--col-c); min-width:120px; flex-shrink:0; }
+        .mysql-lab-wrapper .lab-complete-col-type { font-family:'JetBrains Mono',monospace; color:var(--type-c); min-width:100px; flex-shrink:0; }
+        .mysql-lab-wrapper .lab-pulse-hint { animation:labPulse 2s ease-in-out infinite; }
+        @keyframes labPulse { 0%,100% { box-shadow:0 0 6px rgba(255,215,0,0.3); } 50% { box-shadow:0 0 14px rgba(255,215,0,0.7); } }
+        ::-webkit-scrollbar { width:8px; height:8px; }
+        ::-webkit-scrollbar-track { background:#1a1a1a; }
+        ::-webkit-scrollbar-thumb { background:#444; border-radius:4px; }
+        ::-webkit-scrollbar-thumb:hover { background:#555; }
+
+        /* ═══════════════════════════════════════════
+           TAB 5 — SCENARIO QUIZ (scoped .scen-quiz-wrapper)
+        ═══════════════════════════════════════════ */
+        .scen-quiz-wrapper { font-family:'IBM Plex Sans',sans-serif; background:var(--sq-bg-primary); color:var(--sq-text-primary); min-height:60vh; position:relative; }
+        .scen-quiz-wrapper::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(0,194,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,194,255,0.03) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+        .sq-inner { max-width:960px; margin:0 auto; padding:24px 20px; position:relative; z-index:1; }
+        .sq-progress-bar { background:var(--sq-bg-secondary); border:1px solid var(--sq-border-color); border-radius:10px; padding:14px 20px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+        .sq-progress-label { font-size:0.88em; font-weight:600; color:var(--sq-text-secondary); white-space:nowrap; font-family:'IBM Plex Mono',monospace; }
+        .sq-progress-label strong { color:var(--sq-accent-primary); }
+        .sq-progress-track { flex:1; height:6px; background:var(--sq-bg-tertiary); border-radius:3px; overflow:hidden; }
+        .sq-progress-fill { height:100%; background:linear-gradient(90deg,var(--sq-accent-primary),var(--sq-accent-secondary)); border-radius:3px; transition:width 0.4s cubic-bezier(0.4,0,0.2,1); }
+        .sq-score-badge { font-family:'IBM Plex Mono',monospace; font-size:0.85em; color:var(--sq-accent-teal); font-weight:600; white-space:nowrap; }
+        .sq-quiz-container { background:var(--sq-bg-secondary); border:1px solid var(--sq-border-color); border-radius:12px; padding:28px; margin-bottom:20px; }
+        .sq-scenario-text { background:var(--sq-bg-tertiary); border:1px solid var(--sq-border-color); border-left:3px solid var(--sq-accent-warning); padding:18px 20px; border-radius:8px; margin-bottom:22px; font-size:0.98em; color:var(--sq-text-primary); line-height:1.75; }
+        .sq-scenario-label { font-size:0.72em; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--sq-accent-warning); font-family:'IBM Plex Mono',monospace; margin-bottom:8px; display:block; }
+        .sq-question-text { font-size:1.05em; font-weight:600; color:var(--sq-text-primary); margin-bottom:18px; line-height:1.6; }
+        .sq-answers-grid { display:grid; gap:10px; margin-bottom:18px; }
+        .sq-answer-option { background:var(--sq-bg-card); border:1.5px solid var(--sq-border-color); padding:14px 18px; border-radius:8px; cursor:pointer; transition:border-color 0.18s,background 0.18s,transform 0.15s; font-size:0.95em; display:flex; align-items:flex-start; gap:12px; }
+        .sq-answer-option .sq-letter { font-family:'IBM Plex Mono',monospace; font-size:0.8em; font-weight:600; color:var(--sq-text-secondary); background:var(--sq-bg-tertiary); border:1px solid var(--sq-border-color); min-width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:5px; flex-shrink:0; margin-top:1px; transition:all 0.18s; }
+        .sq-answer-option:hover:not(.sq-disabled) { border-color:var(--sq-accent-primary); background:rgba(0,194,255,0.06); transform:translateX(3px); }
+        .sq-answer-option:hover:not(.sq-disabled) .sq-letter { background:rgba(0,194,255,0.15); color:var(--sq-accent-primary); border-color:var(--sq-accent-primary); }
+        .sq-answer-option.sq-selected { border-color:var(--sq-accent-primary); background:rgba(0,194,255,0.08); }
+        .sq-answer-option.sq-correct  { border-color:var(--sq-accent-success)!important; background:rgba(0,229,176,0.08)!important; }
+        .sq-answer-option.sq-correct .sq-letter { background:rgba(0,229,176,0.2); color:var(--sq-accent-success); border-color:var(--sq-accent-success); }
+        .sq-answer-option.sq-incorrect { border-color:var(--sq-accent-error)!important; background:rgba(255,77,109,0.07)!important; }
+        .sq-answer-option.sq-incorrect .sq-letter { background:rgba(255,77,109,0.2); color:var(--sq-accent-error); border-color:var(--sq-accent-error); }
+        .sq-answer-option.sq-disabled { cursor:not-allowed; }
+        .sq-feedback-box { background:var(--sq-bg-primary); border:1px solid var(--sq-border-color); border-left:3px solid var(--sq-accent-success); border-radius:8px; padding:18px 20px; margin-top:18px; display:none; animation:slideIn 0.3s ease; }
+        .sq-feedback-box.show { display:block; }
+        .sq-feedback-box.sq-incorrect-feedback { border-left-color:var(--sq-accent-error); }
+        .sq-feedback-header { display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.05em; margin-bottom:10px; }
+        .sq-feedback-header.sq-correct-header   { color:var(--sq-accent-success); }
+        .sq-feedback-header.sq-incorrect-header { color:var(--sq-accent-error); }
+        .sq-feedback-explanation { color:var(--sq-text-secondary); font-size:0.93em; line-height:1.75; }
+        .sq-feedback-explanation strong { color:var(--sq-text-primary); display:block; margin-top:10px; font-size:1em; }
+        .sq-feedback-explanation em { color:var(--sq-accent-primary); font-style:normal; font-weight:600; }
+        .sq-controls { display:flex; justify-content:space-between; align-items:center; margin-top:24px; padding-top:20px; border-top:1px solid var(--sq-border-color); gap:12px; }
+        .sq-btn { font-family:'IBM Plex Sans',sans-serif; font-size:0.9em; font-weight:600; border:none; padding:11px 22px; border-radius:8px; cursor:pointer; transition:all 0.2s; letter-spacing:0.02em; }
+        .sq-btn-primary { background:linear-gradient(135deg,var(--sq-accent-primary),var(--sq-accent-secondary)); color:#fff; }
+        .sq-btn-primary:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,194,255,0.3); }
+        .sq-btn-secondary { background:var(--sq-bg-card); color:var(--sq-text-secondary); border:1.5px solid var(--sq-border-color); }
+        .sq-btn-secondary:hover:not(:disabled) { border-color:var(--sq-accent-primary); color:var(--sq-text-primary); }
+        .sq-btn-reshuffle { background:linear-gradient(135deg,#ff6b35,var(--sq-accent-warning)); color:#fff; }
+        .sq-btn-reshuffle:hover:not(:disabled) { opacity:0.9; transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,184,48,0.3); }
+        .sq-btn:disabled { opacity:0.35; cursor:not-allowed; transform:none!important; box-shadow:none!important; }
+        .sq-results-screen { background:var(--sq-bg-secondary); border:1px solid var(--sq-border-color); border-radius:12px; padding:44px 36px; text-align:center; display:none; }
+        .sq-results-screen.show { display:block; animation:fadeIn 0.5s ease; }
+        .sq-results-icon  { font-size:4.5em; margin-bottom:14px; }
+        .sq-results-title { font-size:2em; font-weight:700; margin-bottom:10px; background:linear-gradient(135deg,var(--sq-accent-primary),var(--sq-accent-secondary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .sq-results-score { font-size:3.2em; font-weight:700; color:var(--sq-accent-primary); font-family:'IBM Plex Mono',monospace; margin:20px 0; }
+        .sq-results-details { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:28px 0; }
+        .sq-result-card { background:var(--sq-bg-card); border:1px solid var(--sq-border-color); border-radius:10px; padding:22px 16px; }
+        .sq-result-card-value { font-size:2em; font-weight:700; font-family:'IBM Plex Mono',monospace; color:var(--sq-accent-primary); margin-bottom:6px; }
+        .sq-result-card-label { color:var(--sq-text-secondary); font-size:0.85em; }
+        .sq-results-message { background:var(--sq-bg-card); border:1px solid var(--sq-border-color); border-radius:8px; padding:18px 22px; margin:20px 0; font-size:1em; color:var(--sq-text-secondary); line-height:1.7; }
+        .sq-results-buttons { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
+        @media(max-width:600px) { .sq-results-details { grid-template-columns:1fr; } .sq-controls { flex-wrap:wrap; } }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <h1>🗄️ Mod 7 – Database Fundamentals</h1>
+    <p class="subtitle">CompTIA Tech+ Aligned | Module 7 Complete</p>
+</div>
+
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('instruction')">📚 Instruction</button>
+    <button class="tab-btn"        onclick="switchTab('reinforcement')">⚡ Challenge Tasks</button>
+    <button class="tab-btn"        onclick="switchTab('sql-exercise')">🗄️ SQL Exercise</button>
+    <button class="tab-btn"        onclick="switchTab('mysql-lab')">🔬 MySQL Lab</button>
+    <button class="tab-btn"        onclick="switchTab('quiz')">📝 Scenario Quiz</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TAB 1: INSTRUCTION                                        -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="container">
+    <div class="main-content">
+        <div class="lesson" id="lesson3">
+            <h2>Understanding Tables &amp; Keys</h2>
+
+            <div class="problem-scenario">
+                <h3>🤔 The Problem</h3>
+                <p>You're building a student enrollment system. How do you uniquely identify each student? What if two students have the same name?</p>
+            </div>
+
+            <div class="visual-demo">
+                <h3>The Challenge of Identification</h3>
+                <p style="margin-bottom:8px;">❌ <strong>Without Unique IDs:</strong></p>
+                <table>
+                    <thead><tr><th>Name</th><th>Email</th><th>Major</th></tr></thead>
+                    <tbody>
+                        <tr><td>James Smith</td><td>jsmith@university.edu</td><td>Computer Science</td></tr>
+                        <tr><td>James Smith</td><td>jsmith2@university.edu</td><td>Business</td></tr>
+                    </tbody>
+                </table>
+                <p style="margin-top:10px;color:var(--accent-error);">Problem: Which James Smith are we talking about?</p>
+
+                <p style="margin-top:20px;margin-bottom:8px;">✅ <strong>With Primary Keys:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student_ID <span class="badge pk">PK</span></th>
+                            <th>Name</th><th>Email</th><th>Major</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color:var(--accent-success);font-weight:600;">1001</td>
+                            <td>James Smith</td><td>jsmith@university.edu</td><td>Computer Science</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--accent-success);font-weight:600;">1002</td>
+                            <td>James Smith</td><td>jsmith2@university.edu</td><td>Business</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top:10px;color:var(--accent-success);">Solution: Each student has a unique identifier!</p>
+            </div>
+
+            <div class="key-concept">
+                <strong>Primary Key:</strong> A column that uniquely identifies each row. Think of it like a Social Security Number — no two people can have the same one.
+                <ul style="margin-left:18px;margin-top:8px;">
+                    <li><strong style="color:var(--accent-primary);">Must be unique</strong> — No duplicates allowed</li>
+                    <li><strong style="color:var(--accent-primary);">Cannot be NULL</strong> — Every row must have a value</li>
+                    <li><strong style="color:var(--accent-primary);">Never changes</strong> — Once assigned, it stays the same</li>
+                </ul>
+            </div>
+
+            <div class="interactive-section">
+                <h3>🎯 Which Field Should Be the Primary Key?</h3>
+                <div class="concept-check">
+                    <div class="single-q" data-answer="product_id">
+                        <p>You're designing a Products table. Which field makes the best primary key?</p>
+                        <div class="check-option" data-val="product_name"><strong>product_name</strong> — e.g. "Wireless Mouse"</div>
+                        <div class="check-option" data-val="product_id"><strong>product_id</strong> — e.g. 12345</div>
+                        <div class="check-option" data-val="price"><strong>price</strong> — e.g. 29.99</div>
+                        <div class="explanation">✅ <strong>product_id</strong> is ideal: it's always unique, never changes, and is efficient as a number. Product names can duplicate ("Wireless Mouse" from two suppliers) and prices definitely duplicate!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TAB 2: REINFORCEMENT                                      -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div class="rein-wrapper">
+    <div class="rein-inner">
+
+        <div class="rein-task-card" id="t1-card">
+            <div class="rein-task-header">
+                <span class="rein-task-num">TASK 01</span>
+                <span class="rein-task-title">Database Operations Classification</span>
+                <span class="rein-task-type">Drag &amp; Drop · Single-Item Zones</span>
+            </div>
+            <div class="rein-task-body">
+                <div class="rein-scenario-box">
+                    <div class="rein-sc-label">📋 Scenario</div>
+                    <p class="rein-sc-label-p">A hospital IT team is training new staff on what databases are used for. They must correctly classify each activity as one of the four core database operations before gaining access to the patient records system.</p>
+                </div>
+                <p class="rein-task-instructions">Drag each <strong>activity</strong> from the right column and drop it onto the correct <strong>database operation</strong> on the left. Each zone accepts exactly one chip.</p>
+
+                <div class="rein-dnd-workspace" id="t1-workspace">
+                    <div class="rein-dnd-targets">
+                        <div class="rein-dnd-column-label">Database Operations</div>
+                        <div class="rein-drop-target" id="t1-drop-create" data-accept="create"><div class="rein-drop-target-label">➕ Create / Import</div></div>
+                        <div class="rein-drop-target" id="t1-drop-query"  data-accept="query"><div class="rein-drop-target-label">🔍 Query</div></div>
+                        <div class="rein-drop-target" id="t1-drop-report" data-accept="report"><div class="rein-drop-target-label">📊 Run Reports</div></div>
+                        <div class="rein-drop-target" id="t1-drop-update" data-accept="update"><div class="rein-drop-target-label">✏️ Update / Input</div></div>
+                    </div>
+                    <div class="rein-dnd-sources" id="t1-sources">
+                        <div class="rein-dnd-column-label">Activities</div>
+                        <div class="rein-drag-chip" draggable="true" data-val="report">Generating a monthly summary of all admissions grouped by department</div>
+                        <div class="rein-drag-chip" draggable="true" data-val="query">Retrieving all patients admitted in the last 30 days who have a penicillin allergy</div>
+                        <div class="rein-drag-chip" draggable="true" data-val="update">Recording a patient's new home address after they moved</div>
+                        <div class="rein-drag-chip" draggable="true" data-val="create">Uploading last year's paper records as a CSV import into the new system</div>
+                    </div>
+                </div>
+
+                <div class="rein-task-actions">
+                    <button class="rein-btn-submit" id="t1-submit">Submit Answer</button>
+                    <button class="rein-btn-reset"  id="t1-reset">↺ Reset</button>
+                </div>
+
+                <div class="rein-feedback-panel" id="t1-feedback">
+                    <div class="rein-fb-header"><span class="rein-fb-icon"></span><span class="rein-fb-verdict"></span></div>
+                    <div class="rein-fb-body">
+                        <div class="rein-fb-section">
+                            <div class="rein-fb-section-title">✅ Why Each Answer Is Correct</div>
+                            <div class="rein-fb-section-body">
+                                <strong>Create / Import</strong> — Uploading a CSV is a bulk data-creation operation. Databases support both manual entry and mass imports from spreadsheets and legacy systems.<br><br>
+                                <strong>Query</strong> — Searching for patients by date range and allergy flag is an ad-hoc query: it filters and returns a result set without generating a formatted output document.<br><br>
+                                <strong>Run Reports</strong> — A monthly admissions summary is a report: a pre-defined, formatted output aggregating data across many records, typically scheduled for managers or regulators.<br><br>
+                                <strong>Update / Input</strong> — Changing an existing patient's address modifies a stored record. The patient already exists; only one field changes — this is distinct from creating a new record.
+                            </div>
+                        </div>
+                        <div class="rein-fb-section">
+                            <div class="rein-fb-section-title">❌ Common Confusion: Query vs. Report</div>
+                            <div class="rein-fb-section-body">
+                                A <strong>query</strong> asks an ad-hoc question and returns a raw result set — flexible and real-time. A <strong>report</strong> is structured, pre-built, and formatted for non-technical stakeholders, often on a schedule. Think: <em>query = searching</em> · <em>report = publishing</em>.
+                            </div>
+                        </div>
+                        <div class="rein-fb-tip"><strong>💡 Pro Tip:</strong> On Tech+, "generate a summary / produce a printout" → Report · "Find all records where…" → Query · "Add new records / import CSV" → Create · "Modify an existing field" → Update / Input.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TAB 3: SQL EXERCISE                                       -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-sql-exercise">
+<div class="sql-exer-wrapper">
+
+    <div class="sql-quiz-grid">
+        <!-- Left: scenario -->
+        <div class="sql-scenario-col">
+            <div class="sql-scenario-card" id="sqlScenarioCard">
+                <div class="sql-scenario-tag"><span class="dot"></span>Performance Optimization</div>
+                <div class="sql-scenario-title">📌 Speeding Up Customer Searches</div>
+                <p class="sql-scenario-desc">Support staff search the Customers table by email dozens of times per hour. The DBA notices these lookups are slow because the table has grown to 500,000 rows. The table structure itself is fine — only lookup speed is the problem.</p>
+
+                <button class="sql-hint-btn" onclick="sqlToggleHint()">💡 Need a hint?</button>
+                <div class="sql-hint-reveal" id="sqlHintReveal">
+                    <strong>Hint:</strong> Focus on &ldquo;lookups are slow because the table has grown to 500,000 rows.&rdquo;
+                </div>
+
+                <div id="sqlFeedbackArea"></div>
+
+                <div class="sql-reveal" id="sqlReveal">
+                    <div class="sql-reveal-header"><span>💾 CREATE INDEX – Email Lookups</span></div>
+                    <div class="sql-block"><span class="cm">-- Create a unique index (emails must be unique anyway)</span>
+<span class="kw">CREATE UNIQUE INDEX</span> idx_cust_email
+<span class="kw">ON</span> Customers (email);
+
+<span class="cm">-- Confirm the index exists</span>
+<span class="kw">SHOW INDEX</span> <span class="kw">FROM</span> Customers;</div>
+                </div>
+
+                <div class="sql-reset-strip" id="sqlResetStrip" style="display:none;">
+                    <button class="btn-reset-inline" onclick="sqlReset()">↺ Try Again</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: command buttons -->
+        <div class="sql-commands-col">
+            <div class="sql-commands-header">SQL Commands</div>
+            <div id="sqlCommandList"></div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TAB 4: MYSQL LAB                                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-mysql-lab">
+<div class="mysql-lab-wrapper">
+
+  <div class="lab-header">
+    <div class="lab-header-top">
+      <div class="lab-mach-logo">MACH <span>IT</span> TRAINING</div>
+      <div class="lab-header-divider"></div>
+      <div class="lab-module-badge">MODULE 7</div>
+      <div class="lab-title-text">MySQL Workbench Design Lab</div>
+      <div class="lab-part-badge">Constructing Tables</div>
+    </div>
+
+    <div class="lab-scenario-box">
+      <div class="lab-scenario-icon">🖥️</div>
+      <div>
+        <div class="lab-scenario-label">Scenario</div>
+        <div class="lab-scenario-text">
+          You are the IT technician for <strong>Mach IT LLC</strong>. You have been tasked with building and maintaining the company's new client database from scratch. In this lab you will <strong>design the tables</strong> that will store customer records, product inventory, services offered, stock levels, and sales transactions — structured exactly as a real database administrator would on day one.
+        </div>
+      </div>
+    </div>
+
+    <div class="lab-progress-section">
+      <div class="lab-progress-label">Progress — Table Construction</div>
+      <div class="lab-steps-track" id="labStepsTrack">
+        <div class="lab-step-item">
+          <div class="lab-step-bubble active" id="labStepBubble">1</div>
+          <div class="lab-step-info">
+            <div class="lab-step-number">Table 1</div>
+            <div class="lab-step-name active" id="labStepName">Customers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lab-main-content">
+
+    <!-- INTRO SCREEN -->
+    <div class="lab-intro-screen visible" id="labIntroScreen">
+
+      <!-- Why MySQL? -->
+      <div class="lab-intro-section">
+        <div class="lab-intro-section-header">
+          <div class="lab-intro-section-icon">🏢</div>
+          <div class="lab-intro-section-title">Why MySQL? — Choosing the Right Database for the Job</div>
+        </div>
+        <div class="lab-intro-section-body">
+          <p class="lab-intro-lead">
+            Not all databases are created equal. Before you build one, you need to understand <strong>why the choice of database platform matters</strong> — and why <strong>MySQL</strong> is the industry standard for small-to-medium businesses like Mach IT LLC.
+          </p>
+          <div class="lab-db-compare-grid">
+            <div class="lab-db-card mysql">
+              <div class="lab-db-card-header">🐬 MySQL <span style="font-size:10px;font-weight:400;color:#8b949e;">&nbsp;— Recommended</span></div>
+              <div class="lab-db-card-body">
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span><strong>Free &amp; open-source</strong> — no licensing cost for Community Edition</span></div>
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span><strong>MySQL Workbench</strong> GUI included — no command-line required</span></div>
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span><strong>Industry standard</strong> — powers WordPress, Shopify, Joomla, and millions of SMB apps</span></div>
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span><strong>CompTIA tested</strong> — appears on A+ and Server+ certification exams</span></div>
+              </div>
+            </div>
+            <div class="lab-db-card">
+              <div class="lab-db-card-header">🪟 Microsoft SQL Server</div>
+              <div class="lab-db-card-body">
+                <div class="lab-db-attr bad"><span class="lab-db-attr-icon">✗</span><span><strong>Expensive licensing</strong> — Enterprise edition runs $15,000+ per core</span></div>
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span>Tight Azure &amp; Office 365 integration for Microsoft shops</span></div>
+                <div class="lab-db-attr warn"><span class="lab-db-attr-icon">⚠</span><span>Express (free) edition has 10 GB database size cap</span></div>
+                <div class="lab-db-attr bad"><span class="lab-db-attr-icon">✗</span><span>Windows-only server (Linux support is newer and limited)</span></div>
+              </div>
+            </div>
+            <div class="lab-db-card">
+              <div class="lab-db-card-header">🔴 Oracle Database</div>
+              <div class="lab-db-card-body">
+                <div class="lab-db-attr bad"><span class="lab-db-attr-icon">✗</span><span><strong>Enterprise pricing</strong> — licensing can exceed $100,000 per processor</span></div>
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span>Unmatched performance for massive transactional workloads</span></div>
+                <div class="lab-db-attr bad"><span class="lab-db-attr-icon">✗</span><span>Extremely complex to administer — requires dedicated DBAs</span></div>
+                <div class="lab-db-attr bad"><span class="lab-db-attr-icon">✗</span><span>Overkill for any business under ~500 concurrent users</span></div>
+              </div>
+            </div>
+            <div class="lab-db-card">
+              <div class="lab-db-card-header">🐘 PostgreSQL</div>
+              <div class="lab-db-card-body">
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span><strong>Free &amp; open-source</strong> with no restrictions</span></div>
+                <div class="lab-db-attr good"><span class="lab-db-attr-icon">✓</span><span>More advanced SQL features than MySQL (JSON, arrays, full-text)</span></div>
+                <div class="lab-db-attr bad"><span class="lab-db-attr-icon">✗</span><span>No official GUI as polished as MySQL Workbench</span></div>
+                <div class="lab-db-attr warn"><span class="lab-db-attr-icon">⚠</span><span>Steeper configuration curve — requires more tuning out-of-the-box</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="lab-why-mysql-box">
+            <div class="lab-why-mysql-title">✅ Why MySQL is the right choice for Mach IT LLC</div>
+            <ul class="lab-why-mysql-list">
+              <li>Zero licensing cost — Community Edition is free forever, unlike SQL Server or Oracle</li>
+              <li>MySQL Workbench provides a professional GUI that mirrors what students will use in the field</li>
+              <li>Scales appropriately for SMBs — handles millions of rows without enterprise overhead</li>
+              <li>Native support in cPanel, GoDaddy, Bluehost, and virtually every web hosting platform</li>
+              <li>The #1 most-deployed open-source RDBMS — the skill transfers to any IT environment</li>
+              <li>CompTIA A+, Server+, and Security+ all reference MySQL concepts in exam objectives</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enterprise Schema -->
+      <div class="lab-intro-section">
+        <div class="lab-intro-section-header">
+          <div class="lab-intro-section-icon">🏦</div>
+          <div class="lab-intro-section-title">For Context — What a Large Organization's Database Looks Like</div>
+        </div>
+        <div class="lab-intro-section-body">
+          <p class="lab-intro-lead">
+            The Mach IT LLC database you're about to build has <strong>5 tables</strong>. A large enterprise may have <strong>hundreds of interconnected tables</strong> spread across multiple schemas. The diagram below shows what a typical enterprise schema looks like.
+          </p>
+          <div class="lab-ent-schema-wrap">
+            <div class="lab-ent-schema">
+              <div class="lab-ent-domain crm">
+                <div class="lab-ent-domain-header">CRM / Sales</div>
+                <div class="lab-ent-domain-tables">
+                  <div class="lab-ent-table-chip">customers</div><div class="lab-ent-table-chip">contacts</div>
+                  <div class="lab-ent-table-chip">leads</div><div class="lab-ent-table-chip">accounts</div>
+                  <div class="lab-ent-table-chip">opportunities</div><div class="lab-ent-table-chip">sales_orders</div>
+                  <div class="lab-ent-table-chip">order_line_items</div><div class="lab-ent-table-chip">commissions</div>
+                </div>
+              </div>
+              <div class="lab-ent-domain hr">
+                <div class="lab-ent-domain-header">HR / Payroll</div>
+                <div class="lab-ent-domain-tables">
+                  <div class="lab-ent-table-chip">employees</div><div class="lab-ent-table-chip">departments</div>
+                  <div class="lab-ent-table-chip">job_titles</div><div class="lab-ent-table-chip">payroll_runs</div>
+                  <div class="lab-ent-table-chip">pay_stubs</div><div class="lab-ent-table-chip">benefits</div>
+                  <div class="lab-ent-table-chip">time_entries</div><div class="lab-ent-table-chip">leave_requests</div>
+                </div>
+              </div>
+              <div class="lab-ent-domain fin">
+                <div class="lab-ent-domain-header">Finance / GL</div>
+                <div class="lab-ent-domain-tables">
+                  <div class="lab-ent-table-chip">general_ledger</div><div class="lab-ent-table-chip">chart_of_accounts</div>
+                  <div class="lab-ent-table-chip">journal_entries</div><div class="lab-ent-table-chip">budgets</div>
+                  <div class="lab-ent-table-chip">invoices</div><div class="lab-ent-table-chip">payments</div>
+                  <div class="lab-ent-table-chip">vendors</div><div class="lab-ent-table-chip">purchase_orders</div>
+                </div>
+              </div>
+              <div class="lab-ent-domain ops">
+                <div class="lab-ent-domain-header">Operations</div>
+                <div class="lab-ent-domain-tables">
+                  <div class="lab-ent-table-chip">products</div><div class="lab-ent-table-chip">product_categories</div>
+                  <div class="lab-ent-table-chip">warehouses</div><div class="lab-ent-table-chip">inventory_lots</div>
+                  <div class="lab-ent-table-chip">suppliers</div><div class="lab-ent-table-chip">shipments</div>
+                  <div class="lab-ent-table-chip">work_orders</div><div class="lab-ent-table-chip">equipment</div>
+                </div>
+              </div>
+              <div class="lab-ent-domain it">
+                <div class="lab-ent-domain-header">IT / Support</div>
+                <div class="lab-ent-domain-tables">
+                  <div class="lab-ent-table-chip">service_tickets</div><div class="lab-ent-table-chip">assets</div>
+                  <div class="lab-ent-table-chip">software_licenses</div><div class="lab-ent-table-chip">network_devices</div>
+                  <div class="lab-ent-table-chip">change_requests</div><div class="lab-ent-table-chip">kb_articles</div>
+                  <div class="lab-ent-table-chip">sla_tiers</div><div class="lab-ent-table-chip">projects</div>
+                </div>
+              </div>
+              <div class="lab-ent-domain sec">
+                <div class="lab-ent-domain-header">Security / Audit</div>
+                <div class="lab-ent-domain-tables">
+                  <div class="lab-ent-table-chip">users</div><div class="lab-ent-table-chip">roles</div>
+                  <div class="lab-ent-table-chip">permissions</div><div class="lab-ent-table-chip">audit_log</div>
+                  <div class="lab-ent-table-chip">login_events</div><div class="lab-ent-table-chip">failed_logins</div>
+                  <div class="lab-ent-table-chip">incidents</div><div class="lab-ent-table-chip">risk_register</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lab-ent-compare-row">
+            <div class="lab-ent-stat-box">
+              <div class="lab-ent-stat-num" style="color:var(--mach-orange);">48</div>
+              <div class="lab-ent-stat-label">Tables shown above across 6 business domains. A mid-size enterprise might have <strong>200–500 tables</strong> in production.</div>
+            </div>
+            <div class="lab-ent-stat-box">
+              <div class="lab-ent-stat-num" style="color:var(--mach-blue);">5</div>
+              <div class="lab-ent-stat-label">Tables you'll build today for Mach IT LLC. <strong>Master the fundamentals here</strong>, and the larger schemas become logical extensions.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-begin-btn-wrap">
+        <button class="lab-begin-btn" onclick="labStartLab()">Begin Lab — Constructing Tables →</button>
+        <div class="lab-begin-btn-sub">You will build the Mach IT LLC Customers table step by step</div>
+      </div>
+
+    </div><!-- /labIntroScreen -->
+
+    <!-- STEP CONTENT -->
+    <div id="labStepContent" style="display:none;">
+
+      <div class="lab-task-card">
+        <div class="lab-task-header">
+          <div class="lab-task-step-num">1</div>
+          <div>
+            <div class="lab-task-title">👥 Create the <code style="color:var(--col-c);background:#1c2128;padding:2px 8px;border-radius:4px;font-size:16px;font-family:'JetBrains Mono',monospace;">Customers</code> Table</div>
+            <div class="lab-task-subtitle">Stores client information for all individuals and businesses served by Mach IT LLC</div>
+          </div>
+        </div>
+        <div class="lab-task-instructions">
+          <ol>
+            <li>Review the <strong>CREATE TABLE script</strong> below — read the comments before copying.</li>
+            <li>Click <strong>📋 Copy to Editor</strong> to load the script into the MySQL Workbench query editor.</li>
+            <li>Click the <strong style="color:#ffd700;">⚡ lightning bolt</strong> button (or press <span class="lab-kbd">Ctrl</span>+<span class="lab-kbd">Shift</span>+<span class="lab-kbd">Enter</span>) to execute the script.</li>
+            <li>Review the <strong>Output</strong> panel to confirm the table was created successfully.</li>
+            <li>Read the <strong>line-by-line explanation</strong> that appears — then click <strong>Finish Lab ✓</strong>.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="lab-script-card">
+        <div class="lab-script-card-header">
+          <div class="lab-script-card-title">CREATE TABLE Customers — SQL Script</div>
+          <button class="lab-copy-btn" id="labCopyBtn" onclick="labCopyToEditor()">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"/></svg>
+            Copy to Editor
+          </button>
+        </div>
+        <div class="lab-script-body">
+          <div class="lab-code-block" id="labCodePreview"></div>
+        </div>
+      </div>
+
+      <!-- MySQL Workbench Replica -->
+      <div class="wb-container">
+        <div class="wb-titlebar">
+          <div class="wb-traffic">
+            <div class="wb-dot red"></div><div class="wb-dot yellow"></div><div class="wb-dot green"></div>
+          </div>
+          <div class="wb-title-text">MySQL Workbench — mach_it_llc@localhost</div>
+        </div>
+        <div class="wb-menubar">
+          <div class="wb-menu-item">File</div><div class="wb-menu-item">Edit</div>
+          <div class="wb-menu-item">View</div><div class="wb-menu-item">Query</div>
+          <div class="wb-menu-item">Database</div><div class="wb-menu-item">Server</div>
+          <div class="wb-menu-item">Tools</div><div class="wb-menu-item">Help</div>
+        </div>
+        <div class="wb-toolbar">
+          <button class="wb-tool-btn" data-tip="New Query Tab">📄</button>
+          <button class="wb-tool-btn" data-tip="Open Script">📂</button>
+          <button class="wb-tool-btn" data-tip="Save Script">💾</button>
+          <div class="wb-tool-separator"></div>
+          <button class="wb-tool-btn exec-btn lab-pulse-hint" id="labExecBtn" data-tip="Execute (Ctrl+Shift+Enter)" onclick="labExecuteSQL()">⚡</button>
+          <button class="wb-tool-btn" data-tip="Execute Current Statement">▶</button>
+          <button class="wb-tool-btn" data-tip="Stop Execution">⏹</button>
+          <div class="wb-tool-separator"></div>
+          <button class="wb-tool-btn" data-tip="Explain Plan">🔍</button>
+          <div class="wb-tool-separator"></div>
+          <span class="wb-tool-label">Schema:</span>
+          <span class="wb-tool-label" style="color:var(--col-c);font-weight:600;">mach_it_llc</span>
+        </div>
+        <div class="wb-tabbar">
+          <div class="wb-tab">
+            <div class="wb-tab-dot"></div>
+            Query 1 — Create Customers
+            <div class="wb-tab-close">✕</div>
+          </div>
+        </div>
+        <div class="wb-layout">
+          <div class="wb-nav" id="labWbNav">
+            <div class="wb-nav-header">Navigator</div>
+            <div class="wb-nav-section">
+              <div class="wb-nav-item schema"><span class="wb-nav-arrow">▼</span>🗄 mach_it_llc</div>
+              <div class="wb-nav-item group"><span class="wb-nav-arrow">▼</span>📁 Tables</div>
+              <div class="wb-nav-item group" style="padding-left:36px;font-style:italic;color:#555;">(empty)</div>
+            </div>
+          </div>
+          <div class="wb-editor-area">
+            <div class="wb-editor-wrap">
+              <div class="wb-line-numbers" id="labLineNums">1</div>
+              <textarea class="wb-editor" id="labWbEditor"
+                placeholder="-- Paste your SQL script here, then click ⚡ to execute"
+                oninput="labUpdateLineNumbers()"
+                spellcheck="false"></textarea>
+            </div>
+            <div class="wb-output">
+              <div class="wb-output-tabs">
+                <div class="wb-output-tab active">Action Output</div>
+                <div class="wb-output-tab">History</div>
+                <div class="wb-output-tab">Table Data</div>
+              </div>
+              <div class="wb-output-body" id="labWbOutput">
+                <div class="wb-output-row">
+                  <span class="wb-output-icon" style="color:var(--wb-dim)">ℹ</span>
+                  <span class="wb-output-msg" style="color:var(--wb-dim);font-style:italic;">Paste your script and click ⚡ to execute…</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wb-statusbar">
+          <span>Connected: mach_it_llc@127.0.0.1:3306</span>
+          <span class="wb-status-sep">|</span>
+          <span id="labWbStatus">Ready</span>
+          <span class="wb-status-sep">|</span>
+          <span>MySQL 8.0.35</span>
+        </div>
+      </div>
+
+      <!-- Explanation Panel -->
+      <div class="lab-explanation-panel" id="labExpPanel">
+        <div class="lab-exp-header">
+          <div class="lab-exp-header-icon">📖</div>
+          <div class="lab-exp-header-title">Line-by-Line Breakdown — <code style="font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--col-c);">CREATE TABLE Customers</code></div>
+          <div class="lab-exp-header-sub">12 definitions explained</div>
+        </div>
+        <table class="lab-exp-table">
+          <thead>
+            <tr><th>#</th><th>SQL Code</th><th>What It Does</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="lab-exp-linenum">1</td>
+              <td><div class="lab-exp-code"><span class="kw">CREATE TABLE</span> Customers <span>(</span></div></td>
+              <td><div class="lab-exp-text">Tells MySQL to create a new table called <strong>Customers</strong> in the active database. The opening parenthesis begins the list of column definitions.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">2</td>
+              <td><div class="lab-exp-code"><span class="col">customer_id</span> <span class="type">INT</span> <span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,</div></td>
+              <td><div class="lab-exp-text">Defines the unique ID for each customer. <span class="exp-badge teal">INT</span> stores whole numbers. <span class="exp-badge">AUTO_INCREMENT</span> auto-assigns the next number on every insert. <span class="exp-badge">PRIMARY KEY</span> means no two rows can share this value.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">3</td>
+              <td><div class="lab-exp-code"><span class="col">first_name</span> <span class="type">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,</div></td>
+              <td><div class="lab-exp-text"><span class="exp-badge teal">VARCHAR(50)</span> stores variable-length text up to 50 characters. <span class="exp-badge">NOT NULL</span> marks this field as required; MySQL will reject any INSERT that leaves this blank.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">4</td>
+              <td><div class="lab-exp-code"><span class="col">last_name</span> <span class="type">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,</div></td>
+              <td><div class="lab-exp-text">Same rules as <strong>first_name</strong>. Storing names in separate columns allows independent sorting and formatting.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">5</td>
+              <td><div class="lab-exp-code"><span class="col">company</span> <span class="type">VARCHAR</span>(<span class="num">100</span>),</div></td>
+              <td><div class="lab-exp-text">Optional company name. No NOT NULL — individual customers won't have a company, so <span class="exp-badge orange">NULL</span> is allowed here.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">6</td>
+              <td><div class="lab-exp-code"><span class="col">email</span> <span class="type">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL UNIQUE</span>,</div></td>
+              <td><div class="lab-exp-text">Required email address. <span class="exp-badge">UNIQUE</span> prevents two customers from sharing the same email and makes email a reliable secondary lookup key.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">7</td>
+              <td><div class="lab-exp-code"><span class="col">phone</span> <span class="type">VARCHAR</span>(<span class="num">20</span>),</div></td>
+              <td><div class="lab-exp-text">Optional phone number stored as <span class="exp-badge teal">VARCHAR</span>, not INT. Text preserves formatting characters like dashes and parentheses.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">8</td>
+              <td><div class="lab-exp-code"><span class="col">city</span> <span class="type">VARCHAR</span>(<span class="num">50</span>),</div></td>
+              <td><div class="lab-exp-text">Optional city name. A future query could filter or group customers by city for regional reporting.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">9</td>
+              <td><div class="lab-exp-code"><span class="col">state</span> <span class="type">CHAR</span>(<span class="num">2</span>),</div></td>
+              <td><div class="lab-exp-text"><span class="exp-badge teal">CHAR(2)</span> stores exactly 2 characters — perfect for US state abbreviations like TX or CA. Unlike VARCHAR, CHAR always reserves the declared length.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">10</td>
+              <td><div class="lab-exp-code"><span class="col">account_type</span> <span class="type">VARCHAR</span>(<span class="num">20</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="str">'Standard'</span>,</div></td>
+              <td><div class="lab-exp-text">Customer tier. <span class="exp-badge">NOT NULL</span> ensures it's always set, and <span class="exp-badge orange">DEFAULT 'Standard'</span> means if no value is provided, MySQL automatically assigns Standard.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">11</td>
+              <td><div class="lab-exp-code"><span class="col">created_date</span> <span class="type">DATE</span> <span class="kw">NOT NULL</span></div></td>
+              <td><div class="lab-exp-text"><span class="exp-badge teal">DATE</span> stores calendar dates in <strong>YYYY-MM-DD</strong> format. Required (NOT NULL). No trailing comma — this is the last column definition.</div></td>
+            </tr>
+            <tr>
+              <td class="lab-exp-linenum">12</td>
+              <td><div class="lab-exp-code">);</div></td>
+              <td><div class="lab-exp-text">Closes the column definition list. The semicolon terminates the SQL statement and signals MySQL to execute it.</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lab-nav-buttons">
+        <div class="lab-btn-execute-hint" id="labExecHint">
+          <span class="lab-hint-arrow">↑</span>
+          Click <strong>⚡</strong> in the toolbar above to execute your script
+        </div>
+        <button class="lab-btn-finish" id="labFinishBtn" onclick="labFinishLab()" disabled>Finish Lab ✓</button>
+      </div>
+
+    </div><!-- /labStepContent -->
+
+    <!-- Complete Screen -->
+    <div class="lab-complete-screen" id="labCompleteScreen">
+      <div class="lab-complete-icon">✅</div>
+      <div class="lab-complete-title">Customers Table Created!</div>
+      <div class="lab-complete-sub">You have successfully designed and executed your first CREATE TABLE statement in MySQL Workbench.</div>
+      <div class="lab-complete-detail">
+        <div class="lab-complete-detail-title">📋 Customers — Schema Summary</div>
+        <ul class="lab-complete-col-list">
+          <li><span class="lab-complete-col-name">customer_id</span><span class="lab-complete-col-type">INT</span><span>Auto-incrementing primary key</span></li>
+          <li><span class="lab-complete-col-name">first_name</span><span class="lab-complete-col-type">VARCHAR(50)</span><span>Required — customer first name</span></li>
+          <li><span class="lab-complete-col-name">last_name</span><span class="lab-complete-col-type">VARCHAR(50)</span><span>Required — customer last name</span></li>
+          <li><span class="lab-complete-col-name">company</span><span class="lab-complete-col-type">VARCHAR(100)</span><span>Optional — NULL allowed for individuals</span></li>
+          <li><span class="lab-complete-col-name">email</span><span class="lab-complete-col-type">VARCHAR(100)</span><span>Required, UNIQUE — no duplicate emails</span></li>
+          <li><span class="lab-complete-col-name">phone</span><span class="lab-complete-col-type">VARCHAR(20)</span><span>Optional — stored as text to preserve formatting</span></li>
+          <li><span class="lab-complete-col-name">city</span><span class="lab-complete-col-type">VARCHAR(50)</span><span>Optional — used for regional reporting filters</span></li>
+          <li><span class="lab-complete-col-name">state</span><span class="lab-complete-col-type">CHAR(2)</span><span>Optional — fixed 2-character state abbreviation</span></li>
+          <li><span class="lab-complete-col-name">account_type</span><span class="lab-complete-col-type">VARCHAR(20)</span><span>Required — defaults to 'Standard'</span></li>
+          <li><span class="lab-complete-col-name">created_date</span><span class="lab-complete-col-type">DATE</span><span>Required — stored as YYYY-MM-DD</span></li>
+        </ul>
+      </div>
+      <div style="font-size:14px;color:#8b949e;margin-bottom:24px;">Next in the full lab: <strong style="color:#e6edf3;">Products, Services, Inventory,</strong> and <strong style="color:#e6edf3;">Sales</strong> tables.</div>
+    </div>
+
+  </div><!-- /lab-main-content -->
+</div><!-- /mysql-lab-wrapper -->
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TAB 5: SCENARIO QUIZ                                      -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+<div class="scen-quiz-wrapper">
+<div class="sq-inner">
+
+    <div class="sq-progress-bar">
+        <span class="sq-progress-label">Question <strong id="sqProgressNum">1</strong> of <strong id="sqProgressTotal">32</strong></span>
+        <div class="sq-progress-track"><div class="sq-progress-fill" id="sqProgressFill" style="width:3.13%"></div></div>
+        <span class="sq-score-badge">Score: <span id="sqScoreCount">0</span></span>
+    </div>
+
+    <div class="sq-quiz-container" id="sqQuizContainer"></div>
+
+    <div class="sq-results-screen" id="sqResultsScreen">
+        <div class="sq-results-icon" id="sqResultsIcon">🏆</div>
+        <div class="sq-results-title">Quiz Complete!</div>
+        <div class="sq-results-score" id="sqFinalScore">0/32</div>
+        <div class="sq-results-details">
+            <div class="sq-result-card">
+                <div class="sq-result-card-value" id="sqCorrectCount" style="color:var(--sq-accent-success)">0</div>
+                <div class="sq-result-card-label">Correct</div>
+            </div>
+            <div class="sq-result-card">
+                <div class="sq-result-card-value" id="sqIncorrectCount" style="color:var(--sq-accent-error)">0</div>
+                <div class="sq-result-card-label">Incorrect</div>
+            </div>
+            <div class="sq-result-card">
+                <div class="sq-result-card-value" id="sqPercentScore">0%</div>
+                <div class="sq-result-card-label">Score</div>
+            </div>
+        </div>
+        <div class="sq-results-message" id="sqResultsMessage"></div>
+        <div class="sq-results-buttons">
+            <button class="sq-btn sq-btn-reshuffle" onclick="sqRestartQuiz()">↺ Reshuffle &amp; Restart</button>
+        </div>
+    </div>
+
+</div>
+</div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   SWITCH TAB
+══════════════════════════════════════════════════════════ */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    var tabMap = { instruction:0, reinforcement:1, 'sql-exercise':2, 'mysql-lab':3, quiz:4 };
+    var btns = document.querySelectorAll('.tab-btn');
+    if (btns[tabMap[tabId]]) btns[tabMap[tabId]].classList.add('active');
+    var el = document.getElementById('tab-' + tabId);
+    if (el) el.classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ══════════════════════════════════════════════════════════
+   TAB 1 — SINGLE-SELECT QUESTIONS
+══════════════════════════════════════════════════════════ */
+(function(){
+    document.querySelectorAll('.single-q').forEach(function(qBlock){
+        var answer = qBlock.getAttribute('data-answer');
+        var options = qBlock.querySelectorAll('.check-option');
+        var explanation = qBlock.querySelector('.explanation');
+        var locked = false;
+        options.forEach(function(opt){
+            opt.addEventListener('click', function(){
+                if (locked) return;
+                locked = true;
+                var chosen = opt.getAttribute('data-val');
+                options.forEach(function(o){
+                    o.style.pointerEvents = 'none';
+                    if (o.getAttribute('data-val') === answer) {
+                        o.style.borderColor = 'var(--accent-success)';
+                        o.style.background  = 'rgba(16,185,129,.15)';
+                    }
+                });
+                if (chosen !== answer) {
+                    opt.style.borderColor = 'var(--accent-error)';
+                    opt.style.background  = 'rgba(239,68,68,.15)';
+                }
+                if (explanation) { explanation.style.display='block'; explanation.classList.add('show'); }
+            });
+        });
+    });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   TAB 2 — REINFORCEMENT DnD
+══════════════════════════════════════════════════════════ */
+(function initTask1() {
+    var workspace = document.getElementById('t1-workspace');
+    var sources   = document.getElementById('t1-sources');
+    if (!workspace || !sources) return;
+    var zoneMap = { 't1-drop-create':'create','t1-drop-query':'query','t1-drop-report':'report','t1-drop-update':'update' };
+    var submitted = false;
+    var dragging  = null;
+
+    function attach(chip) {
+        chip.addEventListener('dragstart', function(e){ dragging=chip; chip.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+        chip.addEventListener('dragend',   function(){ chip.classList.remove('dragging'); dragging=null; });
+    }
+    sources.querySelectorAll('.rein-drag-chip').forEach(attach);
+
+    workspace.querySelectorAll('.rein-drop-target').forEach(function(zone){
+        zone.addEventListener('dragover',  function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', function(){ zone.classList.remove('drag-over'); });
+        zone.addEventListener('drop', function(e){
+            e.preventDefault(); zone.classList.remove('drag-over');
+            if (!dragging) return;
+            zone.querySelectorAll('.rein-drag-chip').forEach(function(c){ sources.appendChild(c); });
+            zone.appendChild(dragging);
+        });
+    });
+    sources.addEventListener('dragover', function(e){ e.preventDefault(); });
+    sources.addEventListener('drop', function(e){ e.preventDefault(); if(dragging){ dragging.remove(); sources.appendChild(dragging); } });
+
+    document.getElementById('t1-submit').addEventListener('click', function(){
+        if (submitted) return;
+        var allCorrect = true;
+        Object.entries(zoneMap).forEach(function(entry){
+            var zid=entry[0], expected=entry[1];
+            var zone=document.getElementById(zid);
+            var chip=zone.querySelector('.rein-drag-chip');
+            var ok=chip && chip.dataset.val===expected;
+            zone.classList.add(ok ? 'correct-zone' : 'incorrect-zone');
+            if (!ok) allCorrect=false;
+        });
+        var panel  = document.getElementById('t1-feedback');
+        var header = panel.querySelector('.rein-fb-header');
+        header.className = 'rein-fb-header ' + (allCorrect ? 'success' : 'error');
+        header.querySelector('.rein-fb-icon').textContent    = allCorrect ? '✅' : '❌';
+        header.querySelector('.rein-fb-verdict').textContent = allCorrect ? 'Correct! Well done.' : 'Not quite — review the explanation below.';
+        panel.classList.add('show');
+        panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        submitted = true;
+        document.getElementById('t1-submit').disabled = true;
+        workspace.querySelectorAll('.rein-drag-chip').forEach(function(c){ c.setAttribute('draggable',false); c.style.cursor='default'; });
+    });
+
+    document.getElementById('t1-reset').addEventListener('click', function(){
+        if (submitted) return;
+        workspace.querySelectorAll('.rein-drag-chip').forEach(function(c){ c.remove(); sources.appendChild(c); });
+        workspace.querySelectorAll('.rein-drop-target').forEach(function(z){ z.classList.remove('correct-zone','incorrect-zone'); });
+        document.getElementById('t1-feedback').classList.remove('show');
+    });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   TAB 3 — SQL EXERCISE
+══════════════════════════════════════════════════════════ */
+const SQL_CORRECT = 'CREATE';
+const SQL_COMMANDS = ['ALTER','CREATE','DELETE','DROP','EDIT','FIND','GRANT','INSERT','MODIFY','SELECT','TRANSACTION','UPDATE'];
+const SQL_EXPLANATION = "CREATE an index on the email column lets the database engine jump directly to matching rows instead of scanning every one. It\u2019s the standard solution for repeated slow lookups on a large table.";
+let sqlLocked = false;
+
+function sqlRenderButtons(pickedCmd) {
+    var list = document.getElementById('sqlCommandList');
+    if (!list) return;
+    list.innerHTML = '';
+    SQL_COMMANDS.forEach(function(cmd){
+        var btn = document.createElement('button');
+        btn.className = 'sql-cmd-btn';
+        btn.textContent = cmd;
+        if (sqlLocked) {
+            btn.disabled = true;
+            if (cmd===SQL_CORRECT) btn.classList.add('correct');
+            else if (cmd===pickedCmd) btn.classList.add('incorrect');
+        } else {
+            btn.addEventListener('click', function(){ sqlSelectAnswer(cmd); });
+        }
+        list.appendChild(btn);
+    });
+}
+
+function sqlSelectAnswer(cmd) {
+    if (sqlLocked) return;
+    sqlLocked = true;
+    var isRight = (cmd===SQL_CORRECT);
+    var fa = document.getElementById('sqlFeedbackArea');
+    fa.innerHTML = '<div class="sql-feedback-strip ' + (isRight?'correct':'incorrect') + '">' +
+        '<span class="icon">' + (isRight?'✅':'❌') + '</span>' +
+        '<div><div>' + (isRight?'Correct!':'Incorrect — the correct command is highlighted in green.') + '</div>' +
+        '<div class="explain">' + SQL_EXPLANATION + '</div></div></div>';
+    document.getElementById('sqlReveal').classList.add('show');
+    document.getElementById('sqlResetStrip').style.display='block';
+    sqlRenderButtons(cmd);
+}
+
+function sqlToggleHint() {
+    document.getElementById('sqlHintReveal').classList.toggle('show');
+}
+
+function sqlReset() {
+    sqlLocked = false;
+    document.getElementById('sqlFeedbackArea').innerHTML = '';
+    document.getElementById('sqlReveal').classList.remove('show');
+    document.getElementById('sqlHintReveal').classList.remove('show');
+    document.getElementById('sqlResetStrip').style.display = 'none';
+    sqlRenderButtons(null);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TAB 4 — MYSQL LAB
+══════════════════════════════════════════════════════════ */
+const LAB_SQL_LINES = [
+    'CREATE TABLE Customers (',
+    '    customer_id   INT          AUTO_INCREMENT PRIMARY KEY,',
+    '    first_name    VARCHAR(50)  NOT NULL,',
+    '    last_name     VARCHAR(50)  NOT NULL,',
+    '    company       VARCHAR(100),',
+    '    email         VARCHAR(100) NOT NULL UNIQUE,',
+    '    phone         VARCHAR(20),',
+    '    city          VARCHAR(50),',
+    '    state         CHAR(2),',
+    "    account_type  VARCHAR(20)  NOT NULL DEFAULT 'Standard',",
+    '    created_date  DATE         NOT NULL',
+    ');'
+];
+const LAB_SQL_TEXT = LAB_SQL_LINES.join('\n');
+let labStepExecuted = false;
+
+function labHighlight(sql) {
+    var h = sql.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    h = h.replace(/(--[^\n]*)/g, '<span class="cmt">$1</span>');
+    h = h.replace(/(\'(?:[^\'\\]|\\.)*\')/g, '<span class="str">$1</span>');
+    var kwList  = ['CREATE','TABLE','NOT','NULL','UNIQUE','AUTO_INCREMENT','PRIMARY','KEY','DEFAULT','FOREIGN','REFERENCES'];
+    var typList = ['INT','VARCHAR','CHAR','TEXT','DATE','DECIMAL','BOOLEAN'];
+    kwList.forEach(function(k){ h=h.replace(new RegExp('\\b'+k+'\\b','g'),'<span class="kw">'+k+'</span>'); });
+    typList.forEach(function(k){ h=h.replace(new RegExp('\\b'+k+'\\b','g'),'<span class="type">'+k+'</span>'); });
+    h = h.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="num">$1</span>');
+    return h;
+}
+
+function labStartLab() {
+    document.getElementById('labIntroScreen').classList.remove('visible');
+    document.getElementById('labStepContent').style.display = '';
+    document.getElementById('labCodePreview').innerHTML = labHighlight(LAB_SQL_TEXT);
+    labUpdateLineNumbers();
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function labCopyToEditor() {
+    var editor = document.getElementById('labWbEditor');
+    editor.value = LAB_SQL_TEXT;
+    labUpdateLineNumbers();
+    var btn = document.getElementById('labCopyBtn');
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg> Copied!';
+    setTimeout(function(){
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"/></svg> Copy to Editor';
+    }, 2500);
+}
+
+function labExecuteSQL() {
+    var editor = document.getElementById('labWbEditor');
+    if (!editor.value.trim()) {
+        document.getElementById('labWbOutput').innerHTML = '<div class="wb-output-row result"><span class="wb-output-icon" style="color:var(--lab-red)">⚠</span><span class="wb-output-msg" style="color:var(--lab-red)">No SQL to execute. Click "Copy to Editor" first.</span><span class="wb-output-time">—</span></div>';
+        return;
+    }
+    var execBtn = document.getElementById('labExecBtn');
+    execBtn.classList.remove('lab-pulse-hint');
+    document.getElementById('labWbStatus').textContent = 'Executing…';
+    document.getElementById('labWbOutput').innerHTML = '<div class="wb-output-row"><span class="wb-output-icon">⏳</span><span class="wb-output-msg" style="color:var(--wb-dim)">Executing statement…</span></div>';
+    setTimeout(function(){
+        var now = new Date();
+        document.getElementById('labWbOutput').innerHTML =
+            '<div class="wb-output-row result">' +
+            '<span class="wb-output-icon" style="color:var(--lab-green)">✔</span>' +
+            '<span class="wb-output-msg">' +
+            '<span style="color:var(--lab-green);font-weight:600;">CREATE TABLE</span>' +
+            '<span style="color:var(--wb-dim);"> — </span>' +
+            '<span style="color:var(--wb-text);">mach_it_llc.customers</span>' +
+            '<span style="color:var(--wb-dim);"> — 0 row(s) affected: &#39;Table Customers created&#39;</span>' +
+            '</span>' +
+            '<span class="wb-output-time">0.031 sec</span>' +
+            '</div>' +
+            '<div class="wb-output-row" style="padding-left:36px;">' +
+            '<span class="wb-output-msg" style="color:var(--wb-dim);font-size:11px;">' + now.toLocaleTimeString() + ' — Statement completed successfully</span>' +
+            '</div>';
+        document.getElementById('labWbStatus').textContent = "Table 'Customers' created — 0.031 sec";
+        document.getElementById('labWbNav').innerHTML =
+            '<div class="wb-nav-header">Navigator</div>' +
+            '<div class="wb-nav-section">' +
+            '<div class="wb-nav-item schema"><span class="wb-nav-arrow">▼</span>🗄 mach_it_llc</div>' +
+            '<div class="wb-nav-item group"><span class="wb-nav-arrow">▼</span>📁 Tables</div>' +
+            '<div class="wb-nav-item table new">📋 customers</div>' +
+            '</div>';
+        document.getElementById('labStepBubble').className = 'lab-step-bubble done';
+        document.getElementById('labStepBubble').textContent = '✓';
+        document.getElementById('labStepName').className = 'lab-step-name done';
+        var expPanel = document.getElementById('labExpPanel');
+        expPanel.classList.add('visible');
+        expPanel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        labStepExecuted = true;
+        document.getElementById('labFinishBtn').disabled = false;
+        document.getElementById('labExecHint').innerHTML =
+            '<span style="color:var(--lab-green)">✔</span>' +
+            '<span style="color:var(--lab-green);font-weight:600;"> Table created successfully!</span>' +
+            '<span style="color:var(--wb-dim);margin-left:6px;">Read the explanation below, then click Finish Lab ✓</span>';
+    }, 800);
+}
+
+function labUpdateLineNumbers() {
+    var editor = document.getElementById('labWbEditor');
+    var nums   = document.getElementById('labLineNums');
+    if (!editor||!nums) return;
+    var lines = editor.value.split('\n').length;
+    nums.textContent = Array.from({length:lines},function(_,i){ return i+1; }).join('\n');
+}
+
+function labFinishLab() {
+    document.getElementById('labStepContent').style.display = 'none';
+    document.getElementById('labCompleteScreen').classList.add('visible');
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+document.addEventListener('keydown', function(e){
+    if ((e.ctrlKey||e.metaKey) && e.shiftKey && e.key==='Enter') {
+        var labTab = document.getElementById('tab-mysql-lab');
+        if (labTab && labTab.classList.contains('active')) { e.preventDefault(); labExecuteSQL(); }
+    }
+});
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   TAB 5 — SCENARIO QUIZ JS
+══════════════════════════════════════════════════════════ */
+const SQ_QUESTION_BANK = [
+    {
+        scenario: "A hospital's IT team is designing a new electronic health records system that must track patients, attending physicians, scheduled appointments, prescribed medications, and billing records — all with complex multi-table reporting requirements and strict data integrity (e.g., prescriptions must reference valid patients and valid physicians).",
+        question: "Which database type is most appropriate for this system?",
+        answers: [
+            { text: "Document database", correct: false },
+            { text: "Key-value database", correct: false },
+            { text: "Relational database", correct: true },
+            { text: "Unstructured data store", correct: false }
+        ],
+        explanation: "<strong>Correct Answer: Relational database</strong><br><br>This scenario describes exactly what relational databases are designed for: well-defined entities with formal relationships enforced by foreign keys, strict integrity rules (a prescription must reference a valid patient AND a valid physician), and complex multi-table reporting. A key-value database cannot enforce these constraints. A document database lacks native referential integrity enforcement. <em>Tip:</em> When the problem description includes ‘strict data integrity’ and ‘complex relationships,’ a relational database is almost always the right answer."
+    }
+];
+
+const SQ_LETTERS = ['A','B','C','D'];
+function sqShuffle(array) {
+    var a=[...array];
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+}
+var sqQuestions=[], sqCurrentIndex=0, sqScore=0, sqUserAnswers=[];
+
+function sqInitQuiz() {
+    sqQuestions = sqShuffle(SQ_QUESTION_BANK).map(function(q){
+        return Object.assign({},q,{answers:sqShuffle(q.answers)});
+    });
+    sqCurrentIndex=0; sqScore=0;
+    sqUserAnswers = new Array(sqQuestions.length).fill(null);
+    document.getElementById('sqProgressTotal').textContent = sqQuestions.length;
+    document.getElementById('sqScoreCount').textContent = '0';
+    document.getElementById('sqQuizContainer').style.display = 'block';
+    document.getElementById('sqResultsScreen').classList.remove('show');
+    sqRenderQuestion();
+}
+
+function sqRenderQuestion() {
+    var q = sqQuestions[sqCurrentIndex];
+    var container = document.getElementById('sqQuizContainer');
+    var answered = sqUserAnswers[sqCurrentIndex] !== null;
+
+    var answersHTML = q.answers.map(function(answer, index){
+        var isSelected = sqUserAnswers[sqCurrentIndex] === index;
+        var isCorrect  = answer.correct && answered;
+        var isIncorrect= isSelected && !answer.correct && answered;
+        var cls='sq-answer-option';
+        if(answered) cls+=' sq-disabled';
+        if(isSelected) cls+=' sq-selected';
+        if(isCorrect)  cls+=' sq-correct';
+        if(isIncorrect)cls+=' sq-incorrect';
+        return '<div class="'+cls+'" onclick="sqSelectAnswer('+index+')">' +
+            '<span class="sq-letter">'+SQ_LETTERS[index]+'</span>' +
+            '<span>'+answer.text+'</span></div>';
+    }).join('');
+
+    var feedbackHTML='';
+    if(answered){
+        var wasCorrect=q.answers[sqUserAnswers[sqCurrentIndex]].correct;
+        var fbClass=wasCorrect?'':'sq-incorrect-feedback';
+        var hClass=wasCorrect?'sq-correct-header':'sq-incorrect-header';
+        var icon=wasCorrect?'✅':'❌';
+        var label=wasCorrect?'Correct!':'Incorrect';
+        feedbackHTML='<div class="sq-feedback-box '+fbClass+' show">' +
+            '<div class="sq-feedback-header '+hClass+'"><span>'+icon+'</span><span>'+label+'</span></div>' +
+            '<div class="sq-feedback-explanation">'+q.explanation+'</div></div>';
+    }
+    var isLast = sqCurrentIndex===sqQuestions.length-1;
+    var nextLabel = (answered&&isLast)?'View Results →':'Next →';
+    container.innerHTML =
+        '<div class="sq-scenario-text"><span class="sq-scenario-label">📋 Scenario</span>'+q.scenario+'</div>' +
+        '<div class="sq-question-text">'+q.question+'</div>' +
+        '<div class="sq-answers-grid">'+answersHTML+'</div>' +
+        feedbackHTML +
+        '<div class="sq-controls">' +
+        '<button class="sq-btn sq-btn-secondary" onclick="sqPreviousQuestion()" '+(sqCurrentIndex===0?'disabled':'')+'>← Previous</button>' +
+        '<button class="sq-btn sq-btn-reshuffle" onclick="sqRestartQuiz()">↺ Reshuffle</button>' +
+        '<button class="sq-btn sq-btn-primary" onclick="sqNextQuestion()" '+(!answered?'disabled':'')+'>'+nextLabel+'</button>' +
+        '</div>';
+    sqUpdateProgress();
+}
+
+function sqSelectAnswer(index) {
+    if(sqUserAnswers[sqCurrentIndex]!==null) return;
+    sqUserAnswers[sqCurrentIndex]=index;
+    if(sqQuestions[sqCurrentIndex].answers[index].correct){
+        sqScore++;
+        document.getElementById('sqScoreCount').textContent=sqScore;
+    }
+    sqRenderQuestion();
+}
+function sqNextQuestion() {
+    if(sqCurrentIndex<sqQuestions.length-1){ sqCurrentIndex++; sqRenderQuestion(); }
+    else sqShowResults();
+}
+function sqPreviousQuestion() {
+    if(sqCurrentIndex>0){ sqCurrentIndex--; sqRenderQuestion(); }
+}
+function sqUpdateProgress() {
+    document.getElementById('sqProgressNum').textContent=sqCurrentIndex+1;
+    var pct=((sqCurrentIndex+1)/sqQuestions.length)*100;
+    document.getElementById('sqProgressFill').style.width=pct+'%';
+}
+function sqShowResults() {
+    var total=sqQuestions.length, incorrect=total-sqScore;
+    var pct=Math.round((sqScore/total)*100);
+    document.getElementById('sqQuizContainer').style.display='none';
+    document.getElementById('sqResultsScreen').classList.add('show');
+    document.getElementById('sqFinalScore').textContent=sqScore+'/'+total;
+    document.getElementById('sqCorrectCount').textContent=sqScore;
+    document.getElementById('sqIncorrectCount').textContent=incorrect;
+    document.getElementById('sqPercentScore').textContent=pct+'%';
+    var icon='🏆', msg='';
+    if(pct>=90){ icon='🏆'; msg='Outstanding performance! You have mastered Database Fundamentals concepts and are well-prepared for the CompTIA Tech+ exam.'; }
+    else if(pct>=80){ icon='🎉'; msg='Excellent work! You have a strong grasp of database fundamentals. Review any questions you missed — focus on constraint types, access methods, and when to use relational vs. nonrelational databases.'; }
+    else if(pct>=70){ icon='📚'; msg='Good progress! Strengthen your understanding of GRANT vs. DENY permissions, data persistence, programmatic access, and the difference between ALTER and DROP before exam day.'; }
+    else if(pct>=60){ icon='💪'; msg='You are building your foundation. Review the detailed explanations for each missed question — pay close attention to SQL command selection, constraint types, and database access levels.'; }
+    else { icon='📘'; msg='Keep studying! Return to the Database Fundamentals instructional module, then reattempt this quiz. Focus on primary keys, foreign keys, SQL commands, constraints, and the three database types covered in this module.'; }
+    document.getElementById('sqResultsIcon').textContent=icon;
+    document.getElementById('sqResultsMessage').textContent=msg;
+}
+function sqRestartQuiz() { sqInitQuiz(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+document.addEventListener('DOMContentLoaded', function(){
+    sqlRenderButtons(null);
+    sqInitQuiz();
+});
+</script>
+</body>
+</html>

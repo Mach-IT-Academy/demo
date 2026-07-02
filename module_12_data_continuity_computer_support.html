@@ -1,0 +1,1407 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mach IT Training | Mod 12 – Data Continuity &amp; Computer Support</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500;700;900&family=Syne:wght@700;800&family=Exo+2:wght@400;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#06b6d4; --accent-secondary:#0ea5e9;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --accent-purple:#8b5cf6;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+            /* Rein vars */
+            --rein-bg-deep:#0b0f1a; --rein-bg-panel:#111827; --rein-bg-card:#1a2235;
+            --rein-bg-input:#0f1620; --rein-accent:#00d4ff; --rein-accent2:#7c3aed;
+            --rein-success:#10b981; --rein-error:#f43f5e; --rein-warning:#f59e0b;
+            --rein-text-hi:#f0f4ff; --rein-text-mid:#94a3b8; --rein-text-lo:#475569;
+            --rein-border:#1e3a5f;
+            /* Diff Lab vars */
+            --dl-bg:#07080f; --dl-s1:#0d0f1e; --dl-s2:#111428; --dl-s3:#161a34; --dl-s4:#1c2140;
+            --dl-b1:#1e2548; --dl-b2:#2a3360; --dl-b3:#364080;
+            --dl-acc:#f59e0b; --dl-acc2:#d97706; --dl-acc-d:rgba(245,158,11,.1);
+            --dl-grn:#10e896; --dl-grn-d:rgba(16,232,150,.1);
+            --dl-red:#ef4444; --dl-blue:#38bdf8;
+            --dl-txt:#c8d8f0; --dl-muted:#7a90b8; --dl-white:#f0f6ff;
+            --dl-r:6px;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes blink   { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,#0891b2,#0369a1);
+        }
+        .page-header h1   { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px;
+            border-radius:8px; font-weight:600; cursor:pointer;
+            transition:all .2s; font-family:'Inter',sans-serif; font-size:.88em; white-space:nowrap;
+        }
+        .tab-btn:hover  { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content        { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION
+        ═══════════════════════════════════════════ */
+        .instr-outer { max-width:900px; margin:0 auto; padding:20px; }
+        .instr-main  { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .lesson h2   { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+        .problem-scenario { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+        .visual-demo { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .visual-demo h3 { margin-bottom:12px; color:var(--text-primary); }
+        .interactive-section { background:linear-gradient(135deg,rgba(6,182,212,.1),rgba(14,165,233,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+        .concept-check { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .concept-check h4 { color:var(--accent-warning); margin-bottom:12px; }
+        .check-option { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .check-option:hover    { border-color:var(--accent-primary); }
+        .check-option.correct  { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .check-option.incorrect{ border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .check-option.disabled { pointer-events:none; }
+        .explanation { background:rgba(6,182,212,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-primary); display:none; }
+        .explanation.show { display:block; animation:fadeIn .3s ease; }
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th,td { padding:11px; text-align:left; border-bottom:1px solid var(--border-color); }
+        th { background:var(--accent-primary); color:#fff; font-weight:600; }
+        tr:hover { background:var(--bg-tertiary); }
+        ul { padding-left:18px; }
+        ul li { margin-bottom:4px; }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT (RAID DRAG & DROP)
+        ═══════════════════════════════════════════ */
+        .rein-wrapper {
+            font-family:'Exo 2',sans-serif; background:var(--rein-bg-deep);
+            color:var(--rein-text-hi); min-height:60vh; position:relative;
+            --bg-deep:var(--rein-bg-deep); --bg-panel:var(--rein-bg-panel);
+            --bg-card:var(--rein-bg-card); --bg-input:var(--rein-bg-input);
+            --accent:var(--rein-accent);   --accent2:var(--rein-accent2);
+            --success:var(--rein-success); --error:var(--rein-error);
+            --warning:var(--rein-warning); --text-hi:var(--rein-text-hi);
+            --text-mid:var(--rein-text-mid); --text-lo:var(--rein-text-lo);
+            --border:var(--rein-border);
+            --font-mono:'Share Tech Mono',monospace; --font-main:'Exo 2',sans-serif;
+        }
+        .rein-wrapper::before {
+            content:''; position:absolute; inset:0;
+            background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),
+                             linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
+            background-size:40px 40px; pointer-events:none; z-index:0;
+        }
+        .rein-inner { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:24px 20px 60px; }
+        .rein-wrapper .rein-section-header { background:linear-gradient(135deg,rgba(6,182,212,.1),rgba(3,105,161,.15)); border:1px solid var(--border); border-radius:16px; padding:28px 24px 22px; margin-bottom:28px; position:relative; overflow:hidden; text-align:center; }
+        .rein-wrapper .rein-section-header::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--rein-accent2),var(--rein-accent),var(--rein-accent2)); }
+        .rein-wrapper .rein-section-header h1 { font-size:2em; font-weight:700; color:var(--rein-text-hi); margin-bottom:6px; }
+        .rein-wrapper .rein-section-header .subtitle { color:var(--rein-text-mid); font-size:.95em; }
+        /* Task card */
+        .rein-wrapper .task-card { background:var(--rein-bg-panel); border:1px solid var(--border); border-radius:16px; margin-bottom:28px; overflow:hidden; }
+        .rein-wrapper .task-header-rein { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+        .rein-wrapper .task-number { background:linear-gradient(135deg,#06b6d4,#0369a1); color:#fff; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1em; flex-shrink:0; }
+        .rein-wrapper .task-title-block h2 { color:var(--rein-accent); font-size:1.55em; }
+        .rein-wrapper .task-type-badge { display:inline-block; background:rgba(6,182,212,.15); border:1px solid var(--rein-accent); color:var(--rein-accent); padding:2px 10px; border-radius:10px; font-size:.78em; font-weight:600; margin-top:4px; font-family:'Share Tech Mono',monospace; }
+        .rein-wrapper .scenario-box-rein { background:var(--rein-bg-card); padding:18px; border-radius:8px; margin:16px 0; border-left:4px solid var(--rein-warning); }
+        .rein-wrapper .scenario-box-rein h3 { color:var(--rein-warning); margin-bottom:8px; font-size:1em; }
+        .rein-wrapper .scenario-box-rein p { color:var(--rein-text-mid); font-size:.93em; }
+        .rein-wrapper .task-instructions-rein { background:rgba(6,182,212,.08); padding:14px 18px; border-radius:8px; margin:14px 0; border-left:4px solid var(--rein-accent); font-size:.95em; }
+        .rein-wrapper .task-instructions-rein strong { color:var(--rein-accent); }
+        /* DnD */
+        .rein-wrapper .match-layout { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:18px 0; }
+        .rein-wrapper .drag-pool-rein { display:flex; flex-direction:column; gap:9px; }
+        .rein-wrapper .drag-item { background:var(--rein-bg-card); padding:12px 16px; border-radius:8px; border:2px solid var(--rein-border); cursor:grab; transition:all .25s; user-select:none; font-size:.9em; display:flex; align-items:flex-start; gap:10px; }
+        .rein-wrapper .drag-item:hover { border-color:var(--rein-accent); transform:translateX(3px); box-shadow:0 0 10px rgba(6,182,212,.15); }
+        .rein-wrapper .drag-item.dragging { opacity:.4; cursor:grabbing; }
+        .rein-wrapper .drag-item .drag-handle { color:var(--rein-text-lo); font-size:1.1em; flex-shrink:0; margin-top:2px; }
+        .rein-wrapper .drop-column-rein { display:flex; flex-direction:column; gap:10px; }
+        .rein-wrapper .drop-target-rein { background:var(--rein-bg-input); border:2px dashed var(--rein-border); border-radius:8px; min-height:60px; padding:10px 14px; transition:all .25s; }
+        .rein-wrapper .drop-target-rein .drop-label { font-weight:600; color:var(--rein-accent); font-size:.85em; margin-bottom:6px; font-family:'Share Tech Mono',monospace; }
+        .rein-wrapper .drop-target-rein.over { border-color:var(--rein-accent); background:rgba(6,182,212,.06); }
+        .rein-wrapper .drop-target-rein.correct-zone { border-color:var(--rein-success); background:rgba(16,185,129,.08); }
+        .rein-wrapper .drop-target-rein.incorrect-zone { border-color:var(--rein-error); background:rgba(244,63,94,.07); }
+        /* Buttons */
+        .rein-wrapper button { background:var(--rein-accent); color:#fff; border:none; padding:11px 24px; border-radius:6px; font-weight:600; cursor:pointer; transition:all .25s; font-family:'Exo 2',sans-serif; font-size:.95em; }
+        .rein-wrapper button:hover:not(:disabled) { background:#0891b2; transform:translateY(-2px); }
+        .rein-wrapper button:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+        .rein-wrapper button.reset-btn { background:transparent; border:1px solid var(--rein-error); color:var(--rein-error); font-size:.85em; padding:7px 14px; }
+        .rein-wrapper button.reset-btn:hover { background:rgba(244,63,94,.1); transform:none; }
+        .rein-wrapper .action-row { display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap; }
+        /* Feedback */
+        .rein-wrapper .feedback-panel { margin-top:18px; border-radius:10px; overflow:hidden; display:none; }
+        .rein-wrapper .feedback-panel.show { display:block; animation:slideUp .3s ease; }
+        .rein-wrapper .feedback-header-rein { padding:14px 18px; font-weight:700; font-size:1.05em; display:flex; align-items:center; gap:8px; }
+        .rein-wrapper .feedback-header-rein.success { background:rgba(16,185,129,.22); color:#6ee7b7; }
+        .rein-wrapper .feedback-header-rein.error { background:rgba(244,63,94,.18); color:#fca5a5; }
+        .rein-wrapper .feedback-body-rein { padding:18px; background:var(--rein-bg-card); }
+        .rein-wrapper .feedback-section { margin-bottom:16px; }
+        .rein-wrapper .feedback-section:last-child { margin-bottom:0; }
+        .rein-wrapper .feedback-section h4 { color:var(--rein-warning); margin-bottom:8px; font-size:.88em; text-transform:uppercase; letter-spacing:.5px; }
+        .rein-wrapper .feedback-section p, .rein-wrapper .feedback-section li { font-size:.9em; color:var(--rein-text-mid); line-height:1.65; }
+        .rein-wrapper .feedback-section ul { margin-left:18px; }
+        .rein-wrapper .feedback-section li { margin-bottom:5px; }
+        .rein-wrapper .why-correct { border-left:3px solid var(--rein-success); padding-left:14px; }
+        .rein-wrapper .why-wrong   { border-left:3px solid var(--rein-error);   padding-left:14px; }
+        .rein-wrapper .pro-tip { background:rgba(6,182,212,.08); border-left:3px solid var(--rein-accent); padding:12px 16px; border-radius:0 6px 6px 0; margin-top:10px; font-size:.88em; color:var(--rein-text-mid); }
+        .rein-wrapper .pro-tip strong { color:var(--rein-accent); }
+        @media(max-width:700px){ .rein-wrapper .match-layout { grid-template-columns:1fr; } }
+
+        /* ═══════════════════════════════════════════
+           TABS 3-5 — SHARED EXERCISE STYLES
+        ═══════════════════════════════════════════ */
+        .exer-outer { max-width:1400px; margin:0 auto; padding:20px; }
+        .ref-panel { background:var(--bg-secondary); border:2px solid var(--border-color); border-radius:12px; margin-bottom:22px; overflow:hidden; }
+        .ref-header { display:flex; justify-content:space-between; align-items:center; padding:16px 22px; cursor:pointer; background:var(--bg-tertiary); font-weight:700; font-size:1em; color:var(--text-primary); user-select:none; transition:background .2s; }
+        .ref-header:hover { background:var(--bg-primary); }
+        .ref-toggle { color:var(--accent-primary); font-size:.85em; font-weight:700; white-space:nowrap; }
+        .ref-body { padding:18px 22px; overflow-x:auto; }
+        .ref-body.hidden { display:none; }
+        .ref-table { width:100%; border-collapse:collapse; font-size:.88em; }
+        .ref-table th { background:var(--bg-tertiary); color:var(--accent-primary); padding:10px 14px; text-align:left; font-weight:700; letter-spacing:.04em; font-size:.82em; text-transform:uppercase; border-bottom:2px solid var(--border-color); }
+        .ref-table td { padding:10px 14px; border-bottom:1px solid var(--border-color); color:var(--text-secondary); vertical-align:top; }
+        .ref-table tr:last-child td { border-bottom:none; }
+        .ref-table tr:hover td { background:rgba(99,102,241,.06); color:var(--text-primary); }
+        .ref-table .term-name { color:var(--text-primary); font-weight:700; font-size:.9em; font-family:'JetBrains Mono',monospace; }
+        .ref-note { margin-top:12px; font-size:.82em; color:var(--text-secondary); font-style:italic; }
+        .quiz-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
+        .scenario-col { display:flex; flex-direction:column; gap:16px; }
+        .scenario-card { background:var(--bg-secondary); border-radius:12px; padding:26px; border:2px solid var(--border-color); animation:fadeIn .4s ease; }
+        .scenario-tag { display:inline-flex; align-items:center; gap:7px; background:rgba(6,182,212,.15); color:var(--accent-primary); font-size:.82em; font-weight:600; padding:4px 11px; border-radius:20px; margin-bottom:14px; width:fit-content; }
+        .scenario-tag .dot { width:7px; height:7px; border-radius:50%; background:var(--accent-primary); }
+        .multi-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,.15); color:var(--accent-warning); font-size:.82em; font-weight:700; padding:4px 12px; border-radius:20px; margin-bottom:10px; width:fit-content; border:1px solid rgba(245,158,11,.3); }
+        .scenario-desc { color:var(--text-secondary); font-size:.95em; line-height:1.7; }
+        .hint-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,.15); border:2px solid var(--accent-warning); color:var(--accent-warning); font-size:.85em; font-weight:600; padding:8px 14px; border-radius:6px; cursor:pointer; transition:all .2s; margin-top:14px; }
+        .hint-btn:hover { background:rgba(245,158,11,.25); transform:translateY(-1px); }
+        .hint-reveal { background:var(--bg-tertiary); border-radius:8px; padding:14px 16px; border-left:4px solid var(--accent-warning); margin-top:10px; max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease,opacity .3s ease,margin-top .4s ease; }
+        .hint-reveal.show { max-height:220px; opacity:1; margin-top:12px; }
+        .hint-reveal strong { color:var(--accent-warning); }
+        .feedback-strip { display:flex; align-items:flex-start; gap:12px; padding:13px 18px; border-radius:8px; font-size:.93em; font-weight:600; margin-top:14px; animation:slideIn .3s ease; }
+        .feedback-strip.correct   { background:rgba(16,185,129,.18); border:1px solid rgba(16,185,129,.35); color:var(--accent-success); }
+        .feedback-strip.incorrect { background:rgba(239,68,68,.18);  border:1px solid rgba(239,68,68,.35);  color:var(--accent-error); }
+        .feedback-strip .icon     { font-size:1.3em; flex-shrink:0; margin-top:2px; }
+        .feedback-strip .explain  { color:var(--text-secondary); font-weight:400; font-size:.92em; margin-top:3px; }
+        .explain-reveal { background:var(--bg-primary); border:2px solid var(--border-color); border-radius:10px; overflow:hidden; margin-top:14px; max-height:0; transition:max-height .5s cubic-bezier(.4,0,.2,1),opacity .35s ease; opacity:0; }
+        .explain-reveal.show { max-height:480px; opacity:1; }
+        .explain-reveal-header { display:flex; align-items:center; gap:10px; padding:11px 16px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); }
+        .explain-reveal-header span { font-size:.88em; font-weight:600; color:var(--accent-primary); }
+        .explain-block { padding:16px; font-size:.9em; line-height:1.8; color:var(--text-secondary); overflow-y:auto; max-height:380px; }
+        .explain-block .label { color:var(--accent-success); font-weight:700; }
+        .commands-col { background:var(--bg-secondary); border-radius:12px; padding:20px; border:2px solid var(--border-color); height:fit-content; position:sticky; top:70px; max-height:calc(100vh - 100px); overflow-y:auto; }
+        .commands-header { font-size:.88em; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.08em; padding-bottom:12px; border-bottom:2px solid var(--border-color); margin-bottom:14px; text-align:center; }
+        .commands-subheader { font-size:.78em; color:var(--accent-warning); text-align:center; margin-bottom:12px; font-weight:600; }
+        .cmd-btn { display:block; width:100%; text-align:left; background:var(--bg-tertiary); border:2px solid var(--border-color); color:var(--text-primary); font-family:'JetBrains Mono',monospace; font-size:.85em; font-weight:600; padding:9px 14px; border-radius:7px; cursor:pointer; transition:all .2s; margin-bottom:7px; }
+        .cmd-btn:last-of-type { margin-bottom:0; }
+        .cmd-btn:hover:not(:disabled):not(.selected) { border-color:var(--accent-primary); background:rgba(6,182,212,.1); color:#fff; }
+        .cmd-btn.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); color:var(--accent-success); }
+        .cmd-btn.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15);  color:var(--accent-error); }
+        .cmd-btn.correct-multi  { border-color:var(--accent-success); background:rgba(16,185,129,.15); color:var(--accent-success); }
+        .cmd-btn.incorrect-multi{ border-color:var(--accent-error);   background:rgba(239,68,68,.15);  color:var(--accent-error); }
+        .cmd-btn.selected       { border-color:var(--accent-warning); background:rgba(245,158,11,.15); color:var(--accent-warning); }
+        .cmd-btn.missed         { border-color:var(--accent-success); background:rgba(16,185,129,.07); color:var(--accent-success); opacity:.75; }
+        .cmd-btn:disabled { pointer-events:none; }
+        .cmd-btn.correct:disabled,.cmd-btn.incorrect:disabled,
+        .cmd-btn.correct-multi:disabled,.cmd-btn.incorrect-multi:disabled,.cmd-btn.missed:disabled { opacity:1; }
+        .cmd-btn:disabled:not(.correct):not(.incorrect):not(.correct-multi):not(.incorrect-multi):not(.missed) { opacity:.4; }
+        .submit-btn { display:block; width:100%; margin-top:10px; background:var(--accent-primary); color:#fff; border:none; padding:11px 16px; border-radius:7px; cursor:pointer; font-family:'Inter',sans-serif; font-size:.9em; font-weight:600; transition:all .2s; }
+        .submit-btn:hover:not(:disabled) { background:var(--accent-secondary); transform:translateY(-1px); }
+        .submit-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+        .reset-wrap { text-align:center; margin-top:24px; }
+        .btn-reset { background:var(--bg-tertiary); color:var(--accent-warning); border:1px solid var(--accent-warning); padding:11px 26px; border-radius:7px; font-weight:600; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; font-size:.93em; }
+        .btn-reset:hover { background:rgba(245,158,11,.12); }
+        .exer-controls { display:flex; justify-content:center; margin-top:22px; padding-top:18px; border-top:1px solid var(--border-color); }
+        .exer-btn { background:var(--accent-primary); color:#fff; border:none; padding:11px 22px; border-radius:7px; font-weight:600; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; font-size:.93em; }
+        .exer-btn:hover { background:var(--accent-secondary); transform:translateY(-2px); }
+        .exer-btn.reset { background:var(--bg-tertiary); color:var(--accent-warning); border:1px solid var(--accent-warning); }
+        .exer-btn.reset:hover { background:rgba(245,158,11,.12); }
+        @media(max-width:820px){ .quiz-grid{grid-template-columns:1fr} .commands-col{position:static;max-height:none} }
+
+        /* ═══════════════════════════════════════════
+           TAB 6 — DIFFERENTIAL BACKUP LAB
+        ═══════════════════════════════════════════ */
+        .diff-lab-wrapper {
+            font-family:'DM Sans',sans-serif; background:var(--dl-bg);
+            color:var(--dl-txt); min-height:60vh; position:relative; overflow:hidden;
+        }
+        .diff-lab-wrapper::before {
+            content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+            background:radial-gradient(ellipse 60% 40% at 20% 80%,rgba(245,158,11,.06) 0%,transparent 60%),
+                       radial-gradient(ellipse 50% 30% at 80% 10%,rgba(239,68,68,.03) 0%,transparent 50%);
+        }
+        .diff-lab-wrapper::after {
+            content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+            background-image:linear-gradient(rgba(245,158,11,.016) 1px,transparent 1px),
+                             linear-gradient(90deg,rgba(245,158,11,.016) 1px,transparent 1px);
+            background-size:48px 48px;
+        }
+        /* Phase bar (adapted from sticky to relative within tab) */
+        .diff-lab-wrapper .phase-bar {
+            position:relative; top:auto; z-index:10; background:rgba(7,8,15,.9);
+            border-bottom:1px solid var(--dl-b1); padding:.6rem 1.8rem;
+            display:flex; align-items:center; gap:.5rem; overflow-x:auto;
+        }
+        .diff-lab-wrapper .phase { font-family:'Share Tech Mono',monospace; font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; padding:.3rem .8rem; border-radius:20px; border:1px solid var(--dl-b1); color:var(--dl-muted); white-space:nowrap; transition:all .3s; }
+        .diff-lab-wrapper .phase.done   { border-color:rgba(16,232,150,.3); color:var(--dl-grn); background:rgba(16,232,150,.06); }
+        .diff-lab-wrapper .phase.active { border-color:var(--dl-acc); color:var(--dl-acc); background:var(--dl-acc-d); }
+        .diff-lab-wrapper .phase-arrow  { color:var(--dl-b2); font-size:.7rem; flex-shrink:0; }
+        .diff-lab-wrapper .dl-wrap { max-width:980px; margin:0 auto; padding:2rem 1.4rem 4rem; position:relative; z-index:1; }
+        .diff-lab-wrapper .dl-screen { display:none; }
+        .diff-lab-wrapper .dl-screen.active { display:block; animation:fadeUp .4s ease; }
+        /* Brief grid */
+        .diff-lab-wrapper .brief-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-bottom:1.5rem; }
+        @media(max-width:640px){ .diff-lab-wrapper .brief-grid { grid-template-columns:1fr; } }
+        .diff-lab-wrapper .brief-hero { grid-column:1/-1; background:var(--dl-s1); border:1px solid var(--dl-b1); border-radius:var(--dl-r); padding:2rem; position:relative; overflow:hidden; }
+        .diff-lab-wrapper .brief-hero::before { content:'DIFF'; font-family:'Syne',sans-serif; font-size:8rem; font-weight:800; color:rgba(245,158,11,.04); position:absolute; right:-1rem; top:50%; transform:translateY(-50%); pointer-events:none; }
+        .diff-lab-wrapper .bh-tag { font-family:'Share Tech Mono',monospace; font-size:.62rem; letter-spacing:.2em; color:var(--dl-acc); text-transform:uppercase; margin-bottom:.6rem; }
+        .diff-lab-wrapper .bh-title { font-family:'Syne',sans-serif; font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:800; color:var(--dl-white); line-height:1.1; margin-bottom:.8rem; }
+        .diff-lab-wrapper .bh-sub { font-size:.95rem; color:var(--dl-white); line-height:1.72; max-width:560px; }
+        .diff-lab-wrapper .info-card { background:var(--dl-s1); border:1px solid var(--dl-b1); border-radius:var(--dl-r); padding:1.2rem; }
+        .diff-lab-wrapper .ic-label { font-family:'Share Tech Mono',monospace; font-size:.58rem; letter-spacing:.2em; color:var(--dl-white); text-transform:uppercase; margin-bottom:.7rem; }
+        .diff-lab-wrapper .ic-content { font-size:.9rem; line-height:1.7; color:var(--dl-white); }
+        .diff-lab-wrapper .ic-content strong { color:var(--dl-white); }
+        .diff-lab-wrapper .ic-content em { color:var(--dl-acc); font-style:normal; font-weight:600; }
+        .diff-lab-wrapper .need-list,.diff-lab-wrapper .limit-list { list-style:none; padding-left:0; }
+        .diff-lab-wrapper .need-list li,.diff-lab-wrapper .limit-list li { display:flex; align-items:flex-start; gap:.6rem; font-size:.88rem; color:var(--dl-white); line-height:1.55; margin-bottom:.45rem; }
+        .diff-lab-wrapper .need-list li::before  { content:'▸'; color:var(--dl-acc); flex-shrink:0; margin-top:1px; }
+        .diff-lab-wrapper .limit-list li::before { content:'▸'; color:var(--dl-red); flex-shrink:0; margin-top:1px; }
+        .diff-lab-wrapper .need-list li strong,.diff-lab-wrapper .limit-list li strong { color:var(--dl-white); }
+        .diff-lab-wrapper .full-span { grid-column:1/-1; }
+        .diff-lab-wrapper .spec-table { width:100%; border-collapse:collapse; margin-top:.6rem; }
+        .diff-lab-wrapper .spec-table th { font-family:'Share Tech Mono',monospace; font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dl-muted); padding:.4rem .6rem; border-bottom:1px solid var(--dl-b1); text-align:left; }
+        .diff-lab-wrapper .spec-table td { font-size:.85rem; color:var(--dl-white); padding:.4rem .6rem; border-bottom:1px solid rgba(255,255,255,.03); }
+        .diff-lab-wrapper .spec-table td.hi   { color:var(--dl-acc);  font-weight:700; font-family:'Share Tech Mono',monospace; }
+        .diff-lab-wrapper .spec-table td.warn { color:var(--dl-acc);  font-weight:700; }
+        .diff-lab-wrapper .spec-table td.ok   { color:var(--dl-grn);  font-weight:700; }
+        .diff-lab-wrapper .start-btn { display:flex; align-items:center; justify-content:center; gap:.7rem; width:100%; padding:1rem; border-radius:var(--dl-r); border:1px solid var(--dl-acc); color:var(--dl-acc); background:var(--dl-acc-d); font-family:'Share Tech Mono',monospace; font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; cursor:pointer; transition:all .25s; margin-top:.5rem; }
+        .diff-lab-wrapper .start-btn:hover { background:var(--dl-acc); color:var(--dl-bg); box-shadow:0 0 28px rgba(245,158,11,.4); }
+        /* Step header */
+        .diff-lab-wrapper .step-header { margin-bottom:1.1rem; }
+        .diff-lab-wrapper .step-tag { font-family:'Share Tech Mono',monospace; font-size:.6rem; letter-spacing:.18em; color:var(--dl-white); text-transform:uppercase; margin-bottom:.3rem; }
+        .diff-lab-wrapper .step-title { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--dl-white); letter-spacing:.04em; text-transform:uppercase; }
+        .diff-lab-wrapper .step-scenario { background:rgba(245,158,11,.05); border:1px solid rgba(245,158,11,.2); border-left:3px solid var(--dl-acc); border-radius:3px; padding:.85rem 1rem; margin-bottom:.9rem; }
+        .diff-lab-wrapper .ss-label { font-family:'Share Tech Mono',monospace; font-size:.58rem; letter-spacing:.18em; color:var(--dl-acc); text-transform:uppercase; margin-bottom:.35rem; }
+        .diff-lab-wrapper .ss-text { font-size:.88rem; line-height:1.68; color:var(--dl-white); }
+        .diff-lab-wrapper .ss-text strong { color:var(--dl-white); }
+        .diff-lab-wrapper .why-box { background:rgba(56,189,248,.04); border:1px solid rgba(56,189,248,.15); border-left:3px solid var(--dl-blue); border-radius:3px; padding:.85rem 1rem; margin-bottom:.9rem; }
+        .diff-lab-wrapper .wb-label { font-family:'Share Tech Mono',monospace; font-size:.58rem; letter-spacing:.18em; color:var(--dl-blue); text-transform:uppercase; margin-bottom:.35rem; }
+        .diff-lab-wrapper .wb-text { font-size:.88rem; line-height:1.68; color:#80b0c8; }
+        .diff-lab-wrapper .wb-text strong { color:var(--dl-blue); }
+        .diff-lab-wrapper .dl-instr { background:rgba(16,232,150,.04); border:1px solid rgba(16,232,150,.15); border-left:3px solid var(--dl-grn); border-radius:3px; padding:.75rem 1rem; margin-bottom:1.1rem; font-size:.88rem; line-height:1.68; color:#80c8a8; }
+        .diff-lab-wrapper .dl-instr strong { font-family:'Share Tech Mono',monospace; font-size:.64rem; letter-spacing:.15em; color:var(--dl-grn); text-transform:uppercase; display:block; margin-bottom:.3rem; }
+        /* Chrome/console */
+        .diff-lab-wrapper .chrome { border:1px solid var(--dl-b2); border-radius:var(--dl-r); overflow:hidden; margin-bottom:1rem; }
+        .diff-lab-wrapper .chrome-bar { display:flex; align-items:center; gap:.7rem; padding:.55rem 1rem; border-bottom:1px solid var(--dl-b1); background:linear-gradient(90deg,rgba(245,158,11,.08),transparent); }
+        .diff-lab-wrapper .cdots { display:flex; gap:4px; }
+        .diff-lab-wrapper .cdots span { width:9px; height:9px; border-radius:50%; background:var(--dl-b2); }
+        .diff-lab-wrapper .cdots span:first-child { background:var(--dl-red); }
+        .diff-lab-wrapper .chrome-title { font-family:'Share Tech Mono',monospace; font-size:.66rem; color:var(--dl-white); letter-spacing:.1em; flex:1; text-align:center; }
+        .diff-lab-wrapper .c-layout { display:grid; grid-template-columns:200px 1fr; min-height:400px; }
+        @media(max-width:600px){ .diff-lab-wrapper .c-layout { grid-template-columns:1fr; } }
+        .diff-lab-wrapper .c-sidebar { background:var(--dl-s2); border-right:1px solid var(--dl-b1); padding:.9rem 0; }
+        .diff-lab-wrapper .sb-section { padding:.2rem .8rem .65rem; border-bottom:1px solid var(--dl-b1); margin-bottom:.2rem; }
+        .diff-lab-wrapper .sb-lbl { font-family:'Share Tech Mono',monospace; font-size:.55rem; letter-spacing:.2em; color:var(--dl-white); text-transform:uppercase; margin-bottom:.4rem; }
+        .diff-lab-wrapper .sb-item { font-family:'DM Sans',sans-serif; font-weight:500; font-size:.82rem; color:var(--dl-white); padding:.28rem .5rem; border-radius:3px; display:flex; align-items:center; gap:.4rem; }
+        .diff-lab-wrapper .sb-item.active { color:var(--dl-acc); background:var(--dl-s3); border-left:2px solid var(--dl-acc); }
+        .diff-lab-wrapper .sb-item.done   { color:var(--dl-grn); opacity:.7; }
+        .diff-lab-wrapper .sb-icon { font-size:.72rem; opacity:.7; }
+        .diff-lab-wrapper .c-main { padding:1.3rem; background:var(--dl-s1); }
+        .diff-lab-wrapper .f-lbl { font-family:'Share Tech Mono',monospace; font-size:.62rem; letter-spacing:.12em; color:var(--dl-white); text-transform:uppercase; margin-bottom:.32rem; display:block; }
+        /* File chips */
+        .diff-lab-wrapper .file-grid { display:flex; flex-direction:column; gap:.38rem; margin-bottom:.8rem; }
+        .diff-lab-wrapper .file-chip { display:flex; align-items:center; gap:.65rem; background:var(--dl-s3); border:1px solid var(--dl-b1); border-radius:3px; padding:.48rem .8rem; cursor:pointer; transition:all .2s; user-select:none; }
+        .diff-lab-wrapper .file-chip:hover { border-color:var(--dl-b2); }
+        .diff-lab-wrapper .file-chip.sel { border-color:var(--dl-acc); background:var(--dl-acc-d); }
+        .diff-lab-wrapper .fc-icon { font-size:.9rem; flex-shrink:0; }
+        .diff-lab-wrapper .fc-name { font-family:'Share Tech Mono',monospace; font-size:.76rem; color:var(--dl-white); flex:1; }
+        .diff-lab-wrapper .fc-flag { font-family:'Share Tech Mono',monospace; font-size:.64rem; padding:2px 8px; border-radius:2px; flex-shrink:0; white-space:nowrap; }
+        .diff-lab-wrapper .fc-flag.sun { color:var(--dl-muted); background:var(--dl-s2); border:1px solid var(--dl-b1); }
+        .diff-lab-wrapper .fc-flag.mon { color:#38bdf8; background:rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.2); }
+        .diff-lab-wrapper .fc-flag.tue { color:#a78bfa; background:rgba(167,139,250,.08); border:1px solid rgba(167,139,250,.2); }
+        .diff-lab-wrapper .fc-flag.wed { color:var(--dl-acc); background:var(--dl-acc-d); border:1px solid rgba(245,158,11,.25); }
+        /* Msg box */
+        .diff-lab-wrapper .msg-box { font-family:'Share Tech Mono',monospace; font-size:.72rem; min-height:1rem; margin-top:.5rem; line-height:1.6; transition:all .2s; padding:.5rem .7rem; border-radius:3px; display:none; }
+        .diff-lab-wrapper .msg-box.show { display:block; }
+        .diff-lab-wrapper .msg-box.ok  { color:var(--dl-grn); background:rgba(16,232,150,.06); border:1px solid rgba(16,232,150,.2); }
+        .diff-lab-wrapper .msg-box.err { color:var(--dl-red); background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.2); }
+        /* Step nav */
+        .diff-lab-wrapper .step-nav { display:flex; align-items:center; justify-content:space-between; margin-top:1.2rem; padding-top:1.1rem; border-top:1px solid var(--dl-b1); }
+        .diff-lab-wrapper .nav-btn { font-family:'Share Tech Mono',monospace; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; padding:.45rem 1.1rem; border-radius:3px; border:1px solid; cursor:pointer; transition:all .2s; background:transparent; }
+        .diff-lab-wrapper .nav-btn:disabled { opacity:.3; cursor:not-allowed; }
+        .diff-lab-wrapper .btn-back { color:var(--dl-muted); border-color:var(--dl-b1); }
+        .diff-lab-wrapper .btn-back:hover:not(:disabled) { color:var(--dl-white); border-color:var(--dl-b2); }
+        .diff-lab-wrapper .btn-next { color:var(--dl-acc); border-color:var(--dl-acc); }
+        .diff-lab-wrapper .btn-next:hover:not(:disabled) { background:var(--dl-acc); color:var(--dl-bg); box-shadow:0 0 20px rgba(245,158,11,.35); }
+        /* Complete banner */
+        .diff-lab-wrapper .complete-banner { background:rgba(16,232,150,.06); border:1px solid rgba(16,232,150,.3); border-radius:var(--dl-r); padding:1.5rem; text-align:center; margin-top:1rem; }
+        .diff-lab-wrapper .cb-icon  { font-size:2.5rem; margin-bottom:.5rem; }
+        .diff-lab-wrapper .cb-title { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--dl-grn); margin-bottom:.4rem; letter-spacing:.04em; }
+        .diff-lab-wrapper .cb-sub   { font-size:.88rem; color:var(--dl-white); line-height:1.65; max-width:480px; margin:0 auto; }
+        /* Live dot */
+        .diff-lab-wrapper .live-dot { width:6px; height:6px; border-radius:50%; background:var(--dl-grn); box-shadow:0 0 8px var(--dl-grn); animation:blink 2s ease-in-out infinite; }
+        .diff-lab-wrapper .lab-topbar { display:flex; align-items:center; justify-content:space-between; padding:.8rem 1.8rem; background:rgba(7,8,15,.94); border-bottom:1px solid var(--dl-b1); }
+        .diff-lab-wrapper .tb-logo { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; color:var(--dl-white); letter-spacing:.08em; text-transform:uppercase; }
+        .diff-lab-wrapper .tb-logo span { color:var(--dl-acc); }
+        .diff-lab-wrapper .tb-badge { font-family:'Share Tech Mono',monospace; font-size:.6rem; letter-spacing:.14em; padding:3px 10px; border-radius:20px; border:1px solid rgba(245,158,11,.3); color:var(--dl-acc); background:var(--dl-acc-d); }
+        .diff-lab-wrapper .tb-right { display:flex; align-items:center; gap:.6rem; }
+
+        /* ═══════════════════════════════════════════
+           TAB 7 — SCENARIO QUIZ
+        ═══════════════════════════════════════════ */
+        .quiz-wrap { max-width:900px; margin:0 auto; padding:20px; }
+        .quiz-wrap .quiz-container { background:var(--bg-secondary); border-radius:12px; padding:28px; margin-bottom:24px; }
+        .quiz-wrap .sq-scenario-text { background:var(--bg-tertiary); padding:20px; border-radius:8px; border-left:4px solid var(--accent-warning); margin-bottom:24px; font-size:1.05em; line-height:1.7; }
+        .quiz-wrap .question-text { font-size:1.1em; font-weight:600; color:var(--text-primary); margin-bottom:20px; }
+        .quiz-wrap .answers-grid { display:grid; gap:12px; margin-bottom:20px; }
+        .quiz-wrap .answer-option { background:var(--bg-tertiary); border:2px solid var(--border-color); padding:16px 20px; border-radius:8px; cursor:pointer; transition:all .2s; }
+        .quiz-wrap .answer-option:hover:not(.sq-disabled) { border-color:var(--accent-primary); transform:translateX(4px); }
+        .quiz-wrap .answer-option.sq-correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); }
+        .quiz-wrap .answer-option.sq-incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15); }
+        .quiz-wrap .answer-option.sq-disabled  { cursor:not-allowed; opacity:.7; }
+        .quiz-wrap .feedback-box { background:var(--bg-primary); border-radius:8px; padding:20px; margin-top:20px; border-left:4px solid var(--accent-success); display:none; animation:slideIn .3s ease; }
+        .quiz-wrap .feedback-box.show { display:block; }
+        .quiz-wrap .feedback-box.incorrect-feedback { border-left-color:var(--accent-error); }
+        .quiz-wrap .feedback-header { display:flex; align-items:center; gap:10px; font-size:1.2em; font-weight:700; margin-bottom:12px; }
+        .quiz-wrap .feedback-icon { font-size:1.4em; }
+        .quiz-wrap .feedback-explanation { color:var(--text-secondary); line-height:1.7; }
+        .quiz-wrap .reset-bar { display:flex; justify-content:center; margin-top:20px; padding-top:20px; border-top:2px solid var(--border-color); }
+        .quiz-wrap .sq-reset-btn { background:var(--bg-tertiary); border:2px solid var(--border-color); color:var(--text-primary); padding:12px 28px; border-radius:8px; font-weight:600; cursor:pointer; transition:all .25s; font-size:1em; }
+        .quiz-wrap .sq-reset-btn:hover { background:var(--bg-primary); border-color:var(--accent-primary); }
+
+        @media(max-width:600px){ .page-header h1 { font-size:1.6em; } }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <h1>💾 Mod 12 – Data Continuity &amp; Computer Support</h1>
+    <p class="subtitle">CompTIA Tech+ Aligned | Module 12 Complete</p>
+</div>
+
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('instruction')">📚 Instruction</button>
+    <button class="tab-btn"        onclick="switchTab('reinforcement')">⚡ Challenge Tasks</button>
+    <button class="tab-btn"        onclick="switchTab('diagnostic')">🔧 Diagnostic Tools</button>
+    <button class="tab-btn"        onclick="switchTab('utilities')">🛠️ Utilities</button>
+    <button class="tab-btn"        onclick="switchTab('troubleshooting')">🔍 Troubleshooting</button>
+    <button class="tab-btn"        onclick="switchTab('lab')">🗃️ Differential Backup Lab</button>
+    <button class="tab-btn"        onclick="switchTab('quiz')">📝 Scenario Quiz</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 1: INSTRUCTION
+══════════════════════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="instr-outer">
+    <div class="instr-main">
+        <div class="lesson" id="lesson10">
+            <h2>Putting It All Together</h2>
+            <div class="problem-scenario">
+                <h3>🏁 Final Scenario</h3>
+                <p>You're the lead IT technician for a mid-sized company. Your job today: design a resilient data continuity plan, respond to hardware failures, and ensure licensing compliance. Let's put your knowledge to the test!</p>
+            </div>
+            <div class="visual-demo">
+                <h3>Module 12 Concepts at a Glance</h3>
+                <table>
+                    <thead><tr><th>Topic</th><th>Key Terms</th><th>Exam Focus</th></tr></thead>
+                    <tbody>
+                        <tr><td>Backup Types</td><td>Full, Incremental, Differential</td><td>Backup speed vs. restore speed tradeoffs</td></tr>
+                        <tr><td>RAID</td><td>RAID 0/1/5/10</td><td>Match RAID level to use case; RAID ≠ backup</td></tr>
+                        <tr><td>DR Metrics</td><td>RTO, RPO, MTTR, MTBF</td><td>Distinguish RTO (time down) from RPO (data loss)</td></tr>
+                        <tr><td>DR Sites</td><td>Hot, Warm, Cold</td><td>Match site type to RTO requirement</td></tr>
+                        <tr><td>Storage Media</td><td>NAS, Tape, Cloud, SSD</td><td>3-2-1 backup rule; best medium per scenario</td></tr>
+                        <tr><td>Troubleshooting</td><td>6-Step CompTIA Model</td><td>Correct step order; document last</td></tr>
+                        <tr><td>Hardware Symptoms</td><td>Clicking, BSOD, POST codes</td><td>Symptom → component diagnosis</td></tr>
+                        <tr><td>Maintenance</td><td>PM schedules, UPS, thermal</td><td>Correct frequency for each task</td></tr>
+                        <tr><td>Licensing</td><td>Per-seat, Volume, GPL, SaaS</td><td>Choose correct license for scenario</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="interactive-section">
+                <h3>🎯 Final Challenge: Multi-Scenario</h3>
+                <div class="concept-check">
+                    <div class="single-q" data-answer="incr-chain">
+                        <p><strong>A company runs a full backup every Monday and incremental backups Tuesday–Friday. A disaster occurs Friday afternoon. How many backup sets are needed to fully restore?</strong></p>
+                        <div class="check-option" data-val="one">Just Friday's backup</div>
+                        <div class="check-option" data-val="two">Monday's full + Friday's incremental only</div>
+                        <div class="check-option" data-val="incr-chain">Monday's full + Tuesday + Wednesday + Thursday + Friday incrementals</div>
+                        <div class="explanation">✅ <strong>Full chain</strong> is correct. With incremental backups, each day's backup only contains what changed <em>since the previous day</em>. To restore Friday's state, you need ALL incrementals in the chain: Mon (full) + Tue + Wed + Thu + Fri. This is the key weakness of incrementals — complex restores.</div>
+                    </div>
+                </div>
+                <div class="concept-check" style="margin-top:14px;">
+                    <div class="single-q" data-answer="rto2">
+                        <p><strong>Management says: "We need to be fully operational again within 2 hours of any disaster." What DR metric does this represent, and what site type likely supports it?</strong></p>
+                        <div class="check-option" data-val="rpo-cold">RPO of 2 hours → Cold Site</div>
+                        <div class="check-option" data-val="rto2">RTO of 2 hours → Warm or Hot Site</div>
+                        <div class="check-option" data-val="mtbf2">MTBF of 2 hours → any site type</div>
+                        <div class="explanation">✅ Correct! "Back operational within X time" = <strong>RTO</strong>. A 2-hour RTO requires either a hot site (fastest, near-instant) or a warm site (equipment ready, data must be loaded). A cold site typically takes days, making it incompatible with a 2-hour RTO.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 2: REINFORCEMENT — RAID DRAG & DROP
+══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div class="rein-wrapper">
+    <div class="rein-inner">
+        <div class="rein-section-header">
+            <h1>Module 12 – Data Continuity &amp; Computer Support Challenge Tasks</h1>
+            <p class="subtitle">Demonstrate Your Skills</p>
+        </div>
+
+        <div class="task-header-rein">
+            <div class="task-number">2</div>
+            <div class="task-title-block">
+                <h2>RAID Level Architecture Match</h2>
+                <span class="task-type-badge">⬛ DRAG &amp; DROP MATCHING</span>
+            </div>
+        </div>
+
+        <div class="scenario-box-rein">
+            <h3>📋 Scenario</h3>
+            <p>A storage consultant is configuring four servers for different departments. Each department has distinct performance and redundancy requirements. The consultant must match each description to the correct RAID level before the hardware deployment window opens.</p>
+        </div>
+
+        <div class="task-instructions-rein">
+            <strong>Task:</strong> Drag each scenario description from the right pool and drop it onto the correct RAID level on the left. Each zone accepts exactly one item.
+        </div>
+
+        <div class="match-layout">
+            <div class="drop-column-rein" id="raidDropCol">
+                <div class="drop-target-rein" data-correct="r0"><div class="drop-label">⚡ RAID 0 — Striping</div></div>
+                <div class="drop-target-rein" data-correct="r1"><div class="drop-label">🪞 RAID 1 — Mirroring</div></div>
+                <div class="drop-target-rein" data-correct="r5"><div class="drop-label">🔐 RAID 5 — Striping + Parity</div></div>
+                <div class="drop-target-rein" data-correct="r10"><div class="drop-label">🏆 RAID 10 — Mirror + Stripe</div></div>
+            </div>
+            <div class="drag-pool-rein" id="raidDragPool">
+                <div class="drag-item" draggable="true" data-id="r0"><span class="drag-handle">⠿</span>Animation studio scratch disk — maximum read/write speed required; data is re-rendered from source files if lost; zero redundancy acceptable</div>
+                <div class="drag-item" draggable="true" data-id="r1"><span class="drag-handle">⠿</span>Boot drive for a small business file server — must tolerate a single drive failure without any downtime; 2 drives, 50% usable capacity</div>
+                <div class="drag-item" draggable="true" data-id="r10"><span class="drag-handle">⠿</span>Financial trading database — requires both maximum fault tolerance AND high-speed random read/write; minimum four drives; willing to sacrifice 50% storage</div>
+                <div class="drag-item" draggable="true" data-id="r5"><span class="drag-handle">⠿</span>NAS for a law firm's shared documents — efficient storage use, survives one drive failure, good read performance; minimum three drives required</div>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <button onclick="checkTask2()">Submit Answer</button>
+            <button class="reset-btn" onclick="resetTask2()">↺ Reset</button>
+        </div>
+
+        <div class="feedback-panel" id="fb2">
+            <div class="feedback-header-rein" id="fb2Header"></div>
+            <div class="feedback-body-rein">
+                <div class="feedback-section">
+                    <h4>✅ Why Each RAID Level Is Correct</h4>
+                    <div class="why-correct">
+                        <ul>
+                            <li><strong>RAID 0 — Animation Scratch Disk:</strong> RAID 0 stripes data across all drives simultaneously, delivering the highest possible throughput. There is <em>zero redundancy</em> — if any single drive fails, ALL data is lost. This is acceptable for scratch/temp storage where source files exist elsewhere. RAID 0 uses 100% of available drive capacity.</li>
+                            <li><strong>RAID 1 — Small Business Boot Drive:</strong> RAID 1 writes identical data to two drives simultaneously (mirroring). If one drive fails, the other continues operating without interruption. The tradeoff is 50% usable capacity (2 × 1 TB = 1 TB usable). Minimum 2 drives. Ideal for OS drives and critical single-server deployments.</li>
+                            <li><strong>RAID 5 — Law Firm NAS:</strong> RAID 5 stripes data with distributed parity across a minimum of 3 drives. If one drive fails, the parity data on the remaining drives can reconstruct everything. Usable capacity is (n-1) drives. Great read performance; write performance is slightly reduced due to parity calculation. Most widely deployed RAID for general-purpose storage.</li>
+                            <li><strong>RAID 10 — Trading Database:</strong> RAID 10 (also called RAID 1+0) mirrors pairs of drives and then stripes across those mirrors. This combines RAID 1's fault tolerance with RAID 0's performance. Requires minimum 4 drives; 50% usable. Can survive multiple simultaneous drive failures as long as both drives in a mirrored pair don't fail. Premium option for databases and high-IOPS workloads.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="feedback-section">
+                    <h4>❌ Common Mistakes</h4>
+                    <div class="why-wrong">
+                        <ul>
+                            <li><strong>Treating RAID as a backup:</strong> RAID provides fault tolerance against hardware failure — it does NOT protect against accidental deletion, ransomware, or site-wide disasters. You still need backups regardless of RAID level.</li>
+                            <li><strong>Confusing RAID 5 and RAID 10 for databases:</strong> RAID 5 can handle one failure but has slower write speeds (parity overhead). High-performance databases need RAID 10 for fast random I/O.</li>
+                            <li><strong>Minimum drive counts:</strong> RAID 0 = 2 drives min · RAID 1 = 2 drives min · RAID 5 = 3 drives min · RAID 10 = 4 drives min.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="feedback-section">
+                    <h4>🌍 Real-World Application</h4>
+                    <p>In enterprise environments, RAID levels are selected based on three factors: performance requirements (IOPS and throughput), fault tolerance needs (how many simultaneous drive failures must be survivable), and storage efficiency (what percentage of raw capacity is usable). RAID 5 dominates NAS appliances and mid-tier storage. RAID 10 is standard in production SQL Server and Oracle deployments where downtime is unacceptable.</p>
+                </div>
+                <div class="feedback-section pro-tip">
+                    <strong>💡 Pro Tip:</strong> On the Tech+ exam, watch for phrases like "maximum speed, no redundancy needed" → RAID 0 · "mirror, 50% capacity" → RAID 1 · "parity, 3+ drives, efficient storage" → RAID 5 · "best performance AND redundancy, 4+ drives" → RAID 10. And always: RAID ≠ backup. This distinction is tested directly.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 3: DIAGNOSTIC TOOLS EXERCISE
+══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-diagnostic">
+<div class="exer-outer">
+    <div class="ref-panel">
+        <div class="ref-header" onclick="diagToggleRef()">
+            <span>📋 Diagnostic Tools Reference Guide — Study this before you begin</span>
+            <span class="ref-toggle" id="diagRefToggle">▲ Hide Table</span>
+        </div>
+        <div class="ref-body" id="diagRefBody">
+            <table class="ref-table">
+                <thead><tr><th>Tool</th><th>What It Does</th><th>When to Use It</th><th>How to Access It</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="term-name">BIOS</span></td><td>Firmware stored on the motherboard that runs before the OS loads; configures hardware-level settings such as boot order, hardware enable/disable, and system clock</td><td>Changing boot device order; enabling CPU virtualization; checking hardware sensor readings before the OS loads</td><td>Press F2, F10, Del, or Esc during POST (key varies by manufacturer)</td></tr>
+                    <tr><td><span class="term-name">CHKDSK</span></td><td>Windows command-line utility that scans a drive for file system errors and bad sectors; can automatically repair errors and schedule scans at the next reboot for active drives</td><td>File system corruption; file-not-found errors on existing files; suspected disk issues approached from the command line</td><td>Command Prompt: <em>chkdsk C: /f /r</em> (schedules scan at reboot for the system drive)</td></tr>
+                    <tr><td><span class="term-name">Device Manager</span></td><td>Windows tool that lists all installed hardware devices and their driver status; allows driver updates, rollbacks, device enable/disable, and uninstall</td><td>Yellow exclamation mark (⚠) on a device; hardware stopped working after a driver or Windows update; need to update or roll back a driver</td><td>Right-click Start &gt; Device Manager, or <em>devmgmt.msc</em></td></tr>
+                    <tr><td><span class="term-name">Event Viewer</span></td><td>Windows tool that displays logs of system, application, and security events recorded by the OS; used to investigate crashes, errors, and warnings by timestamp</td><td>Unexpected system shutdowns or restarts; application crashes; investigating what caused an error and when it occurred</td><td><em>eventvwr.msc</em>, or search "Event Viewer" in Start</td></tr>
+                    <tr><td><span class="term-name">ifconfig</span></td><td>Linux/macOS terminal command that displays current network interface settings including IP address, subnet mask, broadcast address, and MAC address</td><td>Checking IP address or interface status on a Linux or macOS machine from the terminal</td><td>Terminal: <em>ifconfig</em> or <em>ifconfig eth0</em> — Windows equivalent is <em>ipconfig</em></td></tr>
+                    <tr><td><span class="term-name">msconfig</span></td><td>Windows System Configuration utility that controls which programs and services launch at startup, and provides boot mode options including Safe Boot</td><td>Slow boot time caused by excessive startup items; disabling non-essential services; enabling Safe Boot for advanced troubleshooting</td><td>Run &gt; <em>msconfig</em>, or search "System Configuration"</td></tr>
+                    <tr><td><span class="term-name">ping</span></td><td>Command-line utility that sends ICMP test packets to a host and reports whether responses are received; the fastest way to confirm basic network connectivity</td><td>First step in any network troubleshooting workflow; confirming whether a host is reachable before investigating further</td><td>Command Prompt / Terminal: <em>ping [IP address or hostname]</em></td></tr>
+                    <tr><td><span class="term-name">POST card</span></td><td>Physical hardware diagnostic card that plugs into a PCI/PCIe slot and reads the numeric codes the BIOS broadcasts during the Power-On Self-Test; identifies which component caused a boot failure</td><td>System powers on but produces no video output and no beep codes; hardware failure occurs before the OS loads; need to identify which component failed during initialization</td><td>Physical card inserted into a motherboard PCI or PCIe expansion slot; reads POST codes on its built-in numeric display</td></tr>
+                    <tr><td><span class="term-name">Processes</span></td><td>A view of every program and background process currently running on the system, showing real-time CPU, memory, disk, and network usage per process</td><td>Identifying which specific process is consuming excessive CPU or memory; finding and terminating a rogue or runaway background process by name</td><td>Task Manager &gt; Processes tab (Ctrl+Shift+Esc)</td></tr>
+                    <tr><td><span class="term-name">Run as Administrator</span></td><td>Windows feature that launches a program with elevated (administrator-level) privileges, allowing system-level changes that a standard user account cannot make</td><td>Installation or configuration tool fails with "requires elevated privileges" or "requires administrator" message; need admin rights without logging out of the current session</td><td>Right-click executable or shortcut &gt; "Run as administrator"</td></tr>
+                    <tr><td><span class="term-name">Scan Drive</span></td><td>GUI-based disk error-checking tool built into Windows File Explorer; performs the same basic function as CHKDSK but without requiring the command line</td><td>Drive warning notification appears; user wants to check a drive for errors using a graphical interface rather than the command prompt</td><td>File Explorer &gt; right-click drive &gt; Properties &gt; Tools tab &gt; Check</td></tr>
+                    <tr><td><span class="term-name">System Properties</span></td><td>Windows control panel displaying computer name, installed RAM, processor, OS edition, and domain/workgroup membership; used to rename computers, join domains, and configure advanced settings</td><td>Joining a computer to an Active Directory domain; renaming a computer; verifying installed RAM; configuring Remote Desktop or virtual memory settings</td><td><em>sysdm.cpl</em>, or right-click This PC &gt; Properties &gt; Advanced system settings</td></tr>
+                    <tr><td><span class="term-name">Task Manager</span></td><td>Windows utility for monitoring overall system performance and managing running applications; provides tabs for Processes, Performance, Startup, Users, and Services</td><td>Force-closing a frozen or unresponsive application; checking system-wide CPU and memory usage at a glance; managing which programs launch at startup</td><td>Ctrl+Shift+Esc | Ctrl+Alt+Del &gt; Task Manager | right-click Taskbar &gt; Task Manager</td></tr>
+                    <tr><td><span class="term-name">tracert</span></td><td>Windows command-line utility that maps every router (hop) between your machine and a destination, showing the IP address and round-trip time at each hop along the path</td><td>Ping succeeds but the connection is slow or intermittent; identifying exactly which network hop is introducing delay or dropping packets</td><td>Command Prompt: <em>tracert [IP address or hostname]</em> — Linux/macOS equivalent is <em>traceroute</em></td></tr>
+                </tbody>
+            </table>
+            <p class="ref-note">💡 Tip — The most commonly confused pairs: CHKDSK vs. Scan Drive (same function — command line vs. GUI), ping vs. tracert (ping tests reachability; tracert maps the full route hop by hop), Task Manager vs. Processes (Task Manager is the full tool; Processes is the tab for per-process CPU/memory detail), BIOS vs. POST card (BIOS is firmware you configure; a POST card is hardware you insert to read boot diagnostic codes).</p>
+        </div>
+    </div>
+
+    <div class="quiz-grid">
+        <div class="scenario-col">
+            <div class="scenario-card">
+                <div class="scenario-tag"><span class="dot"></span>Scenario 1 of 1</div>
+                <p class="scenario-desc">A technician needs to boot a desktop computer from a USB flash drive to run a third-party hardware diagnostic utility. Every time the machine powers on, it boots directly from the internal hard drive and ignores the USB drive. The technician needs to access the firmware interface that runs before the operating system loads and change the priority order of boot devices so the USB drive is checked first.</p>
+                <button class="hint-btn" onclick="diagToggleHint()">💡 Need a hint?</button>
+                <div class="hint-reveal" id="diagHintReveal">
+                    <strong>Hint:</strong> Focus on &ldquo;change the priority order of boot devices so the USB drive is checked first.&rdquo;
+                </div>
+                <div id="diagFeedbackArea"></div>
+                <div class="explain-reveal" id="diagExplainReveal">
+                    <div class="explain-reveal-header"><span>🔍 BIOS — Controls Boot Order and Firmware-Level Hardware Settings</span></div>
+                    <div class="explain-block">
+                        <pre style="white-space:pre-wrap;font-family:inherit;"><span class="label">Tool:</span> BIOS
+<span class="label">Key identifiers:</span> Need to change boot order; configure hardware before OS loads; access firmware settings that persist after reboot.
+<span class="label">What BIOS manages:</span> Boot device priority, enabling/disabling onboard hardware (Wi-Fi, virtualization, USB ports), system date/time, CPU and memory settings.
+<span class="label">Key distinction:</span> BIOS settings operate below the OS layer — no operating system is needed to access or change them.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="commands-col" id="diagCommandsCol">
+            <div class="commands-header">Select a Tool</div>
+            <button class="cmd-btn" onclick="diagSelectAnswer('BIOS')">BIOS</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('CHKDSK')">CHKDSK</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('Device Manager')">Device Manager</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('Event Viewer')">Event Viewer</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('ifconfig')">ifconfig</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('msconfig')">msconfig</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('ping')">ping</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('POST card')">POST card</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('Processes')">Processes</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('Run as Administrator')">Run as Administrator</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('Scan Drive')">Scan Drive</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('System Properties')">System Properties</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('Task Manager')">Task Manager</button>
+            <button class="cmd-btn" onclick="diagSelectAnswer('tracert')">tracert</button>
+        </div>
+    </div>
+    <div class="reset-wrap">
+        <button class="btn-reset" onclick="diagResetQuestion()">&#8634; Reset</button>
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 4: UTILITIES EXERCISE
+══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-utilities">
+<div class="exer-outer">
+    <div class="ref-panel">
+        <div class="ref-header" onclick="utilToggleRef()">
+            <span>📋 Utilities Reference Guide — Study this before you begin</span>
+            <span class="ref-toggle" id="utilRefToggle">▲ Hide Table</span>
+        </div>
+        <div class="ref-body" id="utilRefBody">
+            <table class="ref-table">
+                <thead><tr><th>Utility / Technique</th><th>What It Does</th><th>When to Use It</th><th>How to Access It</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="term-name">Command+Option+Esc</span></td><td>macOS keyboard shortcut that opens the Force Quit Applications dialog, allowing the user to immediately terminate any frozen or unresponsive application without restarting the computer</td><td>A Mac application is frozen (spinning beachball); the app cannot be closed normally; need to terminate the app without rebooting</td><td>Press Command+Option+Esc simultaneously | Apple menu &gt; Force Quit</td></tr>
+                    <tr><td><span class="term-name">compatibility mode</span></td><td>Windows feature that runs an application as if it were operating under an older version of Windows by applying that version's API behaviors and settings to the specific executable</td><td>An older application crashes, won't install, or behaves incorrectly on a newer OS version; no updated version is available</td><td>Right-click executable &gt; Properties &gt; Compatibility tab &gt; "Run this program in compatibility mode for:" &gt; select Windows version</td></tr>
+                    <tr><td><span class="term-name">Ctrl+Alt+Del</span></td><td>Windows secure attention key sequence that overrides the current user session and displays the Windows Security screen, providing access to Task Manager, Lock, Sign Out, Switch User, and Power options even when the desktop is unresponsive</td><td>Windows desktop is frozen and normal methods are not responding; need to reach Task Manager or initiate a restart</td><td>Press Ctrl+Alt+Del simultaneously — intercepted by Windows at the hardware level and cannot be blocked by running applications</td></tr>
+                    <tr><td><span class="term-name">delete &amp; reinstall</span></td><td>Application troubleshooting technique that completely uninstalls a problematic application and all associated files, then installs a fresh copy from an official source</td><td>Application crashes consistently; a built-in repair tool has already been attempted without success; corrupted installation files or registry entries are suspected</td><td>Settings &gt; Apps &gt; select application &gt; Uninstall; then download a fresh installer from the official source and install</td></tr>
+                    <tr><td><span class="term-name">reboot</span></td><td>Restarting the computer; clears RAM, terminates all running processes, flushes cached data, and starts the OS fresh — resolving many unexplained software issues</td><td>Unexplained slowdown after extended uptime; pending Windows Update changes require a restart; first troubleshooting step for most software complaints</td><td>Start &gt; Power &gt; Restart | Settings &gt; Windows Update &gt; Restart now | Ctrl+Alt+Del &gt; Power &gt; Restart</td></tr>
+                    <tr><td><span class="term-name">Recovery Environment (WinRE)</span></td><td>Windows Recovery Environment — a special repair partition that runs independently of the main Windows installation; provides Startup Repair, Command Prompt, System Restore, System Image Recovery, and Reset this PC when the OS cannot load</td><td>Windows fails to boot or is stuck in a boot loop; need a command prompt outside the running OS for low-level repairs</td><td>Boots automatically after 2–3 failed boot attempts | Hold Shift while clicking Restart | bootable Windows installation media</td></tr>
+                    <tr><td><span class="term-name">Safe Mode</span></td><td>Windows diagnostic startup mode that loads only essential Microsoft-signed drivers and core services, bypassing third-party drivers, startup programs, and most background services</td><td>Windows crashes on every normal boot after installing a driver or application; malware cannot be removed during a normal session because it is active in memory</td><td>msconfig &gt; Boot &gt; Safe Boot | Hold Shift while clicking Restart &gt; Troubleshoot &gt; Advanced Options &gt; Startup Settings</td></tr>
+                    <tr><td><span class="term-name">System Image</span></td><td>A complete sector-by-sector backup of an entire drive including the OS, installed applications, drivers, settings, and all data — used to restore a machine to its exact previous state</td><td>Before a major OS upgrade or risky system change; disaster recovery after hardware failure requiring complete OS and data restoration</td><td>Control Panel &gt; Backup and Restore (Windows 7) &gt; Create a system image | Restore via WinRE &gt; System Image Recovery</td></tr>
+                    <tr><td><span class="term-name">System Restore</span></td><td>Windows feature that rolls back system files, drivers, and registry settings to a previously saved restore point — without affecting personal documents, photos, or user data files</td><td>Windows became unstable after installing a driver, update, or application; a restore point from before the problem exists</td><td>Start &gt; type "System Restore" | Control Panel &gt; Recovery &gt; Open System Restore | WinRE &gt; System Restore</td></tr>
+                </tbody>
+            </table>
+            <p class="ref-note">💡 Tip — Most confused pairs: Safe Mode vs. Recovery Environment (WinRE) — Safe Mode loads minimal Windows drivers from the current OS installation; WinRE runs from a separate partition and works even when Windows won't boot. System Restore vs. System Image — System Restore is a lightweight rollback of registry/driver changes that preserves personal files; a System Image is a complete drive backup for catastrophic failure. Ctrl+Alt+Del (Windows) vs. Command+Option+Esc (Mac) — same purpose, different platforms.</p>
+        </div>
+    </div>
+
+    <div class="quiz-grid">
+        <div class="scenario-col">
+            <div class="scenario-card">
+                <div class="scenario-tag"><span class="dot"></span>Scenario</div>
+                <p class="scenario-desc">A technician needs to run a series of low-level command-line repair commands — specifically <code>bootrec /fixmbr</code> and <code>bootrec /fixboot</code> — to rebuild the corrupted Master Boot Record on a Windows workstation. Because the machine will not boot into Windows at all, the command prompt available within a running Windows session cannot be accessed. She needs to reach a boot-time environment that provides a command prompt with full system access without requiring the main Windows installation to load.</p>
+                <button class="hint-btn" onclick="utilToggleHint()">💡 Need a hint?</button>
+                <div class="hint-reveal" id="utilHintReveal">
+                    <strong>Hint:</strong> Focus on &ldquo;will not boot into Windows at all, the command prompt available within a running Windows session cannot be accessed.&rdquo;
+                </div>
+                <div id="utilFeedbackArea"></div>
+                <div class="explain-reveal" id="utilExplainReveal">
+                    <div class="explain-reveal-header"><span>🔍 Recovery Environment (WinRE) — Command Prompt Access for Low-Level Repairs Outside the Running OS</span></div>
+                    <div class="explain-block">
+                        <pre style="white-space:pre-wrap;font-family:inherit;"><span class="label">Tool:</span> Recovery Environment (WinRE)
+<span class="label">Access:</span> Automatic (after boot failures) | Shift+Restart | bootable Windows installation media
+<span class="label">Key identifiers:</span> Need command prompt when Windows will not boot; must run bootrec, sfc, diskpart, or other system-level commands; OS is inaccessible.
+<span class="label">Navigation:</span> WinRE > Troubleshoot > Advanced Options > Command Prompt
+<span class="label">Common repair commands:</span> bootrec /fixmbr | bootrec /fixboot | bootrec /rebuildbcd | sfc /scannow | diskpart
+<span class="label">Exam tip:</span> WinRE's Command Prompt runs with full system privileges — it is not restricted by a running Windows session's user account limitations.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="commands-col" id="utilCommandsCol">
+            <div class="commands-header">Select a Utility</div>
+            <button class="cmd-btn" id="util-btn-0" onclick="utilSelectAnswer('Command+Option+Esc')">Command+Option+Esc</button>
+            <button class="cmd-btn" id="util-btn-1" onclick="utilSelectAnswer('compatibility mode')">compatibility mode</button>
+            <button class="cmd-btn" id="util-btn-2" onclick="utilSelectAnswer('Ctrl+Alt+Del')">Ctrl+Alt+Del</button>
+            <button class="cmd-btn" id="util-btn-3" onclick="utilSelectAnswer('delete &amp; reinstall')">delete &amp; reinstall</button>
+            <button class="cmd-btn" id="util-btn-4" onclick="utilSelectAnswer('reboot')">reboot</button>
+            <button class="cmd-btn" id="util-btn-5" onclick="utilSelectAnswer('Recovery Environment (WinRE)')">Recovery Environment (WinRE)</button>
+            <button class="cmd-btn" id="util-btn-6" onclick="utilSelectAnswer('Safe Mode')">Safe Mode</button>
+            <button class="cmd-btn" id="util-btn-7" onclick="utilSelectAnswer('System Image')">System Image</button>
+            <button class="cmd-btn" id="util-btn-8" onclick="utilSelectAnswer('System Restore')">System Restore</button>
+        </div>
+    </div>
+    <div class="exer-controls">
+        <button class="exer-btn reset" onclick="utilResetScenario()">&#8634; Reset</button>
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 5: TROUBLESHOOTING EXERCISE
+══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-troubleshooting">
+<div class="exer-outer">
+    <div class="ref-panel">
+        <div class="ref-header" onclick="tsToggleRef()">
+            <span>📋 Failure Types Reference Guide — Study this before you begin</span>
+            <span class="ref-toggle" id="tsRefToggle">▲ Hide Table</span>
+        </div>
+        <div class="ref-body" id="tsRefBody">
+            <table class="ref-table">
+                <thead><tr><th>Failure Type</th><th>Key Symptoms</th><th>What Actually Fails</th><th>How to Confirm / Distinguish</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="term-name">corrupted bootloader</span></td><td>POST completes and BIOS recognizes the drive, but the system displays "BOOTMGR is missing," "Boot device not found," or a similar error before the OS loading screen</td><td>The boot sector or Boot Configuration Data (BCD) that tells the system where to find and load the Windows kernel</td><td>Startup Repair detects BCD/boot sector damage; bootrec commands in WinRE resolve the issue; hardware is intact and drive is detected</td></tr>
+                    <tr><td><span class="term-name">defective fan motor</span></td><td>Abrupt thermal shutdowns with no BSOD or error message; system restarts and works for a consistent period before shutting down again; grinding or rattling noise from the CPU fan area</td><td>The fan's bearing or motor — unable to spin at consistent speed, removing less and less heat until the CPU's thermal protection trips</td><td>BIOS hardware monitor shows rising CPU temperature; visual/audio inspection confirms slow or uneven fan spin; replacing the cooler eliminates the shutdowns</td></tr>
+                    <tr><td><span class="term-name">defective monitor</span></td><td>Black or distorted display; computer is otherwise functional (audible sounds, indicator lights active); problem is on the display unit only</td><td>The monitor hardware itself — the display panel, backlight, or internal electronics</td><td>Substitution test — connecting a known-working replacement monitor to the same video port produces correct output</td></tr>
+                    <tr><td><span class="term-name">defective network adapter driver</span></td><td>Network connectivity lost immediately after a Windows Update or driver update; adapter shows yellow ⚠ in Device Manager; physical cable and switch port confirmed working</td><td>The driver software that allows the OS to communicate with the network adapter — the hardware itself is intact</td><td>Rolling back or reinstalling the driver restores full connectivity</td></tr>
+                    <tr><td><span class="term-name">defective power supply</span></td><td>Random, unexpected system shutdowns without a thermal pattern; system requires multiple attempts to power on; may cause other components to behave erratically</td><td>PSU voltage regulation — the 12V, 5V, and 3.3V rails fluctuate outside ±5% tolerance, starving components of stable power</td><td>PSU tester shows out-of-tolerance voltage readings; all symptoms disappear when a known-good PSU is installed</td></tr>
+                    <tr><td><span class="term-name">device driver failure</span></td><td>A specific device stops working after a Windows or driver update; yellow ⚠ appears in Device Manager on that device; all other hardware continues to function normally</td><td>The driver software for a particular hardware device — the hardware is physically intact but the OS cannot communicate with it</td><td>Updating, rolling back, or reinstalling the driver restores device function</td></tr>
+                    <tr><td><span class="term-name">faulty mouse or keyboard driver</span></td><td>Keyboard produces incorrect characters; mouse moves erratically or jumps; problem began after installing third-party input device software or a driver update</td><td>The HID (Human Interface Device) driver or third-party input management software</td><td>Uninstalling the software and reverting to the Windows default HID driver restores correct behavior</td></tr>
+                    <tr><td><span class="term-name">faulty video driver</span></td><td>Visual artifacts within Windows — flickering, scrambled pixels, color distortion; display produces output; symptoms began immediately after a driver update</td><td>The graphics driver software — the monitor and GPU hardware are intact</td><td>Rolling back the display driver eliminates all artifacts; symptoms are software-driven (appear only within the OS, not during POST)</td></tr>
+                    <tr><td><span class="term-name">hard drive failure</span></td><td>Gradually worsening read/write performance; files becoming corrupted or unreadable; SMART errors (reallocated sectors, rising raw read error rates); periodic clicking sounds</td><td>Physical HDD — failing platters, read/write heads, or actuator arm</td><td>SMART diagnostic utility reports reallocated sectors or high error counts; clicking sound during disk access</td></tr>
+                    <tr><td><span class="term-name">memory failure</span></td><td>Random BSODs with varying memory-related stop codes (MEMORY_MANAGEMENT, PAGE_FAULT_IN_NONPAGED_AREA); crashes occur across different applications and at idle; no consistent trigger</td><td>Defective cells within RAM modules — failures occur when the OS or applications read/write those specific addresses</td><td>Windows Memory Diagnostic (mdsched.exe) or MemTest86 reports errors; removing/replacing suspect modules eliminates crashes</td></tr>
+                    <tr><td><span class="term-name">network adapter failure</span></td><td>Adapter completely absent from Device Manager (not just a warning icon); BIOS confirms adapter is enabled in firmware; driver reinstall has no effect</td><td>The physical NIC hardware — the network interface controller chip on the motherboard or add-in card</td><td>Driver reinstall and rollback have no effect; substitution test — a USB or PCIe replacement adapter immediately restores connectivity</td></tr>
+                    <tr><td><span class="term-name">RAM failure</span></td><td>System fails to complete POST; blank display from the moment of power-on; motherboard beep codes indicating a memory error; no BIOS screen appears</td><td>A physically defective RAM module — the chip itself has failed, preventing the BIOS from establishing a working memory environment</td><td>Remove all modules and reinsert one at a time; the defective stick prevents POST in any slot; a known-good module allows POST to complete normally</td></tr>
+                    <tr><td><span class="term-name">sound card failure</span></td><td>Complete audio silence; speakers confirmed working on another device; audio device appears in Device Manager without any warning icon; driver reinstall has no effect</td><td>The onboard audio chipset or dedicated sound card hardware — the physical audio processing circuit has failed</td><td>Substitution test — a USB audio adapter immediately restores audio</td></tr>
+                    <tr><td><span class="term-name">video card failure</span></td><td>No display output from the moment the system powers on — including during POST, before any driver loads; monitor confirmed working on another system</td><td>The discrete GPU hardware — the graphics processor, VRAM, or power delivery on the card has failed</td><td>Monitor works on onboard video output; discrete GPU not detected by BIOS; symptoms persist regardless of driver</td></tr>
+                </tbody>
+            </table>
+            <p class="ref-note">💡 Tip — Most confused pairs: faulty video driver vs. video card failure (driver failure = OS-level artifacts that resolve when driver changes; hardware failure = no output even during POST). Defective network adapter driver vs. network adapter failure (driver = yellow ⚠ in Device Manager fixed by rollback; hardware = adapter absent entirely, driver changes have no effect). RAM failure vs. memory failure (RAM failure = catastrophic POST failure with beep codes; memory failure = defective cells causing random OS-level BSODs).</p>
+        </div>
+    </div>
+
+    <div class="quiz-grid">
+        <div class="scenario-col">
+            <div class="scenario-card">
+                <div class="scenario-tag"><span class="dot"></span>Performance-Based Question</div>
+                <div class="multi-badge">✶ Select 2 answers</div>
+                <p class="scenario-desc">A technician is diagnosing a desktop that exhibits two separate hardware problems discovered through step-by-step testing. First, she connects a PSU tester and finds the 12V rail reading 11.1V to 13.6V — well outside the ±5% tolerance — explaining the random, load-independent shutdowns the user reported. She replaces the power supply with a known-good unit. The random shutdowns stop, but the system now produces repeating beep codes and fails to complete POST with a blank display. She consults the motherboard manual, which identifies the beep pattern as a memory error, then removes and reseats the RAM modules one at a time — isolating one module that prevents POST in every slot it is placed in.</p>
+                <button class="hint-btn" onclick="tsToggleHint()">💡 Need a hint?</button>
+                <div class="hint-reveal" id="tsHintReveal">
+                    <strong>Hint:</strong> Focus on &ldquo;the 12V rail reading 11.1V to 13.6V — well outside the ±5% tolerance.&rdquo;
+                </div>
+                <div id="tsFeedbackArea"></div>
+                <div class="explain-reveal" id="tsExplainReveal">
+                    <div class="explain-reveal-header"><span>🔍 defective power supply + RAM failure — Sequential Testing Reveals Two Distinct Hardware Failures</span></div>
+                    <div class="explain-block">
+                        <pre style="white-space:pre-wrap;font-family:inherit;"><span class="label">defective power supply:</span> Voltage rail readings outside ±5% tolerance caused load-independent random shutdowns. Confirmed by PSU tester; eliminated by installing a known-good unit.
+<span class="label">RAM failure:</span> After PSU replacement, repeating beep codes and POST failure with a blank display indicate a memory initialization error. One-at-a-time module testing isolates the defective stick — it fails POST in every slot.
+<span class="label">Why two failures:</span> An unstable PSU can cause voltage spikes or drops that damage RAM over time. Or both components failed independently. Either way, both must be replaced.
+<span class="label">Diagnostic sequence:</span> PSU tester (voltage out of tolerance) → replace PSU → symptoms change but don't fully resolve → beep codes indicate memory error → one-at-a-time RAM test → defective module identified.
+<span class="label">Key point:</span> When replacing one component does not fully resolve all symptoms, continue testing — additional hardware failures may be present.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="commands-col" id="tsCommandsCol">
+            <!-- rendered by JS -->
+        </div>
+    </div>
+    <div class="reset-wrap">
+        <button class="btn-reset" onclick="tsResetQuestion()">⟳ Reset</button>
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 6: DIFFERENTIAL BACKUP LAB
+══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-lab">
+<div class="diff-lab-wrapper">
+    <!-- Lab topbar -->
+    <div class="lab-topbar">
+        <div class="tb-logo">Mach <span>IT</span> Training</div>
+        <div class="tb-right">
+            <div class="tb-badge">PBQ · Differential Backup Lab</div>
+            <div class="live-dot"></div>
+        </div>
+    </div>
+    <!-- Phase bar -->
+    <div class="phase-bar">
+        <div class="phase active" id="dlph0">Scenario</div>
+        <div class="phase-arrow">›</div>
+        <div class="phase" id="dlph1">File Selection</div>
+    </div>
+    <!-- Main wrap -->
+    <div class="dl-wrap">
+
+        <!-- Screen 0: Scenario / Reference -->
+        <div class="dl-screen active" id="dlsc0">
+            <div class="brief-grid">
+                <div class="brief-hero">
+                    <div class="bh-tag">▶ Differential Backup PBQ // Scenario Briefing</div>
+                    <div class="bh-title">Mach Manufacturing<br>Corporation</div>
+                    <div class="bh-sub">You are the IT systems administrator at Mach Manufacturing Corporation, a CNC machine and ERP operations center. Production line outages cost $50,000 per hour. The plant manager has made it clear: when data is lost, recovery must happen fast — storage cost is secondary. You must configure a Differential Backup strategy that minimizes restore complexity.</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="ic-label">// The Organization</div>
+                    <div class="ic-content">
+                        <strong>Mach Manufacturing Corporation</strong> runs CNC controllers and an SAP ERP system from a Windows Server on the plant floor (<em>MACHMFG-ERP01</em>). New production data — schedules, run logs, inventory deltas, quality reports — is generated every business day. Total data: <em>400 GB</em>. A <strong>Sunday Full Backup</strong> runs weekly. Daily Differentials Mon–Sat ensure every workday's changes are captured and can be restored in two steps, not five.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="ic-label">// Why Differential Is Right Here</div>
+                    <div class="ic-content">
+                        A <strong>Differential Backup</strong> copies all files changed <em>since the last Full Backup</em>. Wednesday's differential contains Monday's + Tuesday's + Wednesday's changes — all in one set. Restoring requires exactly <strong>two backup sets</strong>: the last Full + the most recent Differential. For a plant where downtime costs $50K/hour, this two-step restore is the right tradeoff. Storage grows daily but remains manageable. Speed wins over storage efficiency.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="ic-label">// Production Requirements</div>
+                    <ul class="need-list">
+                        <li><strong>Full Backup every Sunday</strong> — complete weekly baseline</li>
+                        <li><strong>Differential daily Mon–Sat</strong> — cumulative since-Sunday delta</li>
+                        <li>Restore must require <strong>two sets maximum</strong> — no restore chains</li>
+                        <li>Recovery time objective (RTO): <strong>under 2 hours</strong> from any failure</li>
+                        <li>Daily coverage of ERP records, CNC logs, and <strong>production schedules</strong></li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <div class="ic-label">// Differential — Key Characteristics</div>
+                    <ul class="limit-list">
+                        <li>Backs up everything changed <strong>since the last Full Backup</strong> — not since last backup of any type</li>
+                        <li>Does <strong>NOT clear the archive bit</strong> — this is how it accumulates</li>
+                        <li>Each day's backup is <strong>larger than the previous</strong> (Mon &lt; Tue &lt; Wed &lt; Thu)</li>
+                        <li>Restore always requires exactly <strong>two sets</strong>: Full + latest Differential</li>
+                        <li>Missing a differential is <strong>less risky</strong> than incremental — each DIFF is self-contained since the full</li>
+                    </ul>
+                </div>
+
+                <div class="full-span info-card">
+                    <div class="ic-label">// Archive Bit Behavior — The Critical Difference Between Incremental and Differential</div>
+                    <table class="spec-table">
+                        <tr><th>Scenario</th><th>Archive Bit After Backup</th><th>Effect on Next Day's Job</th></tr>
+                        <tr><td>Sunday Full Backup runs</td><td class="ok">Cleared to 0</td><td>Monday differential sees no "since Sunday" changes yet</td></tr>
+                        <tr><td>Monday files modified</td><td class="hi">Set to 1</td><td>Monday DIFF captures them</td></tr>
+                        <tr><td>Monday Differential runs</td><td class="warn">Left at 1 (NOT cleared)</td><td>Tuesday DIFF will see Monday's files AGAIN — plus Tuesday's</td></tr>
+                        <tr><td>Tuesday files modified</td><td class="hi">Set to 1</td><td>Tuesday DIFF captures Mon + Tue changes together</td></tr>
+                        <tr><td>Tuesday Differential runs</td><td class="warn">Left at 1 (NOT cleared)</td><td>Wednesday DIFF sees Mon + Tue + Wed — keeps growing</td></tr>
+                        <tr><td class="hi">Incremental by contrast</td><td class="ok">Clears to 0</td><td>Next day only sees that day's changes — does NOT re-accumulate</td></tr>
+                    </table>
+                </div>
+
+                <div class="full-span" style="text-align:center">
+                    <button class="start-btn" onclick="dlGoScreen(1)">▶&nbsp;&nbsp;Begin Lab — Identify Files for Wednesday's Differential</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 1: File Selection -->
+        <div class="dl-screen" id="dlsc1">
+            <div class="step-header">
+                <div class="step-tag">Step 1 of 1 // File Selection</div>
+                <div class="step-title">Identify Files for Wednesday's Differential</div>
+            </div>
+
+            <div class="step-scenario">
+                <div class="ss-label">🏭 Scenario Context</div>
+                <div class="ss-text">It is <strong>Wednesday, 2:00 AM</strong>. Sunday's Full Backup ran and cleared all archive bits. Monday and Tuesday Differentials both ran but — because they are Differentials — <strong>did not clear the archive bits</strong>. The filesystem now shows files from three different days. Wednesday's Differential must capture everything changed since Sunday, which includes <strong>Monday's changes + Tuesday's changes + Wednesday's changes</strong> — all in one set.</div>
+            </div>
+
+            <div class="why-box">
+                <div class="wb-label">⚡ What to Choose — and Why</div>
+                <div class="wb-text">Select <strong>all six files marked ✦</strong> — regardless of which day they changed (MON, TUE, or WED). Because Monday's and Tuesday's Differentials did not clear the archive bits, those files still show as "changed since Sunday." Wednesday's Differential will capture them all again, alongside today's new changes. This is what makes Differential grow daily — and what makes the restore so simple: Wednesday's DIFF alone contains everything since Sunday. The three files marked SUNDAY were captured in the Full and have not changed — exclude them.</div>
+            </div>
+
+            <div class="dl-instr">
+                <strong>📋 Instructions</strong>
+                1. Review each file's change marker — MON, TUE, and WED tags indicate the day the file was last modified.<br>
+                2. SUNDAY files were captured in the Full Backup and have archive bit = 0 — do NOT include them.<br>
+                3. Select ALL files changed since Sunday (MON, TUE, and WED) — a Differential captures them all in one set.<br>
+                4. Confirm your selection.
+            </div>
+
+            <div class="chrome">
+                <div class="chrome-bar">
+                    <div class="cdots"><span></span><span></span><span></span></div>
+                    <div class="chrome-title">Mach Backup Console — File System View — MACHMFG-ERP01 — Wednesday 02:00 AM</div>
+                </div>
+                <div class="c-layout">
+                    <div class="c-sidebar">
+                        <div class="sb-section">
+                            <div class="sb-lbl">Status</div>
+                            <div class="sb-item active"><span class="sb-icon">📂</span>File Select</div>
+                            <div class="sb-item"><span class="sb-icon">⚙️</span>Job Config</div>
+                            <div class="sb-item"><span class="sb-icon">⚡</span>Restore</div>
+                            <div class="sb-item"><span class="sb-icon">▶</span>Run</div>
+                        </div>
+                        <div class="sb-section">
+                            <div class="sb-lbl">Legend</div>
+                            <div class="sb-item" style="font-size:.66rem;color:var(--dl-acc)">MON/TUE/WED = include</div>
+                            <div class="sb-item" style="font-size:.66rem;color:var(--dl-muted)">SUNDAY = exclude</div>
+                        </div>
+                    </div>
+                    <div class="c-main">
+                        <div class="f-lbl" style="margin-bottom:.5rem">SELECT ALL FILES CHANGED SINCE SUNDAY'S FULL BACKUP</div>
+                        <div class="file-grid" id="dlFileGrid">
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="false"><span class="fc-icon">🗄️</span><span class="fc-name">erp_baseline_config.xml</span><span class="fc-flag sun">SUNDAY — no change</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="true"><span class="fc-icon">📊</span><span class="fc-name">production_schedule_MON.csv</span><span class="fc-flag mon">✦ MON</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="true"><span class="fc-icon">📋</span><span class="fc-name">cnc_run_log_TUE.log</span><span class="fc-flag tue">✦ TUE</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="false"><span class="fc-icon">📁</span><span class="fc-name">archived_orders_2023.zip</span><span class="fc-flag sun">SUNDAY — no change</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="true"><span class="fc-icon">📝</span><span class="fc-name">inventory_delta_WED.txt</span><span class="fc-flag wed">✦ WED</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="true"><span class="fc-icon">📊</span><span class="fc-name">quality_report_MON.pdf</span><span class="fc-flag mon">✦ MON</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="true"><span class="fc-icon">📄</span><span class="fc-name">shift_log_WED.txt</span><span class="fc-flag wed">✦ WED</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="false"><span class="fc-icon">🗄️</span><span class="fc-name">machine_firmware_v4.2.bin</span><span class="fc-flag sun">SUNDAY — no change</span></div>
+                            <div class="file-chip" onclick="dlToggleFile(this)" data-changed="true"><span class="fc-icon">📋</span><span class="fc-name">purchase_orders_TUE.csv</span><span class="fc-flag tue">✦ TUE</span></div>
+                        </div>
+                        <div id="dlMsgBox" class="msg-box"></div>
+                        <div class="step-nav">
+                            <button class="nav-btn btn-back" onclick="dlGoScreen(0)">← Back</button>
+                            <button class="nav-btn btn-next" onclick="dlCheckStep1()">Confirm Selection →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="complete-banner" id="dlCompleteBanner" style="display:none">
+                <div class="cb-icon">✅</div>
+                <div class="cb-title">Step 1 Complete</div>
+                <div class="cb-sub">All 6 files changed since Sunday selected (2 MON + 2 TUE + 2 WED). Three unchanged SUNDAY files correctly excluded. This is exactly what Wednesday's Differential captures — the archive bit accumulation in action.</div>
+            </div>
+        </div>
+
+    </div><!-- /dl-wrap -->
+</div><!-- /diff-lab-wrapper -->
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 7: SCENARIO QUIZ
+══════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+<div class="quiz-wrap">
+    <div class="quiz-container">
+        <div class="sq-scenario-text">
+            A file server uses three drives in a RAID configuration. One drive fails. The IT team swaps in a replacement drive and the array rebuilds automatically. Only 2/3 of total disk capacity is usable.
+        </div>
+        <div class="question-text">Which RAID level is this server running?</div>
+        <div class="answers-grid" id="quizAnswersGrid">
+            <!-- Rendered by JS -->
+        </div>
+        <div class="feedback-box" id="quizFeedbackBox">
+            <div class="feedback-header">
+                <span class="feedback-icon" id="quizFeedbackIcon"></span>
+                <span id="quizFeedbackLabel"></span>
+            </div>
+            <div class="feedback-explanation" id="quizFeedbackExplanation"></div>
+        </div>
+        <div class="reset-bar">
+            <button class="sq-reset-btn" onclick="quizResetQuestion()">🔄 Reset &amp; Reshuffle</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   SWITCH TAB
+═══════════════════════════════════════════════════════ */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+    var tabMap = { instruction:0, reinforcement:1, diagnostic:2, utilities:3, troubleshooting:4, lab:5, quiz:6 };
+    var btns = document.querySelectorAll('.tab-btn');
+    if (btns[tabMap[tabId]]) btns[tabMap[tabId]].classList.add('active');
+    var el = document.getElementById('tab-' + tabId);
+    if (el) el.classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 1 — INSTRUCTION: Single-Select Concept Checks
+═══════════════════════════════════════════════════════ */
+(function(){
+    document.querySelectorAll('.single-q').forEach(function(q){
+        var correctAnswer = q.getAttribute('data-answer');
+        var opts = q.querySelectorAll('.check-option');
+        var explanation = q.querySelector('.explanation');
+        var answered = false;
+        opts.forEach(function(opt){
+            opt.addEventListener('click', function(){
+                if (answered) return;
+                answered = true;
+                var val = opt.getAttribute('data-val');
+                opts.forEach(function(o){ o.classList.add('disabled'); });
+                if (val === correctAnswer) {
+                    opt.classList.add('correct');
+                } else {
+                    opt.classList.add('incorrect');
+                    opts.forEach(function(o){
+                        if (o.getAttribute('data-val') === correctAnswer) o.classList.add('correct');
+                    });
+                }
+                if (explanation) explanation.classList.add('show');
+            });
+        });
+    });
+})();
+
+/* ═══════════════════════════════════════════════════════
+   TAB 2 — REINFORCEMENT: RAID Drag & Drop
+═══════════════════════════════════════════════════════ */
+var reinCurrentDrag = null;
+
+function initRaidDrag() {
+    var pool = document.getElementById('raidDragPool');
+    if (!pool) return;
+
+    function wireDragItems(container) {
+        container.querySelectorAll('.drag-item').forEach(function(item){
+            item.addEventListener('dragstart', function(e){
+                reinCurrentDrag = this;
+                this.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            item.addEventListener('dragend', function(){ this.classList.remove('dragging'); });
+        });
+    }
+
+    wireDragItems(pool);
+
+    document.querySelectorAll('#raidDropCol .drop-target-rein').forEach(function(zone){
+        zone.addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('over'); });
+        zone.addEventListener('dragleave', function(){ this.classList.remove('over'); });
+        zone.addEventListener('drop', function(e){
+            e.preventDefault(); this.classList.remove('over');
+            if (!reinCurrentDrag) return;
+            var existing = this.querySelector('.drag-item');
+            if (existing) pool.appendChild(existing);
+            this.appendChild(reinCurrentDrag);
+            wireDragItems(this);
+        });
+    });
+
+    pool.addEventListener('dragover', function(e){ e.preventDefault(); });
+    pool.addEventListener('drop', function(e){
+        e.preventDefault();
+        if (reinCurrentDrag) { pool.appendChild(reinCurrentDrag); wireDragItems(pool); }
+    });
+}
+
+initRaidDrag();
+
+function checkTask2() {
+    var zones = document.querySelectorAll('#raidDropCol .drop-target-rein');
+    var allCorrect = true;
+    zones.forEach(function(zone){
+        var expected = zone.getAttribute('data-correct');
+        var dropped  = zone.querySelector('.drag-item');
+        zone.classList.remove('correct-zone','incorrect-zone');
+        if (!dropped || dropped.getAttribute('data-id') !== expected) {
+            allCorrect = false; zone.classList.add('incorrect-zone');
+        } else {
+            zone.classList.add('correct-zone');
+        }
+    });
+    showReinFeedback(allCorrect);
+}
+
+function resetTask2() {
+    var pool = document.getElementById('raidDragPool');
+    document.querySelectorAll('#raidDropCol .drop-target-rein .drag-item').forEach(function(item){ pool.appendChild(item); });
+    document.querySelectorAll('#raidDropCol .drop-target-rein').forEach(function(z){ z.classList.remove('correct-zone','incorrect-zone'); });
+    document.getElementById('fb2').classList.remove('show');
+}
+
+function showReinFeedback(correct) {
+    var panel  = document.getElementById('fb2');
+    var header = document.getElementById('fb2Header');
+    panel.classList.add('show');
+    header.className = 'feedback-header-rein ' + (correct ? 'success' : 'error');
+    header.innerHTML = correct
+        ? '✅ Correct! Outstanding work.'
+        : '❌ Incorrect — review the detailed explanation below and try again.';
+    panel.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 3 — DIAGNOSTIC TOOLS
+═══════════════════════════════════════════════════════ */
+var diagAnswered = false;
+var DIAG_CORRECT = 'BIOS';
+var DIAG_TERMS   = ['BIOS','CHKDSK','Device Manager','Event Viewer','ifconfig','msconfig','ping','POST card','Processes','Run as Administrator','Scan Drive','System Properties','Task Manager','tracert'];
+
+function diagToggleRef() {
+    var body = document.getElementById('diagRefBody');
+    var tog  = document.getElementById('diagRefToggle');
+    body.classList.toggle('hidden');
+    tog.textContent = body.classList.contains('hidden') ? '▼ Show Table' : '▲ Hide Table';
+}
+
+function diagToggleHint() {
+    document.getElementById('diagHintReveal').classList.toggle('show');
+}
+
+function diagSelectAnswer(term) {
+    if (diagAnswered) return;
+    diagAnswered = true;
+    var correct = (term === DIAG_CORRECT);
+    var btns = document.querySelectorAll('#diagCommandsCol .cmd-btn');
+    btns.forEach(function(btn){
+        btn.disabled = true;
+        if (btn.textContent === DIAG_CORRECT) btn.classList.add('correct');
+        else if (btn.textContent === term && !correct) btn.classList.add('incorrect');
+    });
+    var fa = document.getElementById('diagFeedbackArea');
+    var fc = correct ? 'correct' : 'incorrect';
+    var fi = correct ? '✅' : '❌';
+    var fm = correct ? 'Correct!' : 'Incorrect — the correct answer is highlighted in green.';
+    var exp = 'The BIOS (Basic Input/Output System) is firmware stored on a chip on the motherboard. It initializes hardware and runs before the operating system loads. Boot device order is a BIOS-level setting — the technician presses F2, F10, Del, or Esc during the POST screen to enter the BIOS setup and change the sequence so the USB drive is checked before the internal hard drive.';
+    fa.innerHTML = '<div class="feedback-strip ' + fc + '"><span class="icon">' + fi + '</span><div><div>' + fm + '</div><div class="explain">' + exp + '</div></div></div>';
+    document.getElementById('diagExplainReveal').classList.add('show');
+}
+
+function diagResetQuestion() {
+    diagAnswered = false;
+    document.getElementById('diagFeedbackArea').innerHTML = '';
+    document.getElementById('diagExplainReveal').classList.remove('show');
+    document.getElementById('diagHintReveal').classList.remove('show');
+    document.querySelectorAll('#diagCommandsCol .cmd-btn').forEach(function(btn){
+        btn.disabled = false;
+        btn.classList.remove('correct','incorrect');
+    });
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 4 — UTILITIES
+═══════════════════════════════════════════════════════ */
+var utilAnswered = false;
+var UTIL_CORRECT = 'Recovery Environment (WinRE)';
+var UTIL_TERMS   = ['Command+Option+Esc','compatibility mode','Ctrl+Alt+Del','delete & reinstall','reboot','Recovery Environment (WinRE)','Safe Mode','System Image','System Restore'];
+var UTIL_EXP     = 'WinRE includes a Command Prompt accessible from Troubleshoot > Advanced Options > Command Prompt. This prompt runs with full system access and allows the technician to execute repair commands such as bootrec /fixmbr, bootrec /fixboot, bootrec /rebuildbcd, sfc /scannow, and diskpart — none of which can be run when the OS is inaccessible. WinRE is the correct environment whenever command-line repair is needed outside the running OS.';
+
+function utilToggleRef() {
+    var body = document.getElementById('utilRefBody');
+    var tog  = document.getElementById('utilRefToggle');
+    body.classList.toggle('hidden');
+    tog.textContent = body.classList.contains('hidden') ? '▼ Show Table' : '▲ Hide Table';
+}
+
+function utilToggleHint() {
+    document.getElementById('utilHintReveal').classList.toggle('show');
+}
+
+function utilSelectAnswer(term) {
+    if (utilAnswered) return;
+    utilAnswered = true;
+    var correct = (term === UTIL_CORRECT);
+    UTIL_TERMS.forEach(function(t, i){
+        var btn = document.getElementById('util-btn-' + i);
+        if (!btn) return;
+        btn.disabled = true;
+        if (t === UTIL_CORRECT)      btn.classList.add('correct');
+        else if (t === term)         btn.classList.add('incorrect');
+    });
+    var fc = correct ? 'correct' : 'incorrect';
+    var fi = correct ? '✅' : '❌';
+    var fm = correct ? 'Correct!' : 'Incorrect — the correct answer is highlighted in green.';
+    document.getElementById('utilFeedbackArea').innerHTML =
+        '<div class="feedback-strip ' + fc + '"><span class="icon">' + fi + '</span><div><div>' + fm + '</div><div class="explain">' + UTIL_EXP + '</div></div></div>';
+    document.getElementById('utilExplainReveal').classList.add('show');
+}
+
+function utilResetScenario() {
+    utilAnswered = false;
+    UTIL_TERMS.forEach(function(t, i){
+        var btn = document.getElementById('util-btn-' + i);
+        if (!btn) return;
+        btn.disabled = false;
+        btn.className = 'cmd-btn';
+    });
+    document.getElementById('utilFeedbackArea').innerHTML = '';
+    document.getElementById('utilExplainReveal').classList.remove('show');
+    document.getElementById('utilHintReveal').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 5 — TROUBLESHOOTING (Multi-Select, Choose 2)
+═══════════════════════════════════════════════════════ */
+var TS_TERMS  = ['corrupted bootloader','defective fan motor','defective monitor','defective network adapter driver','defective power supply','device driver failure','faulty mouse or keyboard driver','faulty video driver','hard drive failure','memory failure','network adapter failure','RAM failure','sound card failure','video card failure'];
+var TS_ANSWER = ['defective power supply','RAM failure'];
+var TS_NEED   = 2;
+var tsPending = [];
+var tsLocked  = false;
+
+function tsToggleRef() {
+    var body = document.getElementById('tsRefBody');
+    var tog  = document.getElementById('tsRefToggle');
+    body.classList.toggle('hidden');
+    tog.textContent = body.classList.contains('hidden') ? '▼ Show Table' : '▲ Hide Table';
+}
+
+function tsToggleHint() {
+    document.getElementById('tsHintReveal').classList.toggle('show');
+}
+
+function tsRenderButtons() {
+    var subheader = '';
+    if (!tsLocked) {
+        subheader = '<div class="commands-subheader">Choose ' + TS_NEED + ', then click Submit</div>';
+    }
+    var btnsHTML = '';
+    TS_TERMS.forEach(function(term){
+        var cls = '';
+        if (tsLocked) {
+            var wasCorrect = TS_ANSWER.indexOf(term) !== -1;
+            var wasPicked  = tsPending.indexOf(term) !== -1;
+            if (wasCorrect && wasPicked)       cls = 'correct-multi';
+            else if (!wasCorrect && wasPicked) cls = 'incorrect-multi';
+            else if (wasCorrect && !wasPicked) cls = 'missed';
+        } else {
+            if (tsPending.indexOf(term) !== -1) cls = 'selected';
+        }
+        btnsHTML += '<button class="cmd-btn ' + cls + '" ' + (tsLocked ? 'disabled' : '') +
+                    ' onclick="tsToggleChoice(\'' + term.replace(/'/g,"\\'") + '\')">' + term + '</button>';
+    });
+    var submitHTML = '';
+    if (!tsLocked) {
+        var ready = (tsPending.length === TS_NEED);
+        submitHTML = '<button class="submit-btn" ' + (ready ? '' : 'disabled') + ' onclick="tsSubmitAnswer()">Submit Answer</button>';
+    }
+    document.getElementById('tsCommandsCol').innerHTML =
+        '<div class="commands-header">Select a Failure Type</div>' + subheader + btnsHTML + submitHTML;
+}
+
+function tsToggleChoice(term) {
+    if (tsLocked) return;
+    var idx = tsPending.indexOf(term);
+    if (idx === -1) { if (tsPending.length < TS_NEED) tsPending.push(term); }
+    else { tsPending.splice(idx, 1); }
+    tsRenderButtons();
+}
+
+function tsSubmitAnswer() {
+    if (tsLocked) return;
+    tsLocked = true;
+    var sortedPicked = tsPending.slice().sort();
+    var sortedAnswer = TS_ANSWER.slice().sort();
+    var isRight = (sortedPicked.length === sortedAnswer.length) &&
+                  sortedPicked.every(function(v, i){ return v === sortedAnswer[i]; });
+    var fc  = isRight ? 'correct' : 'incorrect';
+    var fi  = isRight ? '✅' : '❌';
+    var fm  = isRight ? 'Correct!' : 'Incorrect — the correct answers are highlighted in green.';
+    var exp = 'The defective power supply (voltage rails out of tolerance causing random shutdowns) and RAM failure (a specific module preventing POST in any slot, identified by the beep code and one-at-a-time testing) are two separate hardware failures. The unstable PSU may have caused electrical stress that damaged the RAM, or both may have failed independently. Replacing the PSU stops the shutdowns but does not resolve the RAM failure, because they are distinct hardware problems requiring separate replacements.';
+    document.getElementById('tsFeedbackArea').innerHTML =
+        '<div class="feedback-strip ' + fc + '"><span class="icon">' + fi + '</span><div><div>' + fm + '</div><div class="explain">' + exp + '</div></div></div>';
+    document.getElementById('tsExplainReveal').classList.add('show');
+    tsRenderButtons();
+}
+
+function tsResetQuestion() {
+    tsPending = [];
+    tsLocked  = false;
+    document.getElementById('tsFeedbackArea').innerHTML = '';
+    document.getElementById('tsExplainReveal').classList.remove('show');
+    document.getElementById('tsHintReveal').classList.remove('show');
+    tsRenderButtons();
+}
+
+tsRenderButtons();
+
+/* ═══════════════════════════════════════════════════════
+   TAB 6 — DIFFERENTIAL BACKUP LAB
+═══════════════════════════════════════════════════════ */
+var dlCurrentScreen = 0;
+var dlCompleted     = new Set([0]);
+
+function dlGoScreen(n) {
+    document.querySelectorAll('.dl-screen').forEach(function(s){ s.classList.remove('active'); });
+    var sc = document.getElementById('dlsc' + n);
+    if (sc) sc.classList.add('active');
+    dlCurrentScreen = n;
+    dlCompleted.add(n);
+    dlUpdatePhases();
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function dlUpdatePhases() {
+    for (var i = 0; i < 2; i++) {
+        var p = document.getElementById('dlph' + i);
+        if (!p) continue;
+        p.className = 'phase';
+        if (dlCompleted.has(i) && i !== dlCurrentScreen) p.classList.add('done');
+        if (i === dlCurrentScreen) p.classList.add('active');
+    }
+}
+
+function dlShowMsg(id, type, text) {
+    var el = document.getElementById(id);
+    el.className = 'msg-box show ' + type;
+    el.innerHTML = text;
+}
+
+function dlToggleFile(el) { el.classList.toggle('sel'); }
+
+function dlCheckStep1() {
+    var chips = Array.prototype.slice.call(document.querySelectorAll('#dlFileGrid .file-chip'));
+    var wrongSel = 0, missed = 0;
+    chips.forEach(function(c){
+        var changed = c.dataset.changed === 'true';
+        var sel     = c.classList.contains('sel');
+        if (sel && !changed) wrongSel++;
+        if (!sel && changed) missed++;
+    });
+    if (wrongSel > 0) {
+        dlShowMsg('dlMsgBox', 'err', '❌ You selected ' + wrongSel + ' file(s) marked SUNDAY. These were captured in Sunday\'s Full Backup and have not changed since — their archive bit is 0. Exclude them from the Differential.');
+        return;
+    }
+    if (missed > 0) {
+        dlShowMsg('dlMsgBox', 'err', '❌ You missed ' + missed + ' file(s) that changed since Sunday. Remember: Wednesday\'s Differential must include ALL files changed since Sunday — Monday\'s, Tuesday\'s, AND Wednesday\'s. Because previous Differentials did not clear the archive bit, all these files are still marked.');
+        return;
+    }
+    dlShowMsg('dlMsgBox', 'ok', '✓ Correct. All 6 files changed since Sunday selected (2 MON + 2 TUE + 2 WED). Three unchanged SUNDAY files excluded. This is what Wednesday\'s Differential captures.');
+    dlCompleted.add(1);
+    dlUpdatePhases();
+    setTimeout(function(){
+        var banner = document.getElementById('dlCompleteBanner');
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }, 700);
+}
+
+dlGoScreen(0);
+
+/* ═══════════════════════════════════════════════════════
+   TAB 7 — SCENARIO QUIZ (RAID 5)
+═══════════════════════════════════════════════════════ */
+(function(){
+    var QUIZ_ANSWERS = [
+        { text:'RAID 1',  correct:false },
+        { text:'RAID 10', correct:false },
+        { text:'RAID 0',  correct:false },
+        { text:'RAID 5',  correct:true  }
+    ];
+
+    var QUIZ_EXPLANATION = '<strong>Correct Answer: RAID 5 — striping with distributed parity, tolerates one drive failure</strong><br><br>RAID 5 requires a minimum of 3 drives, distributes parity data across all drives, tolerates exactly one drive failure (the array remains online during rebuild), and provides (n&#8209;1)/n usable capacity — with 3 drives, that\'s 2/3. RAID 0 provides no redundancy, so a drive failure destroys the array. RAID 1 mirrors in pairs and uses 50% of capacity regardless of drive count. RAID 10 requires at least 4 drives. RAID 5 is the classic "file server with fault tolerance" solution on the exam.';
+
+    function quizShuffle(arr) {
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+        }
+        return a;
+    }
+
+    var quizShuffled = [];
+    var quizAnswered  = false;
+
+    function quizRender() {
+        quizShuffled = quizShuffle(QUIZ_ANSWERS);
+        quizAnswered  = false;
+        var grid = document.getElementById('quizAnswersGrid');
+        grid.innerHTML = quizShuffled.map(function(ans, i){
+            return '<div class="answer-option" id="qopt-' + i + '" onclick="window._quizSelect(' + i + ')">' + ans.text + '</div>';
+        }).join('');
+        var fb = document.getElementById('quizFeedbackBox');
+        fb.className = 'feedback-box';
+        document.getElementById('quizFeedbackIcon').textContent = '';
+        document.getElementById('quizFeedbackLabel').textContent = '';
+        document.getElementById('quizFeedbackExplanation').innerHTML = '';
+    }
+
+    window._quizSelect = function(index) {
+        if (quizAnswered) return;
+        quizAnswered = true;
+        var chosen = quizShuffled[index];
+        quizShuffled.forEach(function(ans, i){
+            var el = document.getElementById('qopt-' + i);
+            el.classList.add('sq-disabled');
+            if (ans.correct)                  el.classList.add('sq-correct');
+            if (i === index && !ans.correct)  el.classList.add('sq-incorrect');
+        });
+        var fb = document.getElementById('quizFeedbackBox');
+        document.getElementById('quizFeedbackIcon').textContent  = chosen.correct ? '✅' : '❌';
+        document.getElementById('quizFeedbackLabel').textContent = chosen.correct ? 'Correct!' : 'Incorrect';
+        document.getElementById('quizFeedbackExplanation').innerHTML = QUIZ_EXPLANATION;
+        fb.className = 'feedback-box show' + (chosen.correct ? '' : ' incorrect-feedback');
+    };
+
+    window.quizResetQuestion = function() { quizRender(); };
+
+    quizRender();
+})();
+</script>
+</body>
+</html>

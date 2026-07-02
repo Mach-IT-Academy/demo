@@ -1,0 +1,1572 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod 3 – Computing Devices &amp; IoT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#6366f1; --accent-secondary:#8b5cf6;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn    { from{opacity:0;transform:translateY(10px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn   { from{opacity:0;transform:translateY(-8px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes popIn     { from{opacity:0;transform:scale(0.95)}       to{opacity:1;transform:scale(1)} }
+        @keyframes starPop   { from{transform:scale(0) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+        @keyframes shake     { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        }
+        .page-header h1 { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:0.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px;
+            border-radius:8px; font-weight:600; cursor:pointer;
+            transition:all .2s; font-family:'Inter',sans-serif; font-size:.88em;
+            white-space:nowrap;
+        }
+        .tab-btn:hover { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           GLOBAL BUTTON
+        ═══════════════════════════════════════════ */
+        button {
+            background:var(--accent-primary); color:#fff; border:none; padding:11px 22px;
+            border-radius:6px; font-weight:600; cursor:pointer; transition:all .25s;
+            font-family:'Inter',sans-serif; font-size:.95em; margin:5px 5px 5px 0;
+        }
+        button:hover { background:var(--accent-secondary); transform:translateY(-2px); }
+        button.secondary { background:var(--bg-tertiary); color:var(--text-primary); border:2px solid var(--border-color); }
+        button.secondary:hover { background:var(--bg-primary); border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           SHARED COMPONENTS
+        ═══════════════════════════════════════════ */
+        .container { max-width:960px; margin:0 auto; padding:20px; }
+        .main-content { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .lesson h2 { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+
+        .problem-scenario { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+
+        .visual-demo { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .visual-demo h3 { margin-bottom:12px; }
+
+        .key-concept { background:rgba(99,102,241,.1); padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid var(--accent-primary); }
+        .key-concept strong { color:var(--accent-primary); }
+
+        .interactive-section { background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+
+        .concept-check { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .concept-check h4 { color:var(--accent-warning); margin-bottom:12px; }
+        .check-option { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .check-option:hover { border-color:var(--accent-primary); }
+        .check-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .check-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .check-option.disabled  { pointer-events:none; }
+        .explanation { background:rgba(139,92,246,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-secondary); display:none; }
+        .explanation.show { display:block; animation:fadeIn .3s ease; }
+
+        /* Generic feedback used by Challenge Tasks */
+        .feedback { margin-top:14px; padding:14px; border-radius:8px; display:none; font-size:.93em; animation:slideIn .3s ease; }
+        .feedback.show    { display:block; }
+        .feedback.success { background:rgba(16,185,129,.15); border-left:4px solid var(--accent-success); }
+        .feedback.error   { background:rgba(239,68,68,.15);  border-left:4px solid var(--accent-error); }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION
+        ═══════════════════════════════════════════ */
+        .device-comparison { display:flex; gap:18px; margin:18px 0; flex-wrap:wrap; }
+        .device-card { background:var(--bg-tertiary); padding:16px; border-radius:8px; flex:1; min-width:250px; border:2px solid var(--border-color); transition:all .25s; }
+        .device-card:hover { border-color:var(--accent-primary); transform:translateY(-4px); }
+        .device-card h4 { color:var(--accent-secondary); margin-bottom:8px; }
+        .device-icon { font-size:2.5em; text-align:center; margin-bottom:12px; }
+        .device-specs { font-size:.88em; color:var(--text-secondary); margin-top:8px; padding-left:18px; }
+        .device-specs li { margin:4px 0; }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT
+        ═══════════════════════════════════════════ */
+        .scenario-box { background:var(--bg-secondary); border-radius:12px; padding:22px; margin-bottom:25px; border-left:5px solid var(--accent-warning); }
+        .scenario-box h2 { color:var(--accent-warning); margin-bottom:10px; font-size:1.3em; }
+
+        .task-container { background:var(--bg-secondary); border-radius:12px; padding:25px; margin-bottom:28px; }
+        .task-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+        .task-header h3 { font-size:1.25em; color:var(--text-primary); }
+        .task-number { background:var(--accent-primary); color:#fff; padding:6px 16px; border-radius:20px; font-weight:700; font-size:.9em; }
+        .task-desc { color:var(--text-secondary); margin-bottom:18px; font-size:.97em; }
+
+        .instructions { background:rgba(99,102,241,.1); padding:14px 16px; border-radius:8px; margin:14px 0; border-left:4px solid var(--accent-primary); font-size:.93em; }
+
+        .component-pool { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:10px; margin:16px 0; }
+        .drag-chip { background:var(--bg-tertiary); padding:12px 14px; border-radius:8px; border:2px solid var(--border-color); cursor:grab; text-align:center; font-size:.88em; transition:all .2s; user-select:none; }
+        .drag-chip:hover { border-color:var(--accent-primary); transform:translateY(-2px); }
+        .drag-chip.dragging { opacity:0.4; }
+        .drag-chip.placed   { opacity:0.35; cursor:not-allowed; border-style:dashed; }
+
+        .drop-zones { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
+        .drop-zone { background:var(--bg-primary); border:2px dashed var(--border-color); border-radius:8px; padding:16px; min-height:90px; transition:all .2s; }
+        .drop-zone.drag-over { border-color:var(--accent-primary); background:rgba(99,102,241,.08); }
+        .drop-zone-label { font-weight:600; color:var(--accent-secondary); margin-bottom:10px; font-size:.95em; }
+        .dropped-items { display:flex; flex-wrap:wrap; gap:6px; }
+        .dropped-tag { background:var(--bg-tertiary); border:2px solid var(--accent-primary); border-radius:6px; padding:5px 10px; font-size:.82em; cursor:pointer; display:flex; align-items:center; gap:5px; }
+        .dropped-tag:hover { border-color:var(--accent-error); }
+        .dropped-tag .remove { color:var(--accent-error); font-weight:700; }
+        .score-badge { display:inline-block; background:var(--bg-tertiary); border:2px solid var(--border-color); border-radius:20px; padding:5px 16px; font-size:.88em; font-weight:600; margin-left:10px; color:var(--text-secondary); }
+
+        /* ═══════════════════════════════════════════
+           TAB 3 — IOT EXERCISE (reskinned)
+        ═══════════════════════════════════════════ */
+        .exer-wrapper { padding:20px; max-width:900px; margin:0 auto; }
+        .exer-xp-bar { display:flex; justify-content:flex-end; margin-bottom:14px; }
+        .exer-xp-badge { background:var(--accent-warning); color:#1a1d29; font-weight:700; font-size:.88em; padding:5px 14px; border-radius:20px; }
+
+        .exer-activity-card { background:var(--bg-secondary); border-radius:12px; overflow:hidden; border:2px solid var(--border-color); animation:slideUp .4s ease; }
+        .exer-activity-header { padding:22px 28px 18px; border-bottom:2px solid var(--border-color); display:flex; align-items:flex-start; gap:16px; }
+        .exer-activity-icon { font-size:2.6em; line-height:1; }
+        .exer-activity-meta { flex:1; }
+        .exer-activity-label { display:inline-flex; align-items:center; gap:6px; background:rgba(99,102,241,.15); color:var(--accent-primary); font-size:.78em; font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:6px; letter-spacing:.5px; text-transform:uppercase; }
+        .exer-activity-title { font-size:1.3em; font-weight:700; color:var(--text-primary); }
+        .exer-activity-desc { font-size:.9em; color:var(--text-secondary); margin-top:4px; }
+        .exer-body { padding:22px 28px; }
+
+        .exer-info-callout { background:rgba(99,102,241,.08); border:2px solid rgba(99,102,241,.2); border-radius:10px; padding:14px 18px; margin-bottom:18px; font-size:.9em; color:var(--text-primary); line-height:1.7; display:flex; gap:10px; align-items:flex-start; }
+        .exer-info-callout.warn { background:rgba(245,158,11,.06); border-color:rgba(245,158,11,.25); }
+        .exer-info-callout-icon { font-size:1.3em; flex-shrink:0; }
+
+        .items-bank { background:var(--bg-primary); border:2px dashed var(--border-color); border-radius:10px; padding:14px; margin-bottom:18px; display:flex; flex-wrap:wrap; gap:10px; min-height:70px; }
+        .items-bank-label { font-size:.72em; font-weight:700; color:var(--text-secondary); letter-spacing:1px; text-transform:uppercase; width:100%; margin-bottom:4px; }
+
+        .sort-area { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:18px; }
+        @media(max-width:600px){ .sort-area { grid-template-columns:1fr; } }
+        .sort-column { background:var(--bg-primary); border:2px dashed var(--border-color); border-radius:10px; padding:12px; min-height:220px; transition:all .2s; }
+        .sort-column.drag-over { border-color:var(--accent-primary); background:rgba(99,102,241,.06); transform:scale(1.02); }
+        .sort-col-header { font-size:.72em; font-weight:700; text-align:center; padding:7px 10px; border-radius:8px; margin-bottom:10px; letter-spacing:.5px; text-transform:uppercase; }
+        .col-short .sort-col-header { background:rgba(16,185,129,.15);  color:var(--accent-success); }
+        .col-local .sort-col-header { background:rgba(99,102,241,.15);  color:var(--accent-primary); }
+        .col-wide  .sort-col-header { background:rgba(139,92,246,.15); color:var(--accent-secondary); }
+
+        .drag-item { background:var(--bg-tertiary); border:2px solid var(--border-color); border-radius:10px; padding:10px 12px; margin-bottom:8px; cursor:grab; display:flex; align-items:center; gap:8px; font-size:.88em; font-weight:600; transition:all .2s; user-select:none; }
+        .drag-item:hover { border-color:var(--accent-primary); transform:translateY(-2px); }
+        .drag-item:active { cursor:grabbing; }
+        .drag-item.dragging      { opacity:0.4; }
+        .drag-item.correct-item  { border-color:var(--accent-success); background:rgba(16,185,129,.1); }
+        .drag-item.wrong-item    { border-color:var(--accent-error);   background:rgba(239,68,68,.1); }
+        .item-emoji { font-size:1.2em; }
+
+        .exer-feedback-bar { display:none; padding:14px 20px; margin-bottom:18px; border-radius:10px; font-weight:600; font-size:.9em; align-items:center; gap:10px; animation:popIn .3s ease; }
+        .exer-feedback-bar.correct { display:flex; background:rgba(16,185,129,.15); border:2px solid var(--accent-success); color:var(--accent-success); }
+        .exer-feedback-bar.wrong   { display:flex; background:rgba(239,68,68,.12);  border:2px solid var(--accent-error);   color:var(--accent-error); }
+
+        .exer-btn-check    { background:var(--accent-primary); }
+        .exer-btn-continue { background:var(--accent-success); display:none; }
+
+        .exer-key-fact { background:var(--bg-tertiary); border:2px solid var(--border-color); border-radius:10px; padding:16px 20px; margin-bottom:12px; display:flex; gap:12px; align-items:flex-start; }
+        .exer-key-fact-icon { font-size:1.4em; flex-shrink:0; }
+        .exer-key-fact-text { font-size:.88em; font-weight:600; color:var(--text-primary); line-height:1.6; }
+        .exer-key-fact-text span { color:var(--accent-primary); }
+
+        .exer-section-divider { font-size:.72em; font-weight:700; color:var(--text-secondary); letter-spacing:1.5px; text-transform:uppercase; margin:20px 0 12px; }
+
+        .exer-completion-screen { text-align:center; padding:44px 32px; }
+        .exer-completion-stars { font-size:3em; margin-bottom:12px; animation:starPop .6s cubic-bezier(.34,1.56,.64,1) .2s both; }
+        .exer-completion-title { font-size:1.8em; font-weight:700; color:var(--accent-primary); margin-bottom:8px; }
+        .exer-completion-desc { font-size:.95em; color:var(--text-secondary); line-height:1.7; margin-bottom:24px; }
+
+        /* ═══════════════════════════════════════════
+           TAB 4 — MOBILE SETUP LAB
+        ═══════════════════════════════════════════ */
+
+        /* Scenario overlay */
+        #scenario-screen { position:fixed; inset:0; background:var(--bg-primary); z-index:600; display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto; }
+        .sc-card  { max-width:780px; width:100%; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; }
+        .sc-head  { background:var(--bg-tertiary); padding:20px 28px; border-bottom:1px solid var(--border-color); }
+        .sc-tag   { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent-warning); letter-spacing:3px; margin-bottom:8px; }
+        .sc-title { font-family:'Rajdhani',sans-serif; font-size:1.8rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:2px; }
+        .sc-body  { padding:28px; max-height:80vh; overflow-y:auto; }
+        .sc-scene { background:var(--bg-tertiary); border-left:4px solid var(--accent-warning); padding:16px 20px; border-radius:0 6px 6px 0; margin-bottom:20px; font-size:.92rem; color:var(--text-primary); line-height:1.9; }
+        .sc-scene b { color:var(--accent-success); }
+        .sc-section h3 { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; color:var(--accent-primary); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:5px; }
+        .sc-section p  { font-size:.88rem; color:var(--text-primary); line-height:1.85; margin-bottom:10px; }
+        .sc-section p b { color:var(--accent-success); }
+        .sc-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+        .sc-card2 { background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:6px; padding:12px 14px; }
+        .sc-card2-icon  { font-size:1.3rem; margin-bottom:5px; }
+        .sc-card2-title { font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:700; color:var(--text-primary); margin-bottom:3px; }
+        .sc-card2-text  { font-size:.81rem; color:var(--text-secondary); line-height:1.65; }
+        .sc-device { background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.3); border-radius:6px; padding:14px 18px; margin:16px 0; display:flex; align-items:center; gap:14px; }
+        .sc-device-icon { font-size:2rem; }
+        .sc-device-info h4 { font-family:'Rajdhani',sans-serif; font-size:1.05rem; font-weight:700; color:var(--text-primary); margin-bottom:3px; }
+        .sc-device-info p  { font-size:.82rem; color:var(--text-secondary); line-height:1.6; }
+        .sc-device-info p b { color:var(--accent-primary); }
+        .sc-objs h3  { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; color:var(--accent-primary); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; }
+        .sc-obj      { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; font-size:.87rem; color:var(--text-primary); line-height:1.7; }
+        .sc-obj-num  { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent-primary); border:1px solid var(--accent-primary); padding:1px 6px; border-radius:2px; flex-shrink:0; margin-top:3px; }
+        .sc-start    { display:block; width:100%; padding:13px; background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary)); color:#fff; font-family:'Rajdhani',sans-serif; font-size:17px; font-weight:800; letter-spacing:2px; text-transform:uppercase; border:none; border-radius:6px; cursor:pointer; transition:all .2s; margin-top:20px; box-shadow:0 0 18px rgba(99,102,241,.3); }
+        .sc-start:hover { box-shadow:0 0 28px rgba(99,102,241,.5); transform:translateY(-2px); }
+
+        /* Lab wrapper */
+        #lab-wrapper { position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:20px; }
+        .lab-header  { text-align:center; padding:22px 0 16px; border-bottom:1px solid var(--border-color); margin-bottom:20px; }
+        .lab-header-badge { display:inline-block; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent-primary); border:1px solid rgba(99,102,241,.4); padding:3px 12px; letter-spacing:3px; margin-bottom:10px; background:rgba(99,102,241,.05); }
+        .lab-header h1 { font-family:'Rajdhani',sans-serif; font-size:2rem; font-weight:700; color:var(--text-primary); letter-spacing:2px; text-transform:uppercase; }
+        .lab-header h1 span { color:var(--accent-primary); }
+        .lab-header p { color:var(--text-secondary); font-size:.88rem; margin-top:6px; font-family:'Share Tech Mono',monospace; }
+
+        /* Progress */
+        .progress-section { margin-bottom:20px; }
+        .progress-label   { display:flex; justify-content:space-between; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-secondary); margin-bottom:7px; }
+        .progress-bar     { height:4px; background:var(--bg-tertiary); border-radius:2px; overflow:hidden; }
+        .progress-fill    { height:100%; background:linear-gradient(90deg,var(--accent-primary),var(--accent-success)); transition:width .5s ease; box-shadow:0 0 8px var(--accent-primary); }
+        .step-dots  { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+        .step-dot   { width:30px; height:30px; border-radius:50%; border:1.5px solid var(--border-color); background:var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-secondary); transition:all .3s; }
+        .step-dot.done   { border-color:var(--accent-success); color:var(--accent-success); background:rgba(16,185,129,.08); }
+        .step-dot.active { border-color:var(--accent-primary); color:var(--accent-primary); background:rgba(99,102,241,.12); box-shadow:0 0 10px rgba(99,102,241,.3); }
+
+        /* Main grid */
+        .main-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start; }
+        @media(max-width:900px){ .main-grid { grid-template-columns:1fr; } }
+
+        /* Panels */
+        .lab-panel    { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; overflow:hidden; }
+        .panel-titlebar { background:var(--bg-tertiary); border-bottom:1px solid var(--border-color); padding:10px 16px; display:flex; align-items:center; gap:8px; }
+        .ptb-dot   { width:9px; height:9px; border-radius:50%; }
+        .ptb-title { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent-primary); letter-spacing:2px; text-transform:uppercase; }
+
+        /* Instruction content */
+        .step-body     { padding:22px; }
+        .step-eyebrow  { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent-primary); letter-spacing:3px; margin-bottom:8px; text-transform:uppercase; }
+        .step-headline { font-family:'Rajdhani',sans-serif; font-size:1.5rem; font-weight:700; color:var(--text-primary); margin-bottom:14px; line-height:1.2; }
+        .inst-text     { font-size:.9rem; color:var(--text-primary); line-height:1.8; margin-bottom:14px; }
+        .inst-text b   { color:var(--accent-success); font-weight:600; }
+        .concept-box   { background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:5px; padding:14px 16px; margin-bottom:14px; }
+        .concept-box-label { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent-warning); letter-spacing:2px; margin-bottom:8px; text-transform:uppercase; }
+        .concept-box p { font-size:.87rem; color:var(--text-primary); line-height:1.8; }
+        .concept-box p b { color:var(--accent-success); font-weight:600; }
+
+        /* Platform callouts */
+        .callout-ios { background:rgba(0,122,255,.06); border:1px solid rgba(0,122,255,.2); border-left:3px solid #007aff; border-radius:0 4px 4px 0; padding:10px 14px; margin-bottom:12px; font-size:.86rem; color:var(--text-primary); line-height:1.8; }
+        .callout-ios b { color:#4da6ff; }
+        .callout-and { background:rgba(61,220,132,.06); border:1px solid rgba(61,220,132,.2); border-left:3px solid #3ddc84; border-radius:0 4px 4px 0; padding:10px 14px; margin-bottom:12px; font-size:.86rem; color:var(--text-primary); line-height:1.8; }
+        .callout-and b { color:#3ddc84; }
+        .action-label { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent-primary); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+        .action-label::before { content:'▶'; font-size:8px; }
+
+        /* Platform tabs */
+        .ptabs    { display:flex; border-radius:5px; overflow:hidden; border:1px solid var(--border-color); margin-bottom:14px; }
+        .ptab     { flex:1; padding:8px 12px; font-family:'Share Tech Mono',monospace; font-size:11px; cursor:pointer; text-align:center; border:none; background:transparent; transition:all .2s; letter-spacing:1px; color:var(--text-secondary); }
+        .ptab.ios        { color:#4da6ff; }
+        .ptab.ios.active { background:rgba(0,122,255,.15); border-bottom:2px solid #007aff; }
+        .ptab.and        { color:#3ddc84; }
+        .ptab.and.active { background:rgba(61,220,132,.12); border-bottom:2px solid #3ddc84; }
+        .pblock        { display:none; }
+        .pblock.active { display:block; }
+
+        /* Nav row */
+        .nav-row { display:flex; gap:10px; padding:16px 22px; border-top:1px solid var(--border-color); background:var(--bg-secondary); flex-wrap:wrap; }
+        .btn-primary { padding:9px 26px; font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; letter-spacing:1px; text-transform:uppercase; cursor:pointer; border-radius:4px; border:none; background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary)); color:#fff; transition:all .2s; margin:0; }
+        .btn-primary:hover { transform:translateY(-1px); box-shadow:0 0 18px rgba(99,102,241,.4); }
+
+        /* Toast */
+        .toast { position:fixed; bottom:24px; right:24px; z-index:10000; background:var(--bg-secondary); border:1px solid var(--accent-success); border-radius:6px; padding:13px 20px; font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--accent-success); box-shadow:0 0 22px rgba(16,185,129,.2); transform:translateX(130%); transition:transform .3s ease; max-width:340px; line-height:1.5; }
+        .toast.show { transform:translateX(0); }
+        .toast.err  { border-color:var(--accent-error); color:var(--accent-error); box-shadow:0 0 22px rgba(239,68,68,.2); }
+
+        /* Phone simulator */
+        .phone-panel    { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; overflow:hidden; position:sticky; top:16px; }
+        .phone-switcher { display:flex; border-bottom:1px solid var(--border-color); }
+        .phone-tab      { flex:1; padding:10px; font-family:'Share Tech Mono',monospace; font-size:11px; text-align:center; cursor:pointer; transition:all .2s; letter-spacing:1px; border:none; background:transparent; }
+        .phone-tab.ios-t        { color:#4da6ff; }
+        .phone-tab.ios-t.active { background:var(--bg-tertiary); border-bottom:2px solid #007aff; }
+        .phone-tab.and-t        { color:#3ddc84; }
+        .phone-tab.and-t.active { background:var(--bg-tertiary); border-bottom:2px solid #3ddc84; }
+        .phone-wrap    { display:flex; justify-content:center; padding:20px 16px; background:var(--bg-tertiary); min-height:460px; }
+        .phone-display        { display:none; }
+        .phone-display.active { display:flex; justify-content:center; }
+
+        /* iOS Shell */
+        .phone-ios { width:210px; background:#1c1c1e; border-radius:36px; border:2px solid #3a3a3c; box-shadow:0 20px 60px rgba(0,0,0,.7); overflow:hidden; display:flex; flex-direction:column; }
+        .ios-notch      { background:#1c1c1e; height:28px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .ios-notch-pill { width:80px; height:22px; background:#000; border-radius:0 0 14px 14px; }
+        .ios-statusbar  { background:#f2f2f7; height:18px; display:flex; align-items:center; justify-content:space-between; padding:0 12px; font-size:8px; font-weight:700; color:#000; font-family:-apple-system,sans-serif; flex-shrink:0; }
+        .ios-screen     { background:#f2f2f7; flex:1; overflow:hidden; }
+        .ios-homebar      { background:#1c1c1e; height:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .ios-homebar-pill { width:60px; height:4px; background:#555; border-radius:2px; }
+
+        /* Android Shell */
+        .phone-and    { width:210px; background:#1a1a2e; border-radius:22px; border:2px solid #2d2d44; box-shadow:0 20px 60px rgba(0,0,0,.7); overflow:hidden; display:flex; flex-direction:column; }
+        .and-punch    { background:#1a1a2e; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .and-camera   { width:10px; height:10px; background:#2d2d44; border-radius:50%; border:1px solid #333; }
+        .and-statusbar { background:#fafafa; height:18px; display:flex; align-items:center; justify-content:space-between; padding:0 10px; font-size:8px; font-weight:600; color:#333; font-family:'Roboto',sans-serif; flex-shrink:0; }
+        .and-screen   { background:#fafafa; flex:1; overflow:hidden; }
+        .and-navbar   { background:#1a1a2e; height:24px; display:flex; align-items:center; justify-content:center; gap:22px; flex-shrink:0; }
+        .and-nav-btn  { width:14px; height:14px; opacity:.5; font-size:9px; color:#fff; display:flex; align-items:center; justify-content:center; }
+
+        /* iOS App Store */
+        .ios-store-header  { background:linear-gradient(180deg,#1c1c1e,#2d2d2f); padding:8px 10px 7px; }
+        .ios-store-title   { color:#fff; font-size:12px; font-weight:700; font-family:-apple-system,sans-serif; margin-bottom:5px; }
+        .ios-search-wrap   { background:rgba(255,255,255,.12); border-radius:9px; padding:5px 9px; display:flex; align-items:center; gap:5px; }
+        .ios-search-wrap input { background:transparent; border:none; outline:none; color:#fff; font-size:10px; font-family:-apple-system,sans-serif; width:100%; }
+        .ios-search-wrap input::placeholder { color:#8e8e93; }
+        .ios-store-body    { background:#f2f2f7; padding:4px 0; }
+        .ios-store-hint    { padding:20px 12px; text-align:center; font-size:8px; color:#8e8e93; font-family:-apple-system,sans-serif; line-height:1.8; }
+        .ios-suggest       { background:#fff; border-bottom:1px solid #e5e5ea; }
+        .ios-suggest-row   { display:flex; align-items:center; gap:7px; padding:7px 10px; border-bottom:1px solid #f2f2f7; font-size:9px; color:#1c1c1e; font-family:-apple-system,sans-serif; }
+        .ios-suggest-icon  { font-size:10px; color:#8e8e93; }
+        .ios-results-label { padding:5px 10px; font-size:8px; color:#8e8e93; font-family:-apple-system,sans-serif; text-transform:uppercase; letter-spacing:.5px; }
+        .ios-app-card      { margin:0 8px 8px; background:#fff; border-radius:12px; padding:9px; display:flex; align-items:center; gap:9px; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+        .ios-app-icon      { width:38px; height:38px; background:linear-gradient(135deg,#00adef,#0072bc); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .ios-app-info      { flex:1; min-width:0; }
+        .ios-app-name      { font-size:11px; font-weight:700; color:#000; font-family:-apple-system,sans-serif; }
+        .ios-app-dev       { font-size:8px; color:#8e8e93; font-family:-apple-system,sans-serif; margin-top:1px; }
+        .ios-app-stars     { font-size:8px; color:#ff9500; margin-top:1px; }
+        .ios-get-btn       { flex-shrink:0; padding:4px 12px; border-radius:14px; font-size:10px; font-weight:700; font-family:-apple-system,sans-serif; cursor:pointer; border:none; transition:all .2s; margin:0; }
+        .ios-get-btn.get   { background:#007aff; color:#fff; }
+        .ios-get-btn.get:hover { background:#005ecb; }
+        .ios-get-btn.open  { background:#e5e5ea; color:#555; pointer-events:none; }
+
+        /* Android Play Store */
+        .and-store-header  { background:#fff; padding:8px 10px 7px; border-bottom:1px solid #e0e0e0; }
+        .and-store-logo    { font-size:11px; font-weight:700; margin-bottom:5px; font-family:'Roboto',sans-serif; }
+        .and-search-wrap   { background:#f1f3f4; border-radius:22px; padding:5px 10px; display:flex; align-items:center; gap:5px; }
+        .and-search-wrap input { background:transparent; border:none; outline:none; color:#333; font-size:10px; font-family:'Roboto',sans-serif; width:100%; }
+        .and-search-wrap input::placeholder { color:#5f6368; }
+        .and-store-body    { background:#fafafa; }
+        .and-store-hint    { padding:20px 12px; text-align:center; font-size:8px; color:#5f6368; font-family:'Roboto',sans-serif; line-height:1.8; }
+        .and-suggest       { background:#fff; border-bottom:1px solid #f0f0f0; }
+        .and-suggest-row   { display:flex; align-items:center; gap:7px; padding:8px 10px; border-bottom:1px solid #f5f5f5; font-size:9px; color:#1a1a1a; font-family:'Roboto',sans-serif; }
+        .and-suggest-icon  { font-size:10px; color:#5f6368; }
+        .and-results-label { padding:5px 10px; font-size:8px; color:#5f6368; font-family:'Roboto',sans-serif; text-transform:uppercase; letter-spacing:.5px; }
+        .and-app-card      { margin:0 8px 8px; background:#fff; border-radius:10px; padding:9px; display:flex; align-items:center; gap:9px; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+        .and-app-icon      { width:38px; height:38px; background:linear-gradient(135deg,#00adef,#0072bc); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .and-app-info      { flex:1; min-width:0; }
+        .and-app-name      { font-size:11px; font-weight:700; color:#1a1a1a; font-family:'Roboto',sans-serif; }
+        .and-app-dev       { font-size:8px; color:#5f6368; font-family:'Roboto',sans-serif; margin-top:1px; }
+        .and-app-dl        { font-size:8px; color:#5f6368; font-family:'Roboto',sans-serif; margin-top:1px; }
+        .and-install-btn   { flex-shrink:0; padding:5px 10px; border-radius:6px; font-size:9px; font-weight:700; font-family:'Roboto',sans-serif; cursor:pointer; border:none; transition:all .2s; margin:0; }
+        .and-install-btn.install       { background:#3ddc84; color:#000; }
+        .and-install-btn.install:hover { background:#2ec46e; }
+        .and-install-btn.open          { background:#e0e0e0; color:#555; pointer-events:none; }
+
+        /* Sim panel */
+        .sim-outer { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; overflow:hidden; margin-top:0; }
+        .sim-titlebar  { background:var(--bg-tertiary); border-bottom:1px solid var(--border-color); padding:10px 16px; display:flex; align-items:center; gap:8px; }
+        .sim-body      { padding:18px; }
+        .sim-section-title { font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:700; color:var(--accent-primary); text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; padding-bottom:5px; border-bottom:1px solid var(--border-color); }
+        .sim-status    { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-secondary); margin-bottom:12px; line-height:1.8; }
+        .sim-btn       { background:rgba(99,102,241,.1); border:1px solid var(--accent-primary); color:var(--accent-primary); padding:8px 22px; font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; cursor:pointer; border-radius:4px; transition:all .2s; text-transform:uppercase; letter-spacing:1px; margin:0; }
+        .sim-btn:hover { background:rgba(99,102,241,.2); }
+
+        /* Completion screen */
+        #completion-screen { display:none; position:fixed; inset:0; background:rgba(26,29,41,.97); z-index:500; overflow-y:auto; padding:40px 20px; }
+        .comp-inner  { max-width:780px; margin:0 auto; }
+        .comp-badge  { text-align:center; margin-bottom:32px; }
+        .comp-icon   { font-size:58px; margin-bottom:14px; }
+        .comp-title  { font-family:'Rajdhani',sans-serif; font-size:2rem; font-weight:700; color:var(--accent-success); text-transform:uppercase; letter-spacing:3px; margin-bottom:6px; }
+        .comp-sub    { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-secondary); letter-spacing:2px; }
+        .sum-block   { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; margin-bottom:16px; overflow:hidden; }
+        .sum-hdr     { background:var(--bg-tertiary); padding:11px 18px; display:flex; align-items:center; gap:10px; }
+        .sum-step-tag { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent-primary); border:1px solid var(--accent-primary); padding:2px 8px; border-radius:2px; background:rgba(99,102,241,.06); }
+        .sum-title   { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:1px; }
+        .sum-body    { padding:18px; font-size:.88rem; line-height:1.85; color:var(--text-primary); }
+        .sum-body b  { color:var(--accent-success); font-weight:600; }
+        .sum-why     { margin-top:10px; padding:10px 14px; background:rgba(245,158,11,.06); border-left:3px solid var(--accent-warning); font-size:.85rem; color:var(--text-primary); line-height:1.8; }
+        .sum-why b   { color:var(--accent-warning); font-weight:600; }
+        .restart-btn { display:block; margin:28px auto 0; background:transparent; border:1px solid var(--accent-primary); color:var(--accent-primary); padding:11px 44px; font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; border-radius:4px; transition:all .2s; }
+        .restart-btn:hover { background:rgba(99,102,241,.1); }
+
+        /* ═══════════════════════════════════════════
+           TAB 5 — SCENARIO QUIZ
+        ═══════════════════════════════════════════ */
+        .quiz-container { background:var(--bg-secondary); border-radius:12px; padding:28px; margin-bottom:24px; }
+        .scenario-text  { background:var(--bg-tertiary); padding:20px; border-radius:8px; border-left:4px solid var(--accent-warning); margin-bottom:24px; font-size:1.05em; line-height:1.7; }
+        .question-text  { font-size:1.1em; font-weight:600; color:var(--text-primary); margin-bottom:20px; }
+        .answers-grid   { display:grid; gap:12px; margin-bottom:20px; }
+        .answer-option  { background:var(--bg-tertiary); border:2px solid var(--border-color); padding:16px 20px; border-radius:8px; cursor:pointer; transition:all .2s; }
+        .answer-option:hover:not(.disabled) { border-color:var(--accent-primary); transform:translateX(4px); }
+        .answer-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); }
+        .answer-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15); }
+        .answer-option.disabled  { cursor:not-allowed; opacity:0.7; }
+        .feedback-box   { background:var(--bg-primary); border-radius:8px; padding:20px; margin-top:20px; border-left:4px solid var(--accent-success); display:none; animation:slideIn .3s ease; }
+        .feedback-box.show { display:block; }
+        .feedback-box.incorrect-feedback { border-left-color:var(--accent-error); }
+        .feedback-header { display:flex; align-items:center; gap:10px; font-size:1.2em; font-weight:700; margin-bottom:12px; }
+        .feedback-icon   { font-size:1.4em; }
+        .feedback-explanation { color:var(--text-secondary); line-height:1.7; margin-top:12px; }
+        .quiz-controls { display:flex; justify-content:center; margin-top:24px; padding-top:20px; border-top:1px solid var(--border-color); }
+        .quiz-reset-btn { background:var(--accent-warning); color:#1a1d29; }
+        .quiz-reset-btn:hover { background:#d97706; }
+    </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     PAGE HEADER
+════════════════════════════════════════ -->
+<div class="page-header">
+    <h1>📱 Mod 3 – Computing Devices &amp; IoT</h1>
+    <p class="subtitle">CompTIA Tech+ FC0-U71 Aligned | Full Module</p>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB NAVIGATION
+════════════════════════════════════════ -->
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('instruction')">📚 Instruction</button>
+    <button class="tab-btn"        onclick="switchTab('reinforcement')">⚡ Challenge Tasks</button>
+    <button class="tab-btn"        onclick="switchTab('exercise')">🔗 IoT Exercise</button>
+    <button class="tab-btn"        onclick="switchTab('mobile-lab')">📱 Mobile Lab</button>
+    <button class="tab-btn"        onclick="switchTab('quiz')">📝 Scenario Quiz</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB 1 — INSTRUCTION (Instr Pt 1)
+════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="container">
+    <div class="main-content">
+        <div class="lesson">
+            <h2>Lesson 1: Servers vs Workstations</h2>
+
+            <div class="problem-scenario">
+                <h3>🏢 IT Scenario</h3>
+                <p>Your company is expanding and needs to purchase new equipment. The CFO asks you: "What's the difference between a server and a workstation? Why can't we just use regular computers for everything?"</p>
+            </div>
+
+            <p>Understanding the fundamental difference between servers and workstations is crucial for making smart IT infrastructure decisions.</p>
+
+            <div class="key-concept">
+                <strong>🎯 Core Concept:</strong> Servers exist to provide services to other devices on a network. Workstations are systems that workers use to accomplish daily tasks.
+            </div>
+
+            <div class="visual-demo">
+                <h3>📊 Server vs Workstation Comparison</h3>
+                <div class="device-comparison">
+                    <div class="device-card">
+                        <div class="device-icon">🖥️</div>
+                        <h4>Server</h4>
+                        <p><strong>Purpose:</strong> Provide services to other devices</p>
+                        <p><strong>Examples:</strong></p>
+                        <ul class="device-specs">
+                            <li>File servers (shared document storage)</li>
+                            <li>Web servers (host websites and applications)</li>
+                            <li>Email servers (handle company communications)</li>
+                            <li>Database servers (manage large data repositories)</li>
+                            <li>Print servers (coordinate network printing)</li>
+                        </ul>
+                        <p><strong>Characteristics:</strong></p>
+                        <ul class="device-specs">
+                            <li>Runs 24/7 for constant availability</li>
+                            <li>Optimized for reliability and uptime</li>
+                            <li>Often has redundant components (backup power, multiple drives)</li>
+                            <li>Located in server rooms or data centers</li>
+                        </ul>
+                    </div>
+
+                    <div class="device-card">
+                        <div class="device-icon">💻</div>
+                        <h4>Workstation</h4>
+                        <p><strong>Purpose:</strong> Individual productivity and task completion</p>
+                        <p><strong>Examples:</strong></p>
+                        <ul class="device-specs">
+                            <li>Desktop computers for office work</li>
+                            <li>Laptops for mobile workers</li>
+                            <li>High-powered CAD workstations for engineers</li>
+                            <li>Video editing stations for content creators</li>
+                        </ul>
+                        <p><strong>Characteristics:</strong></p>
+                        <ul class="device-specs">
+                            <li>Optimized for user interface and interaction</li>
+                            <li>Typically turned off when not in use</li>
+                            <li>Includes monitor, keyboard, mouse</li>
+                            <li>Sits at employee desks</li>
+                            <li>Connects TO servers to access shared resources</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-concept">
+                <p><strong>Real-World Analogy:</strong> Think of a server like a library building that stores books and provides lending services to many patrons. A workstation is like a personal reading desk where one person works with borrowed materials.</p>
+            </div>
+
+            <div class="interactive-section">
+                <h3>🧪 Concept Check: Server or Workstation?</h3>
+                <p>Select which type of computer would be BEST for each scenario:</p>
+
+                <div class="concept-check single-q" data-answer="server">
+                    <h4>Scenario 1: Your company needs to host an internal website for 500 employees to access HR documents.</h4>
+                    <div class="check-option" data-value="server">Server – Provides web hosting service to many users</div>
+                    <div class="check-option" data-value="workstation">Workstation – For individual employee use</div>
+                    <div class="explanation">
+                        ✅ <strong>Correct: Server</strong><br>
+                        A web server is specifically designed to host websites and serve web pages to multiple users simultaneously. It runs continuously and handles many concurrent connections. A workstation would not be appropriate for this shared service role.
+                    </div>
+                </div>
+
+                <div class="concept-check single-q" data-answer="workstation">
+                    <h4>Scenario 2: A graphic designer needs a computer to run Adobe Creative Suite and create marketing materials.</h4>
+                    <div class="check-option" data-value="server">Server – Provides services to network</div>
+                    <div class="check-option" data-value="workstation">Workstation – For individual creative work</div>
+                    <div class="explanation">
+                        ✅ <strong>Correct: Workstation</strong><br>
+                        This is classic workstation usage. The designer needs a powerful computer with a good monitor, graphics card, and user interface for individual productivity. While they may CONNECT to servers to save files, the actual work happens on their local workstation.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-concept">
+                <p><strong>💡 Remember:</strong> Servers SERVE others. Workstations are WHERE people work. Many organizations use both: servers provide centralized services, while workstations give employees the tools to do their jobs.</p>
+            </div>
+        </div><!-- /lesson -->
+    </div><!-- /main-content -->
+</div><!-- /container -->
+</div><!-- /tab-instruction -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 2 — REINFORCEMENT (Rein Pt 2)
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div style="max-width:1100px;margin:0 auto;padding:20px;">
+
+    <div class="scenario-box">
+        <h2>📋 Scenario</h2>
+        <p>You are an IT consultant working with a variety of clients who need help understanding AR/VR technologies, gaming consoles, and IoT implementations for home and business environments. Complete each performance-based task below to demonstrate your knowledge.</p>
+    </div>
+
+    <!-- TASK 1: AR vs VR Classification (Drag & Drop) -->
+    <div class="task-container" id="task1">
+        <div class="task-header">
+            <h3>Task 1: Classify the Technology</h3>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="score-badge" id="t1score">0 / 6</span>
+                <span class="task-number">AR vs VR</span>
+            </div>
+        </div>
+        <p class="task-desc">A client is confused about the difference between Augmented Reality and Virtual Reality. Help them categorize the following technologies and use cases correctly.</p>
+
+        <div class="instructions">
+            <strong>Instructions:</strong> Drag each item from the pool into the correct category (AR or VR). When finished, click <strong>Check Answers</strong>.
+        </div>
+
+        <div class="component-pool" id="t1pool">
+            <div class="drag-chip" draggable="true" data-item="pokemon"   data-answer="ar">Pokémon GO</div>
+            <div class="drag-chip" draggable="true" data-item="metaquest" data-answer="vr">Meta Quest headset gaming</div>
+            <div class="drag-chip" draggable="true" data-item="hololens"  data-answer="ar">Microsoft HoloLens</div>
+            <div class="drag-chip" draggable="true" data-item="beatsaber" data-answer="vr">Beat Saber (VR game)</div>
+            <div class="drag-chip" draggable="true" data-item="hud"       data-answer="ar">Car windshield HUD navigation</div>
+            <div class="drag-chip" draggable="true" data-item="flightsim" data-answer="vr">VR flight simulator training</div>
+        </div>
+
+        <div class="drop-zones">
+            <div class="drop-zone" id="zone-ar" data-zone="ar">
+                <div class="drop-zone-label">👓 Augmented Reality (AR)</div>
+                <div class="dropped-items" id="dropped-ar"></div>
+            </div>
+            <div class="drop-zone" id="zone-vr" data-zone="vr">
+                <div class="drop-zone-label">🥽 Virtual Reality (VR)</div>
+                <div class="dropped-items" id="dropped-vr"></div>
+            </div>
+        </div>
+
+        <button onclick="checkTask1()">✔ Check Answers</button>
+        <button class="secondary" onclick="resetTask1()">↺ Reset</button>
+        <div class="feedback" id="t1feedback"></div>
+    </div>
+
+</div>
+</div><!-- /tab-reinforcement -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 3 — IOT EXERCISE (reskinned)
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-exercise">
+<div class="exer-wrapper">
+    <div class="exer-xp-bar">
+        <div class="exer-xp-badge" id="exerXpBadge">⚡ 0 XP</div>
+    </div>
+    <div id="exerMainArea">
+        <!-- rendered by renderExer() -->
+    </div>
+</div>
+</div><!-- /tab-exercise -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 4 — MOBILE SETUP LAB
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-mobile-lab">
+
+    <!-- SCENARIO OVERLAY -->
+    <div id="scenario-screen">
+      <div class="sc-card">
+        <div class="sc-head">
+          <div class="sc-tag">// MACH IT TRAINING // MODULE 3 // IoT SETUP //</div>
+          <div class="sc-title">Mod 3 – IoT Mobile Setup Lab</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-scene">
+            You have just joined the IT helpdesk at <b>Mach Regional Medical Center</b>. The facilities team has installed <b>TP-Link Kasa Smart Plugs (EP25)</b> in all patient waiting rooms to automate lamp schedules and reduce energy costs. Your supervisor hands you two devices — one iPhone and one Android — and asks you to configure both using the Kasa Smart app so that any staff member can control the plugs from either platform.
+          </div>
+
+          <div class="sc-section" style="margin-bottom:18px;">
+            <h3>📡 What Is IoT?</h3>
+            <p><b>Internet of Things (IoT)</b> refers to physical devices embedded with processors, sensors, and wireless communication chips that connect to the internet and exchange data without direct human interaction. Examples range from smart plugs and thermostats to industrial sensors and medical monitors.</p>
+            <p>Most consumer IoT devices use your existing <b>Wi-Fi network</b> as the backbone and a <b>mobile app</b> as the control interface. Commands travel from your phone up to a cloud server, which delivers them back down to the device — even when you're away from the local network.</p>
+          </div>
+
+          <div class="sc-grid">
+            <div class="sc-card2"><div class="sc-card2-icon">🔌</div><div class="sc-card2-title">Smart Plug (EP25)</div><div class="sc-card2-text">A Wi-Fi enabled outlet for remote power control, scheduling, and energy monitoring. No hub required.</div></div>
+            <div class="sc-card2"><div class="sc-card2-icon">📱</div><div class="sc-card2-title">Mobile App Control</div><div class="sc-card2-text">IoT devices are configured through platform-specific apps. iOS and Android use different permission models and provisioning flows.</div></div>
+            <div class="sc-card2"><div class="sc-card2-icon">☁️</div><div class="sc-card2-title">Cloud + Local Control</div><div class="sc-card2-text">Commands route through TP-Link's cloud by default. Local control is available on the same Wi-Fi subnet with no internet needed.</div></div>
+            <div class="sc-card2"><div class="sc-card2-icon">🔐</div><div class="sc-card2-title">Security Considerations</div><div class="sc-card2-text">IoT devices expand your network's attack surface. VLAN isolation, strong credentials, and firmware updates are critical.</div></div>
+          </div>
+
+          <div class="sc-section" style="margin-bottom:18px;">
+            <h3>📲 Why Different Steps for iOS vs. Android?</h3>
+            <p>On <b>iOS</b>, Apple enforces three explicit permission dialogs — Location Services (required to read your Wi-Fi SSID), Bluetooth, and Local Network. The app also temporarily connects your phone to the plug's own Wi-Fi hotspot through the native Settings app.</p>
+            <p>On <b>Android</b>, Bluetooth scanning requires Location permission at the OS level. Android 12+ separates Nearby Devices from Location permissions. The network switch to the device's access point happens automatically inside the app — no manual trip to Settings required.</p>
+          </div>
+
+          <div class="sc-device">
+            <div class="sc-device-icon">🔌</div>
+            <div class="sc-device-info">
+              <h4>Lab Device: TP-Link Kasa Smart Plug EP25</h4>
+              <p><b>App:</b> Kasa Smart &nbsp;|&nbsp; <b>Protocol:</b> Wi-Fi 2.4 GHz &nbsp;|&nbsp; <b>Account required:</b> Yes (TP-Link ID) &nbsp;|&nbsp; <b>Hub required:</b> No</p>
+            </div>
+          </div>
+
+          <div class="sc-objs">
+            <h3>Lab Objectives</h3>
+            <div class="sc-obj"><span class="sc-obj-num">01</span>Search for and install the Kasa Smart app on both iOS and Android</div>
+            <div class="sc-obj"><span class="sc-obj-num">02</span>Grant all required OS-level permissions on each platform</div>
+            <div class="sc-obj"><span class="sc-obj-num">03</span>Create a TP-Link account and sign in</div>
+            <div class="sc-obj"><span class="sc-obj-num">04</span>Add the EP25 and connect it to the facility Wi-Fi network</div>
+            <div class="sc-obj"><span class="sc-obj-num">05</span>Rename the device using a descriptive naming convention</div>
+            <div class="sc-obj"><span class="sc-obj-num">06</span>Create an automated power schedule</div>
+            <div class="sc-obj"><span class="sc-obj-num">07</span>Verify control from both iOS and Android</div>
+          </div>
+
+          <button class="sc-start" onclick="startLab()">▶ &nbsp; Begin Lab</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN LAB -->
+    <div class="wrapper" id="lab-wrapper" style="display:none;">
+      <div class="lab-header">
+        <div class="lab-header-badge">MACH IT TRAINING // MODULE 3</div>
+        <h1>IoT <span>Mobile</span> Setup Lab</h1>
+        <p>// TP-LINK KASA EP25 // iOS + ANDROID // MACH REGIONAL MEDICAL CENTER //</p>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span id="prog-label">STEP 1 OF 1</span>
+          <span id="prog-pct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="step-dots" id="step-dots"></div>
+      </div>
+
+      <div class="main-grid">
+
+        <!-- LEFT: Instructions -->
+        <div class="lab-panel">
+          <div class="panel-titlebar">
+            <div class="ptb-dot" style="background:#ff5f57"></div>
+            <div class="ptb-dot" style="background:#ffbd2e"></div>
+            <div class="ptb-dot" style="background:#28ca41"></div>
+            <span class="ptb-title">Lab Instructions</span>
+          </div>
+          <div id="inst-content"></div>
+        </div>
+
+        <!-- RIGHT: Phone + Sim Panel -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <!-- Phone Simulator -->
+          <div class="phone-panel">
+            <div class="panel-titlebar">
+              <div class="ptb-dot" style="background:#ff5f57"></div>
+              <div class="ptb-dot" style="background:#ffbd2e"></div>
+              <div class="ptb-dot" style="background:#28ca41"></div>
+              <span class="ptb-title">Device Simulator</span>
+            </div>
+            <div class="phone-switcher">
+              <button class="phone-tab ios-t active" onclick="switchPhone('ios')" style="margin:0;">📱 iOS — iPhone</button>
+              <button class="phone-tab and-t"        onclick="switchPhone('and')" style="margin:0;">🤖 Android</button>
+            </div>
+            <div class="phone-wrap">
+              <!-- iOS -->
+              <div class="phone-display active" id="ios-phone">
+                <div class="phone-ios">
+                  <div class="ios-notch"><div class="ios-notch-pill"></div></div>
+                  <div class="ios-statusbar"><span>9:41</span><span>●●●●● WiFi 🔋</span></div>
+                  <div class="ios-screen" id="ios-screen-content"></div>
+                  <div class="ios-homebar"><div class="ios-homebar-pill"></div></div>
+                </div>
+              </div>
+              <!-- Android -->
+              <div class="phone-display" id="and-phone">
+                <div class="phone-and">
+                  <div class="and-punch"><div class="and-camera"></div></div>
+                  <div class="and-statusbar"><span>9:41</span><span>WiFi 🔋 📶</span></div>
+                  <div class="and-screen" id="and-screen-content"></div>
+                  <div class="and-navbar">
+                    <div class="and-nav-btn">◀</div>
+                    <div class="and-nav-btn">●</div>
+                    <div class="and-nav-btn">■</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sim Interaction Panel -->
+          <div class="sim-outer">
+            <div class="sim-titlebar">
+              <div class="ptb-dot" style="background:#ff5f57"></div>
+              <div class="ptb-dot" style="background:#ffbd2e"></div>
+              <div class="ptb-dot" style="background:#28ca41"></div>
+              <span class="ptb-title">Interaction Panel</span>
+            </div>
+            <div class="sim-body" id="sim-content"></div>
+          </div>
+
+        </div><!-- /right col -->
+      </div><!-- /main-grid -->
+    </div><!-- /lab-wrapper -->
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- COMPLETION SCREEN -->
+    <div id="completion-screen">
+      <div class="comp-inner">
+        <div class="comp-badge">
+          <div class="comp-icon">✅</div>
+          <div class="comp-title">Step 1 Complete!</div>
+          <div class="comp-sub">// MODULE 3 — IoT MOBILE SETUP // APP INSTALLATION VERIFIED //</div>
+        </div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:var(--text-secondary);text-align:center;margin-bottom:26px;letter-spacing:2px;text-transform:uppercase;">Procedure Review &amp; Explanation</div>
+
+        <div class="sum-block">
+          <div class="sum-hdr">
+            <span class="sum-step-tag">STEP 1</span>
+            <span class="sum-title">Downloading the Kasa Smart App</span>
+          </div>
+          <div class="sum-body">
+            You searched for and installed <b>Kasa Smart</b> from Apple's App Store (iOS) and Google Play (Android), verifying the publisher was <b>TP-Link Corporation</b> before installing.
+            <div class="sum-why">
+              <b>WHY IT MATTERS:</b> Malicious apps frequently impersonate smart-home apps to harvest Wi-Fi credentials during setup. Always verify the exact publisher name — a counterfeit "TP-Links" or "Kasa Smart+" could silently capture your network password. App stores do not guarantee safety; publisher verification is your primary checkpoint.
+            </div>
+          </div>
+        </div>
+
+        <button class="restart-btn" onclick="restartLab()">↺ &nbsp; Restart Lab</button>
+      </div>
+    </div>
+
+</div><!-- /tab-mobile-lab -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 5 — SCENARIO QUIZ
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+<div style="max-width:1000px;margin:0 auto;padding:20px;">
+    <div class="quiz-container" id="quizContainer">
+        <!-- rendered by renderScenQuiz() -->
+    </div>
+    <div class="quiz-controls">
+        <button class="quiz-reset-btn" onclick="resetScenQuiz()">🔄 Reset</button>
+    </div>
+</div>
+</div><!-- /tab-quiz -->
+
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────
+   TAB SWITCHING
+───────────────────────────────────────── */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    var activeTab = document.getElementById('tab-' + tabId);
+    if (activeTab) activeTab.classList.add('active');
+    var btns = document.querySelectorAll('.tab-btn');
+    var map  = { instruction:0, reinforcement:1, exercise:2, 'mobile-lab':3, quiz:4 };
+    if (map[tabId] !== undefined && btns[map[tabId]]) btns[map[tabId]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 1: INSTRUCTION — Concept Checks
+───────────────────────────────────────── */
+(function () {
+    document.querySelectorAll('.single-q').forEach(function (qBlock) {
+        var answer  = qBlock.getAttribute('data-answer');
+        var options = qBlock.querySelectorAll('.check-option');
+        var explanation = qBlock.querySelector('.explanation');
+
+        options.forEach(function (opt) {
+            opt.addEventListener('click', function () {
+                if (this.classList.contains('disabled')) return;
+                var chosen = this.getAttribute('data-value');
+                options.forEach(function (o) { o.classList.add('disabled'); });
+
+                if (chosen === answer) {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    options.forEach(function (o) {
+                        if (o.getAttribute('data-value') === answer) o.classList.add('correct');
+                    });
+                }
+                if (explanation) explanation.classList.add('show');
+            });
+        });
+    });
+})();
+
+
+/* ─────────────────────────────────────────
+   TAB 2: REINFORCEMENT — AR vs VR Drag-Drop
+───────────────────────────────────────── */
+var draggedItem = null;
+
+document.querySelectorAll('.drag-chip').forEach(function(chip) {
+    chip.addEventListener('dragstart', function(e) {
+        draggedItem = this;
+        this.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', this.dataset.item);
+    });
+    chip.addEventListener('dragend', function() {
+        this.classList.remove('dragging');
+        draggedItem = null;
+    });
+});
+
+document.querySelectorAll('.drop-zone').forEach(function(zone) {
+    zone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', function() {
+        this.classList.remove('drag-over');
+    });
+    zone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        if (!draggedItem || draggedItem.classList.contains('placed')) return;
+        var zoneId = this.dataset.zone;
+        var item   = draggedItem.dataset.item;
+        var label  = draggedItem.textContent;
+        draggedItem.classList.add('placed');
+
+        var tag = document.createElement('div');
+        tag.className  = 'dropped-tag';
+        tag.dataset.item = item;
+        tag.dataset.zone = zoneId;
+        tag.innerHTML = label + ' <span class="remove" onclick="removeTag(this, \'' + item + '\', \'' + zoneId + '\')">✕</span>';
+        document.getElementById('dropped-' + zoneId).appendChild(tag);
+    });
+});
+
+function removeTag(spanEl, item, zone) {
+    spanEl.parentElement.remove();
+    var orig = document.querySelector('.drag-chip[data-item="' + item + '"]');
+    if (orig) orig.classList.remove('placed');
+}
+
+function showFeedback(id, type, html) {
+    var el = document.getElementById(id);
+    el.className = 'feedback show ' + type;
+    el.innerHTML = html;
+}
+
+function checkTask1() {
+    var correct = 0, total = 6;
+    document.querySelectorAll('.drag-chip').forEach(function(c) {
+        c.draggable = false;
+        c.style.cursor = 'not-allowed';
+    });
+    document.querySelectorAll('.dropped-tag').forEach(function(tag) {
+        var item  = tag.dataset.item;
+        var zone  = tag.dataset.zone;
+        var chip  = document.querySelector('.drag-chip[data-item="' + item + '"]');
+        var expected = chip ? chip.dataset.answer : null;
+        if (zone === expected) {
+            correct++;
+            tag.style.borderColor = 'var(--accent-success)';
+        } else {
+            tag.style.borderColor = 'var(--accent-error)';
+        }
+        var removeBtn = tag.querySelector('.remove');
+        if (removeBtn) removeBtn.style.display = 'none';
+    });
+    document.getElementById('t1score').textContent = correct + ' / ' + total;
+    if (correct === total) {
+        showFeedback('t1feedback', 'success', '✅ <strong>Perfect!</strong> All 6 technologies correctly classified. AR adds digital elements to your real-world view; VR replaces your entire view with a virtual environment and requires a headset.');
+    } else {
+        showFeedback('t1feedback', 'error', '⚠ <strong>' + correct + ' of ' + total + ' correct.</strong> Review: AR keeps you in the real world and overlays digital info (smartphone-based or smart glasses). VR requires a dedicated headset and completely blocks your view of reality. Click Reset to try again.');
+    }
+}
+
+function resetTask1() {
+    document.querySelectorAll('.drag-chip').forEach(function(c) {
+        c.classList.remove('placed', 'dragging');
+        c.draggable = true;
+        c.style.cursor = 'grab';
+        c.style.borderColor = '';
+    });
+    document.getElementById('dropped-ar').innerHTML = '';
+    document.getElementById('dropped-vr').innerHTML = '';
+    document.getElementById('t1score').textContent = '0 / 6';
+    var fb = document.getElementById('t1feedback');
+    fb.className = 'feedback';
+    fb.innerHTML = '';
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 3: IOT EXERCISE — Drag & Sort
+   (all functions prefixed exer* to avoid scope conflicts)
+───────────────────────────────────────── */
+var exerXp     = 0;
+var exerDone   = false;
+var exerDragged = null;
+
+function exerDragStart(e) {
+    if (e.target.dataset.locked === 'true') { e.preventDefault(); return; }
+    exerDragged = e.target;
+    exerDragged.classList.add('dragging');
+}
+function exerDragEnd(e) {
+    if (exerDragged) exerDragged.classList.remove('dragging');
+}
+function exerDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+function exerDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+function exerDrop(e, col) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    if (exerDragged && exerDragged.dataset.locked !== 'true') {
+        exerDragged.classList.remove('wrong-item');
+        e.currentTarget.appendChild(exerDragged);
+    }
+}
+
+function showExerFeedback(correct, msg) {
+    var fb = document.getElementById('exerFeedback');
+    fb.className = 'exer-feedback-bar ' + (correct ? 'correct' : 'wrong');
+    fb.innerHTML = '<span style="font-size:1.3em">' + (correct ? '🎉' : '🤔') + '</span><span>' + msg + '</span>';
+    if (correct) {
+        var cont = document.getElementById('exerContinueBtn');
+        if (cont) cont.style.display = 'inline-block';
+        var checkBtn = document.getElementById('exerCheckBtn1');
+        if (checkBtn) checkBtn.style.display = 'none';
+    }
+}
+
+function awardExerXP(amount) {
+    exerXp += amount;
+    var badge = document.getElementById('exerXpBadge');
+    if (badge) badge.textContent = '⚡ ' + exerXp + ' XP';
+}
+
+function checkExerLesson1() {
+    var allCols  = ['exer-col-short', 'exer-col-local', 'exer-col-wide'];
+    var bankItems = document.getElementById('exerBank1').querySelectorAll('.drag-item');
+    if (bankItems.length > 0) {
+        showExerFeedback(false, 'Place all 9 connection types into a column first!');
+        return;
+    }
+    var correct = 0;
+    allCols.forEach(function(id) {
+        var col = document.getElementById(id);
+        if (!col) return;
+        col.querySelectorAll('.drag-item').forEach(function(el) {
+            if (el.dataset.locked === 'true') { correct++; return; }
+            var expected = el.dataset.cat;
+            var parent   = el.parentElement.id.replace('exer-col-', '');
+            if (expected === parent) {
+                el.classList.add('correct-item'); el.classList.remove('wrong-item');
+                el.dataset.locked = 'true'; el.setAttribute('draggable', 'false');
+                el.style.cursor = 'default'; correct++;
+            } else {
+                el.classList.remove('correct-item'); el.classList.add('wrong-item');
+            }
+        });
+    });
+    if (correct === 9) {
+        showExerFeedback(true, '🎉 Perfect! All 9 connection types correctly sorted! Read the deep-dive below.');
+        var panel = document.getElementById('exerExplanPanel1');
+        if (panel) { panel.style.display = 'block'; panel.scrollIntoView({ behavior:'smooth', block:'start' }); }
+        if (!exerDone) { awardExerXP(50); exerDone = true; }
+    } else {
+        var wrong = 9 - correct;
+        showExerFeedback(false, correct + '/9 correct. ' + wrong + ' item' + (wrong > 1 ? 's are' : ' is') + ' in the wrong column (highlighted red). Drag them to the correct column and try again!');
+    }
+}
+
+function renderExer() {
+    document.getElementById('exerMainArea').innerHTML = `
+    <div class="exer-activity-card">
+      <div class="exer-activity-header">
+        <div class="exer-activity-icon">📡</div>
+        <div class="exer-activity-meta">
+          <div class="exer-activity-label">🎯 Drag &amp; Sort</div>
+          <div class="exer-activity-title">How IoT Devices Connect</div>
+          <div class="exer-activity-desc">IoT devices use many different wireless and wired technologies. Sort each connection type into the correct category below.</div>
+        </div>
+      </div>
+      <div class="exer-body">
+
+        <div class="exer-info-callout">
+          <div class="exer-info-callout-icon">📘</div>
+          <div><strong>Quick Primer — Zigbee &amp; Z-Wave:</strong> These two names are heavily tested on CompTIA Tech+. Both are <strong>low-power wireless protocols built specifically for smart home IoT devices</strong>. Unlike WiFi (which drains batteries fast), Zigbee and Z-Wave sip power — making them perfect for door sensors, light switches, and smart locks that run on small batteries for months. They also form a <strong>mesh network</strong>: each device can relay signals to the next, so coverage extends throughout a building without needing a direct router connection.</div>
+        </div>
+
+        <div class="exer-info-callout warn">
+          <div class="exer-info-callout-icon">💡</div>
+          <div><strong>Short-Range</strong> = works within a few meters &nbsp;|&nbsp; <strong>Local Network</strong> = covers a building/campus &nbsp;|&nbsp; <strong>Wide Area</strong> = works across cities, countries, or anywhere with signal</div>
+        </div>
+
+        <div class="items-bank" id="exerBank1">
+          <div class="items-bank-label">Connection Types to Sort ↓</div>
+          <div class="drag-item" draggable="true" id="ep1" data-cat="wide"  ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">📱</span>4G / 5G Cellular</div>
+          <div class="drag-item" draggable="true" id="ep2" data-cat="short" ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">🦷</span>Bluetooth / BLE</div>
+          <div class="drag-item" draggable="true" id="ep3" data-cat="local" ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">🔌</span>Ethernet</div>
+          <div class="drag-item" draggable="true" id="ep4" data-cat="wide"  ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">📡</span>LoRaWAN</div>
+          <div class="drag-item" draggable="true" id="ep5" data-cat="short" ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">🏷️</span>NFC</div>
+          <div class="drag-item" draggable="true" id="ep6" data-cat="wide"  ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">🛰️</span>Satellite IoT</div>
+          <div class="drag-item" draggable="true" id="ep7" data-cat="local" ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">📶</span>WiFi</div>
+          <div class="drag-item" draggable="true" id="ep8" data-cat="local" ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">🔗</span>Z-Wave</div>
+          <div class="drag-item" draggable="true" id="ep9" data-cat="local" ondragstart="exerDragStart(event)" ondragend="exerDragEnd(event)"><span class="item-emoji">🔗</span>Zigbee</div>
+        </div>
+
+        <div class="sort-area">
+          <div class="sort-column col-short" id="exer-col-short" ondragover="exerDragOver(event)" ondragleave="exerDragLeave(event)" ondrop="exerDrop(event,'short')">
+            <div class="sort-col-header">📲 Short-Range</div>
+          </div>
+          <div class="sort-column col-local" id="exer-col-local" ondragover="exerDragOver(event)" ondragleave="exerDragLeave(event)" ondrop="exerDrop(event,'local')">
+            <div class="sort-col-header">🏠 Local Network</div>
+          </div>
+          <div class="sort-column col-wide" id="exer-col-wide" ondragover="exerDragOver(event)" ondragleave="exerDragLeave(event)" ondrop="exerDrop(event,'wide')">
+            <div class="sort-col-header">🌍 Wide Area</div>
+          </div>
+        </div>
+
+        <div class="exer-feedback-bar" id="exerFeedback"></div>
+
+        <div id="exerExplanPanel1" style="display:none; margin-top:16px;">
+          <div class="exer-section-divider">📖 Connection Type Deep-Dive</div>
+
+          <div class="exer-key-fact">
+            <div class="exer-key-fact-icon">📲</div>
+            <div class="exer-key-fact-text">
+              <span>SHORT-RANGE (personal area)</span><br>
+              <strong>Bluetooth / BLE:</strong> Bluetooth Low Energy is the standard for wearables, fitness trackers, and health monitors. Range: ~10 meters. The "Low Energy" version makes it practical for battery-powered IoT devices that sync to your phone.<br>
+              <strong>NFC (Near-Field Communication):</strong> Works at &lt;4 cm — think tap-to-pay, access badges, and product tags. Almost no power required. Perfect for authentication and quick data exchange at close range.
+            </div>
+          </div>
+
+          <div class="exer-key-fact">
+            <div class="exer-key-fact-icon">🏠</div>
+            <div class="exer-key-fact-text">
+              <span>LOCAL NETWORK (home / office / campus)</span><br>
+              <strong>WiFi:</strong> The most familiar — connects IoT devices to your home router. High speed but also higher power draw. Best for video cameras and devices that need bandwidth.<br>
+              <strong>Zigbee:</strong> A low-power IEEE 802.15.4-based mesh protocol. Used in Philips Hue lights, SmartThings sensors, and Amazon Echo (which has a Zigbee hub built in). Very common on the Tech+ exam.<br>
+              <strong>Z-Wave:</strong> A competing low-power mesh standard operating at 908 MHz (less interference than WiFi's 2.4 GHz). Popular in smart locks, door sensors, and home security systems. Also heavily tested on Tech+.<br>
+              <strong>Ethernet:</strong> Wired connection — no interference, maximum reliability. Used for static IoT devices like security cameras and smart TVs.
+            </div>
+          </div>
+
+          <div class="exer-key-fact">
+            <div class="exer-key-fact-icon">🌍</div>
+            <div class="exer-key-fact-text">
+              <span>WIDE AREA (long-distance)</span><br>
+              <strong>4G / 5G Cellular:</strong> Connects IoT devices anywhere with cell coverage. Used in connected vehicles, remote equipment monitoring, and mobile trackers. Higher power and cost, but global reach.<br>
+              <strong>LoRaWAN:</strong> Long Range Wide Area Network — designed for low-power sensors that send small amounts of data over many kilometers. Used in smart city infrastructure, agriculture, and utility meters.<br>
+              <strong>Satellite IoT:</strong> Reaches anywhere on earth — oceans, deserts, remote pipelines. Used when no other infrastructure exists. Higher latency and cost.
+            </div>
+          </div>
+        </div>
+
+        <button class="exer-btn-check" id="exerCheckBtn1" onclick="checkExerLesson1()">Check My Answers ✓</button>
+        <button class="exer-btn-continue" id="exerContinueBtn" onclick="showExerComplete()">Continue →</button>
+
+      </div>
+    </div>`;
+}
+
+function showExerComplete() {
+    document.getElementById('exerMainArea').innerHTML = `
+    <div class="exer-activity-card">
+      <div class="exer-body">
+        <div class="exer-completion-screen">
+          <div class="exer-completion-stars">⭐⭐⭐</div>
+          <div class="exer-completion-title">Lesson Complete!</div>
+          <div class="exer-completion-desc">You've mastered IoT connection types — a key topic on the CompTIA Tech+ exam.</div>
+
+          <div class="exer-key-fact" style="text-align:left;">
+            <div class="exer-key-fact-icon">📲</div>
+            <div class="exer-key-fact-text"><span>Short-Range</span> — Bluetooth/BLE (~10 m) and NFC (&lt;4 cm). Low power, personal area use.</div>
+          </div>
+          <div class="exer-key-fact" style="text-align:left;">
+            <div class="exer-key-fact-icon">🏠</div>
+            <div class="exer-key-fact-text"><span>Local Network</span> — WiFi, Ethernet, Zigbee, Z-Wave. Building/campus coverage. Zigbee &amp; Z-Wave are mesh, low-power, and <strong>heavily tested on Tech+</strong>.</div>
+          </div>
+          <div class="exer-key-fact" style="text-align:left;">
+            <div class="exer-key-fact-icon">🌍</div>
+            <div class="exer-key-fact-text"><span>Wide Area</span> — 4G/5G Cellular, LoRaWAN, Satellite IoT. City-to-global range for remote and mobile devices.</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Initialize IoT Exercise
+renderExer();
+
+
+/* ─────────────────────────────────────────
+   TAB 4: MOBILE SETUP LAB
+   (render() renamed to renderMobileLab() to avoid conflict)
+───────────────────────────────────────── */
+var labState = freshLabState();
+
+function freshLabState() {
+    return {
+        activePhone:  'ios',
+        iosSearched:  false,
+        andSearched:  false,
+        iosInstalled: false,
+        andInstalled: false,
+    };
+}
+
+function iosScreenHTML() {
+    return `
+    <div class="ios-store-header">
+      <div class="ios-store-title">App Store</div>
+      <div class="ios-search-wrap">
+        <span style="font-size:10px;color:#8e8e93">🔍</span>
+        <input id="ios-search" type="text" placeholder="Search" oninput="onIosSearch(this.value)">
+      </div>
+    </div>
+    <div class="ios-store-body">
+      <div id="ios-hint" class="ios-store-hint">Search for apps, games, and more</div>
+      <div id="ios-suggest" class="ios-suggest" style="display:none">
+        <div class="ios-suggest-row"><span class="ios-suggest-icon">🔍</span><span id="ios-suggest-text"></span></div>
+      </div>
+      <div id="ios-results" style="display:none">
+        <div class="ios-results-label">TOP RESULT</div>
+        <div class="ios-app-card">
+          <div class="ios-app-icon">🔌</div>
+          <div class="ios-app-info">
+            <div class="ios-app-name">Kasa Smart</div>
+            <div class="ios-app-dev">TP-Link Corporation</div>
+            <div class="ios-app-stars">★★★★★ 4.7</div>
+          </div>
+          <button id="ios-get-btn" class="ios-get-btn get" onclick="iosInstall()">GET</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function andScreenHTML() {
+    return `
+    <div class="and-store-header">
+      <div class="and-store-logo">
+        <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc04">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span> Play
+      </div>
+      <div class="and-search-wrap">
+        <span style="font-size:10px;color:#5f6368">🔍</span>
+        <input id="and-search" type="text" placeholder="Search apps" oninput="onAndSearch(this.value)">
+      </div>
+    </div>
+    <div class="and-store-body">
+      <div id="and-hint" class="and-store-hint">Search for apps &amp; games</div>
+      <div id="and-suggest" class="and-suggest" style="display:none">
+        <div class="and-suggest-row"><span class="and-suggest-icon">🔍</span><span id="and-suggest-text"></span></div>
+      </div>
+      <div id="and-results" style="display:none">
+        <div class="and-results-label">SEARCH RESULTS</div>
+        <div class="and-app-card">
+          <div class="and-app-icon">🔌</div>
+          <div class="and-app-info">
+            <div class="and-app-name">Kasa Smart</div>
+            <div class="and-app-dev">TP-Link Corporation · 4.7★</div>
+            <div class="and-app-dl">100M+ downloads</div>
+          </div>
+          <button id="and-install-btn" class="and-install-btn install" onclick="andInstall()">Install</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function simHTML() {
+    return `
+    <div class="sim-section-title">Step 1 — App Installation</div>
+    <p class="inst-text" style="font-size:.82rem;margin-bottom:12px;">Type the app name into each phone's search bar, then tap <strong>GET</strong> (iOS) or <strong>Install</strong> (Android) when the result appears. Install on both platforms before verifying.</p>
+    <div class="sim-status" id="install-status">iOS: ❌ &nbsp;&nbsp; Android: ❌</div>
+    <button class="sim-btn" onclick="advance()">✔ Verify Installation</button>`;
+}
+
+function renderMobileLab() {
+    // Progress
+    var pct = (labState.iosInstalled && labState.andInstalled) ? 50 : 0;
+    document.getElementById('prog-fill').style.width  = pct + '%';
+    document.getElementById('prog-pct').textContent   = pct + '%';
+    document.getElementById('prog-label').textContent = 'STEP 1 OF 1';
+
+    // Step dot
+    var container = document.getElementById('step-dots');
+    if (container) {
+        container.innerHTML = '';
+        var d = document.createElement('div');
+        d.className   = 'step-dot active';
+        d.textContent = '1';
+        container.appendChild(d);
+    }
+
+    // Instructions
+    document.getElementById('inst-content').innerHTML = `
+    <div class="step-body">
+      <div class="step-eyebrow">STEP 1 OF 1 — APP DOWNLOAD</div>
+      <div class="step-headline">Find &amp; Install the Kasa Smart App</div>
+      <p class="inst-text">Before configuring any IoT device, you need the manufacturer's official app installed on both platforms. Use the search bar inside each phone simulator to locate the correct app.</p>
+      <div class="concept-box">
+        <div class="concept-box-label">⚠️ Security — Verify the Publisher</div>
+        <p>Before tapping <b>GET</b> or <b>Install</b>, confirm the publisher reads exactly <b>TP-Link Corporation</b>. Counterfeit apps with near-identical names can steal your Wi-Fi credentials during setup. The publisher field is your primary verification checkpoint.</p>
+      </div>
+      <div class="ptabs" id="ptabs-1">
+        <button class="ptab ios active" onclick="switchInstTab('ios')" style="margin:0;">🍎 iOS — App Store</button>
+        <button class="ptab and"        onclick="switchInstTab('and')" style="margin:0;">🤖 Android — Google Play</button>
+      </div>
+      <div class="pblock active" id="ios-blk-1">
+        <div class="callout-ios">
+          1. Open the <b>App Store</b> on the iOS simulator.<br>
+          2. Type the app name in the search bar and press Search.<br>
+          3. Locate the result by <b>TP-Link Corporation</b>.<br>
+          4. Tap <b>GET</b>, then authenticate with Face ID / Touch ID.
+        </div>
+      </div>
+      <div class="pblock" id="and-blk-1">
+        <div class="callout-and">
+          1. Open <b>Google Play</b> on the Android simulator.<br>
+          2. Type the app name in the search bar.<br>
+          3. Confirm the publisher is <b>TP-Link Corporation</b>.<br>
+          4. Tap <b>Install</b>.
+        </div>
+      </div>
+      <p class="action-label">Search and install on both simulators, then verify below</p>
+    </div>
+    <div class="nav-row">
+      <button class="btn-primary" onclick="advance()">Verify &amp; Continue ▶</button>
+    </div>`;
+
+    // Phone screens
+    document.getElementById('ios-screen-content').innerHTML = iosScreenHTML();
+    document.getElementById('and-screen-content').innerHTML = andScreenHTML();
+
+    // Sim panel
+    document.getElementById('sim-content').innerHTML = simHTML();
+
+    // Restore phone tab
+    switchPhone(labState.activePhone, true);
+    updateInstStatus();
+    applyIosBtn();
+    applyAndBtn();
+
+    if (labState.iosSearched) {
+        var inp = document.getElementById('ios-search');
+        if (inp) { inp.value = 'Kasa Smart'; onIosSearch('Kasa Smart'); }
+    }
+    if (labState.andSearched) {
+        var inp2 = document.getElementById('and-search');
+        if (inp2) { inp2.value = 'Kasa Smart'; onAndSearch('Kasa Smart'); }
+    }
+}
+
+function onIosSearch(val) {
+    var t       = val.trim().toLowerCase();
+    var hint    = document.getElementById('ios-hint');
+    var suggest = document.getElementById('ios-suggest');
+    var results = document.getElementById('ios-results');
+    var stext   = document.getElementById('ios-suggest-text');
+    if (!hint || !suggest || !results) return;
+    if (!t) {
+        hint.style.display    = 'block';
+        suggest.style.display = 'none';
+        results.style.display = 'none';
+    } else if (t === 'kasa smart') {
+        hint.style.display    = 'none';
+        suggest.style.display = 'none';
+        results.style.display = 'block';
+        applyIosBtn();
+    } else {
+        hint.style.display    = 'none';
+        suggest.style.display = 'block';
+        results.style.display = 'none';
+        if (stext) stext.textContent = val.trim();
+    }
+    labState.iosSearched = (t === 'kasa smart');
+}
+
+function onAndSearch(val) {
+    var t       = val.trim().toLowerCase();
+    var hint    = document.getElementById('and-hint');
+    var suggest = document.getElementById('and-suggest');
+    var results = document.getElementById('and-results');
+    var stext   = document.getElementById('and-suggest-text');
+    if (!hint || !suggest || !results) return;
+    if (!t) {
+        hint.style.display    = 'block';
+        suggest.style.display = 'none';
+        results.style.display = 'none';
+    } else if (t === 'kasa smart') {
+        hint.style.display    = 'none';
+        suggest.style.display = 'none';
+        results.style.display = 'block';
+        applyAndBtn();
+    } else {
+        hint.style.display    = 'none';
+        suggest.style.display = 'block';
+        results.style.display = 'none';
+        if (stext) stext.textContent = val.trim();
+    }
+    labState.andSearched = (t === 'kasa smart');
+}
+
+function iosInstall() {
+    if (labState.iosInstalled) return;
+    labState.iosInstalled = true;
+    applyIosBtn();
+    updateInstStatus();
+    toast('✅ Kasa Smart installed on iOS!');
+}
+
+function andInstall() {
+    if (labState.andInstalled) return;
+    labState.andInstalled = true;
+    applyAndBtn();
+    updateInstStatus();
+    toast('✅ Kasa Smart installed on Android!');
+}
+
+function applyIosBtn() {
+    var btn = document.getElementById('ios-get-btn');
+    if (!btn) return;
+    if (labState.iosInstalled) {
+        btn.textContent = 'OPEN';
+        btn.className   = 'ios-get-btn open';
+    } else {
+        btn.textContent = 'GET';
+        btn.className   = 'ios-get-btn get';
+    }
+}
+
+function applyAndBtn() {
+    var btn = document.getElementById('and-install-btn');
+    if (!btn) return;
+    if (labState.andInstalled) {
+        btn.textContent = 'Open';
+        btn.className   = 'and-install-btn open';
+    } else {
+        btn.textContent = 'Install';
+        btn.className   = 'and-install-btn install';
+    }
+}
+
+function updateInstStatus() {
+    var el = document.getElementById('install-status');
+    if (!el) return;
+    el.textContent = 'iOS: ' + (labState.iosInstalled ? '✅' : '❌') + '    Android: ' + (labState.andInstalled ? '✅' : '❌');
+}
+
+function advance() {
+    if (!labState.iosInstalled || !labState.andInstalled) {
+        toast('Install the app on both iOS and Android before continuing.', true);
+        return;
+    }
+    document.getElementById('prog-fill').style.width = '100%';
+    document.getElementById('prog-pct').textContent  = '100%';
+    toast('✅ Step 1 complete!');
+    setTimeout(function() {
+        document.getElementById('completion-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+    }, 700);
+}
+
+function switchPhone(platform, silent) {
+    labState.activePhone = platform;
+    document.querySelectorAll('.phone-tab').forEach(function(t) {
+        t.classList.toggle('active',
+            (platform === 'ios' && t.classList.contains('ios-t')) ||
+            (platform === 'and' && t.classList.contains('and-t'))
+        );
+    });
+    var iosPhone = document.getElementById('ios-phone');
+    var andPhone = document.getElementById('and-phone');
+    if (iosPhone) iosPhone.classList.toggle('active', platform === 'ios');
+    if (andPhone) andPhone.classList.toggle('active', platform === 'and');
+}
+
+function switchInstTab(platform) {
+    var tabs = document.querySelectorAll('#ptabs-1 .ptab');
+    tabs.forEach(function(t) {
+        t.classList.toggle('active',
+            (platform === 'ios' && t.classList.contains('ios')) ||
+            (platform === 'and' && t.classList.contains('and'))
+        );
+    });
+    var iosBlk = document.getElementById('ios-blk-1');
+    var andBlk = document.getElementById('and-blk-1');
+    if (iosBlk) iosBlk.classList.toggle('active', platform === 'ios');
+    if (andBlk) andBlk.classList.toggle('active', platform === 'and');
+    switchPhone(platform, true);
+}
+
+function toast(msg, err) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'toast' + (err ? ' err' : '');
+    void t.offsetWidth;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 3200);
+}
+
+function startLab() {
+    document.getElementById('scenario-screen').style.display = 'none';
+    document.getElementById('lab-wrapper').style.display     = 'block';
+    renderMobileLab();
+}
+
+function restartLab() {
+    labState = freshLabState();
+    document.getElementById('completion-screen').style.display = 'none';
+    document.getElementById('lab-wrapper').style.display       = 'block';
+    document.getElementById('scenario-screen').style.display   = 'none';
+    renderMobileLab();
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 5: SCENARIO QUIZ
+   (all vars/functions prefixed to avoid conflicts)
+───────────────────────────────────────── */
+var scenQuestion = {
+    scenario: "An employee purchases new Bluetooth wireless headphones for their smartphone. They have unboxed the headphones but cannot figure out how to connect them.",
+    question: "What is the FIRST step to connect the headphones?",
+    answers: [
+        { text: "Download manufacturer's app", correct: false },
+        { text: "Enable Bluetooth",            correct: true  },
+        { text: "Restart the phone",           correct: false },
+        { text: "Tap with NFC",                correct: false }
+    ],
+    explanation: "<strong>Correct: Enable Bluetooth</strong><br><br>The first step is always enabling Bluetooth in Settings. After that, put the headphones into pairing mode (usually by holding the power button until an LED flashes), then select them from the phone's list of available Bluetooth devices. Some headphones have companion apps, but basic Bluetooth pairing does not require them — Bluetooth must be enabled first."
+};
+
+var scenQuizAnswered = false;
+
+function renderScenQuiz(selectedIndex) {
+    selectedIndex = (selectedIndex !== undefined) ? selectedIndex : null;
+    var container = document.getElementById('quizContainer');
+    if (!container) return;
+
+    var answersHTML = '';
+    scenQuestion.answers.forEach(function(ans, i) {
+        var cls = 'answer-option';
+        if (selectedIndex !== null) {
+            if (ans.correct)              cls += ' correct';
+            else if (i === selectedIndex) cls += ' incorrect';
+            cls += ' disabled';
+        }
+        answersHTML += '<div class="' + cls + '" onclick="chooseScenQuiz(' + i + ')">' + ans.text + '</div>';
+    });
+
+    var isCorrect = (selectedIndex !== null) && scenQuestion.answers[selectedIndex].correct;
+    var feedbackClass = (selectedIndex !== null && !isCorrect) ? 'incorrect-feedback' : '';
+
+    container.innerHTML =
+        '<div class="scenario-text">' + scenQuestion.scenario + '</div>' +
+        '<div class="question-text">'  + scenQuestion.question  + '</div>' +
+        '<div class="answers-grid">'   + answersHTML             + '</div>' +
+        '<div class="feedback-box ' + (selectedIndex !== null ? 'show' : '') + ' ' + feedbackClass + '">' +
+          '<div class="feedback-header">' +
+            '<span class="feedback-icon">' + (selectedIndex !== null ? (isCorrect ? '✅' : '❌') : '') + '</span>' +
+            '<span>' + (selectedIndex !== null ? (isCorrect ? 'Correct!' : 'Incorrect') : '') + '</span>' +
+          '</div>' +
+          '<div class="feedback-explanation">' + (selectedIndex !== null ? scenQuestion.explanation : '') + '</div>' +
+        '</div>';
+}
+
+function chooseScenQuiz(index) {
+    if (scenQuizAnswered) return;
+    scenQuizAnswered = true;
+    renderScenQuiz(index);
+}
+
+function resetScenQuiz() {
+    scenQuizAnswered = false;
+    renderScenQuiz();
+}
+
+// Initialize Scenario Quiz
+renderScenQuiz();
+
+</script>
+</body>
+</html>

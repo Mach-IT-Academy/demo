@@ -1,0 +1,1233 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod 9 – Virtualization, Cloud &amp; AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#6366f1; --accent-secondary:#8b5cf6;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+            /* Cloud Exercise color tokens */
+            --iaas-color:#6c8fff; --paas-color:#f5a623; --saas-color:#34d399;
+            --cloud-surface:#0d1220; --cloud-border:#1a2540;
+            --cloud-text:#c9d8f0; --cloud-text-dim:#4a6080; --cloud-text-mid:#7a98c0;
+            --cloud-correct:#34d399; --cloud-wrong:#f87171;
+            --cloud-correct-bg:rgba(52,211,153,.06); --cloud-correct-bdr:rgba(52,211,153,.3);
+            --cloud-wrong-bg:rgba(248,113,113,.06);  --cloud-wrong-bdr:rgba(248,113,113,.3);
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes cardIn  { from{opacity:0;transform:translateY(22px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        }
+        .page-header h1 { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:0.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px;
+            border-radius:8px; font-weight:600; cursor:pointer;
+            transition:all .2s; font-family:'Inter',sans-serif; font-size:.88em;
+            white-space:nowrap;
+        }
+        .tab-btn:hover { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           GLOBAL BUTTON
+        ═══════════════════════════════════════════ */
+        button {
+            background:var(--accent-primary); color:#fff; border:none; padding:11px 22px;
+            border-radius:6px; font-weight:600; cursor:pointer; transition:all .25s;
+            font-family:'Inter',sans-serif; font-size:.95em; margin:5px 5px 5px 0;
+        }
+        button:hover { background:var(--accent-secondary); transform:translateY(-2px); }
+        button.secondary { background:var(--bg-tertiary); color:var(--text-primary); border:2px solid var(--border-color); }
+        button.secondary:hover { background:var(--bg-primary); border-color:var(--accent-primary); }
+        button.reset-btn { background:transparent; border:1px solid var(--accent-error); color:var(--accent-error); font-size:.85em; padding:7px 14px; }
+        button.reset-btn:hover { background:rgba(239,68,68,.1); transform:none; }
+
+        /* ═══════════════════════════════════════════
+           SHARED COMPONENTS
+        ═══════════════════════════════════════════ */
+        .container { max-width:960px; margin:0 auto; padding:20px; }
+        .main-content { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .lesson h2 { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+
+        .problem-scenario { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+
+        .visual-demo { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .visual-demo h3 { margin-bottom:12px; }
+
+        .key-concept { background:rgba(99,102,241,.1); padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid var(--accent-primary); }
+        .key-concept strong { color:var(--accent-primary); }
+
+        .interactive-section { background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+
+        .concept-check { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .concept-check h4 { color:var(--accent-warning); margin-bottom:12px; }
+        .check-option { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .check-option:hover { border-color:var(--accent-primary); }
+        .check-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .check-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .check-option.disabled  { pointer-events:none; }
+
+        .explanation { background:rgba(139,92,246,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-secondary); display:none; }
+        .explanation.show { display:block; animation:fadeIn .3s ease; }
+
+        .feedback { margin-top:14px; padding:14px; border-radius:8px; display:none; font-size:.93em; animation:slideIn .3s ease; }
+        .feedback.show    { display:block; }
+        .feedback.success { background:rgba(16,185,129,.15); border-left:4px solid var(--accent-success); }
+        .feedback.error   { background:rgba(239,68,68,.15);  border-left:4px solid var(--accent-error); }
+
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th,td { padding:11px; text-align:left; border-bottom:1px solid var(--border-color); }
+        th { background:var(--accent-primary); color:#fff; font-weight:600; }
+        tr:hover { background:var(--bg-tertiary); }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION: UNIQUE STYLES
+        ═══════════════════════════════════════════ */
+        .layer-diagram { display:flex; flex-direction:column; gap:10px; margin:18px 0; }
+        .layer-box { padding:16px 22px; border-radius:8px; border:2px solid var(--border-color); text-align:center; font-weight:600; transition:all .25s; cursor:default; }
+        .layer-box:hover { transform:scale(1.02); }
+        .layer-hardware   { background:rgba(239,68,68,.15);  border-color:#ef4444;              color:#fca5a5; }
+        .layer-hypervisor { background:rgba(99,102,241,.15); border-color:var(--accent-primary); color:#a5b4fc; }
+        .layer-guest      { background:rgba(16,185,129,.15); border-color:var(--accent-success); color:#6ee7b7; }
+        .layer-label { font-size:.82em; font-weight:400; color:var(--text-secondary); margin-top:4px; }
+
+        .data-structure { display:flex; gap:18px; margin:18px 0; flex-wrap:wrap; }
+        .data-card { background:var(--bg-tertiary); padding:16px; border-radius:8px; flex:1; min-width:200px; border:2px solid var(--border-color); transition:all .25s; }
+        .data-card:hover { border-color:var(--accent-primary); transform:translateY(-4px); }
+        .data-card h4 { color:var(--accent-secondary); margin-bottom:8px; }
+
+        .choice-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:14px; }
+        .choice-card { background:var(--bg-secondary); padding:18px; border-radius:8px; cursor:pointer; border:2px solid var(--border-color); transition:all .25s; user-select:none; }
+        .choice-card:hover { border-color:var(--accent-primary); transform:scale(1.03); }
+        .choice-card.selected { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .choice-card.wrong    { border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .choice-card strong { display:block; margin-bottom:6px; }
+        .choice-card p { font-size:.88em; color:var(--text-secondary); margin:0; }
+
+        .choice-feedback { margin-top:14px; padding:14px; border-radius:8px; display:none; }
+        .choice-feedback.show    { display:block; animation:slideIn .3s ease; }
+        .choice-feedback.success { background:rgba(16,185,129,.2); border-left:4px solid var(--accent-success); }
+        .choice-feedback.error   { background:rgba(239,68,68,.2);  border-left:4px solid var(--accent-error); }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT: SEQUENCE ORDERING
+        ═══════════════════════════════════════════ */
+        .rein-task-header { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+        .rein-task-number {
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+            color:#fff; width:44px; height:44px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1em; flex-shrink:0;
+        }
+        .rein-task-title h2 { color:var(--accent-primary); font-size:1.6em; }
+        .rein-task-badge { display:inline-block; background:rgba(99,102,241,.2); border:1px solid var(--accent-primary); color:var(--accent-primary); padding:2px 10px; border-radius:10px; font-size:.78em; font-weight:600; margin-top:4px; }
+
+        .order-list { list-style:none; margin:16px 0; }
+        .order-item {
+            background:var(--bg-tertiary); padding:13px 16px; margin-bottom:9px;
+            border-radius:8px; border:2px solid var(--border-color); cursor:grab;
+            display:flex; align-items:center; gap:12px; user-select:none; transition:all .25s;
+        }
+        .order-item:hover { border-color:var(--accent-primary); }
+        .order-item.dragging { opacity:0.4; cursor:grabbing; }
+        .order-badge {
+            background:var(--accent-primary); color:#fff; width:28px; height:28px;
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:.85em; flex-shrink:0;
+        }
+        .order-handle { color:var(--text-secondary); font-size:1.1em; flex-shrink:0; }
+        .action-row { display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap; }
+
+        .rein-feedback { margin-top:18px; border-radius:10px; overflow:hidden; display:none; }
+        .rein-feedback.show { display:block; animation:slideUp .3s ease; }
+        .rein-fb-header { padding:14px 18px; font-weight:700; font-size:1.05em; display:flex; align-items:center; gap:8px; }
+        .rein-fb-header.success { background:rgba(16,185,129,.25); color:#6ee7b7; }
+        .rein-fb-header.error   { background:rgba(239,68,68,.25);  color:#fca5a5; }
+        .rein-fb-body { padding:18px; background:var(--bg-tertiary); }
+        .rein-fb-section { margin-bottom:14px; }
+        .rein-fb-section:last-child { margin-bottom:0; }
+        .rein-fb-section h4 { color:var(--accent-warning); margin-bottom:6px; font-size:.9em; text-transform:uppercase; letter-spacing:.5px; }
+        .rein-fb-section p, .rein-fb-section li { font-size:.9em; color:var(--text-secondary); line-height:1.6; }
+        .rein-fb-section ul { margin-left:18px; }
+        .rein-fb-section li { margin-bottom:4px; }
+        .why-correct { border-left:3px solid var(--accent-success); padding-left:12px; }
+        .why-wrong   { border-left:3px solid var(--accent-error);   padding-left:12px; }
+        .pro-tip { background:rgba(99,102,241,.1); border-left:3px solid var(--accent-primary); padding:10px 14px; border-radius:0 6px 6px 0; margin-top:8px; }
+        .pro-tip strong { color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB 3 — CLOUD SERVICE MODELS EXERCISE
+        ═══════════════════════════════════════════ */
+        .cloud-score-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+        .cloud-score-board { display:flex; gap:8px; }
+        .cloud-score-pill { display:flex; align-items:center; gap:8px; padding:8px 16px; border-radius:8px; border:1px solid var(--cloud-border); background:var(--cloud-surface); }
+        .cloud-score-pill .val { font-family:'DM Mono','JetBrains Mono',monospace; font-size:1.2em; font-weight:500; line-height:1; }
+        .cloud-score-pill .lbl { font-size:.65em; letter-spacing:.12em; color:var(--cloud-text-dim); text-transform:uppercase; }
+        .cloud-score-pill.s-correct .val { color:var(--cloud-correct); }
+        .cloud-score-pill.s-wrong   .val { color:var(--cloud-wrong); }
+        .cloud-reset-ghost { background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); font-size:.8em; padding:8px 16px; }
+        .cloud-reset-ghost:hover { border-color:var(--accent-primary); color:var(--text-primary); transform:none; background:transparent; }
+
+        .legend-row  { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
+        .legend-pill { display:flex; align-items:center; gap:7px; padding:6px 14px; border-radius:20px; border:1px solid; font-size:.68em; letter-spacing:.1em; text-transform:uppercase; font-weight:500; }
+        .legend-pill.iaas { border-color:rgba(108,143,255,.4); color:var(--iaas-color); background:rgba(108,143,255,.06); }
+        .legend-pill.paas { border-color:rgba(245,166,35,.4);  color:var(--paas-color); background:rgba(245,166,35,.06); }
+        .legend-pill.saas { border-color:rgba(52,211,153,.4);  color:var(--saas-color); background:rgba(52,211,153,.06); }
+        .legend-dot { width:7px; height:7px; border-radius:50%; }
+        .legend-dot.iaas { background:var(--iaas-color); box-shadow:0 0 5px var(--iaas-color); }
+        .legend-dot.paas { background:var(--paas-color); box-shadow:0 0 5px var(--paas-color); }
+        .legend-dot.saas { background:var(--saas-color); box-shadow:0 0 5px var(--saas-color); }
+
+        .cloud-card { background:var(--cloud-surface); border:1px solid var(--cloud-border); border-radius:14px; padding:34px 38px 30px; position:relative; overflow:hidden; transition:border-color .3s, background .3s; animation:cardIn .4s cubic-bezier(.22,1,.36,1) both; }
+        .cloud-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--iaas-color),transparent 60%); opacity:.4; transition:opacity .3s; }
+        .cloud-card.correct::before { background:linear-gradient(90deg,var(--cloud-correct),transparent 60%); opacity:.6; }
+        .cloud-card.wrong::before   { background:linear-gradient(90deg,var(--cloud-wrong),transparent 60%); opacity:.6; }
+        .cloud-card.correct { border-color:rgba(52,211,153,.35); background:var(--cloud-correct-bg); }
+        .cloud-card.wrong   { border-color:rgba(248,113,113,.35); background:var(--cloud-wrong-bg); }
+
+        .cloud-scenario-index { font-size:.58em; color:var(--cloud-text-dim); letter-spacing:.18em; text-transform:uppercase; margin-bottom:18px; }
+        .cloud-scenario-text  { font-size:.98em; line-height:1.82; color:var(--cloud-text); margin-bottom:30px; }
+
+        .choices-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px; }
+        .choice-btn { border-radius:10px; padding:16px 10px; font-family:'Syne','Inter',sans-serif; font-weight:700; font-size:.88em; letter-spacing:.06em; cursor:pointer; transition:all .18s; text-transform:uppercase; }
+        .choice-btn.iaas-btn { background:rgba(108,143,255,.06); border:1.5px solid rgba(108,143,255,.25); color:rgba(108,143,255,.7); }
+        .choice-btn.iaas-btn:hover:not(:disabled) { background:rgba(108,143,255,.14); border-color:var(--iaas-color); color:var(--iaas-color); transform:translateY(-2px); }
+        .choice-btn.paas-btn { background:rgba(245,166,35,.06);  border:1.5px solid rgba(245,166,35,.25);  color:rgba(245,166,35,.7); }
+        .choice-btn.paas-btn:hover:not(:disabled) { background:rgba(245,166,35,.14); border-color:var(--paas-color); color:var(--paas-color); transform:translateY(-2px); }
+        .choice-btn.saas-btn { background:rgba(52,211,153,.06);  border:1.5px solid rgba(52,211,153,.25);  color:rgba(52,211,153,.7); }
+        .choice-btn.saas-btn:hover:not(:disabled) { background:rgba(52,211,153,.14); border-color:var(--saas-color); color:var(--saas-color); transform:translateY(-2px); }
+        .choice-btn.selected-correct { background:rgba(52,211,153,.14);  border-color:var(--cloud-correct); color:var(--cloud-correct); cursor:default; }
+        .choice-btn.selected-wrong   { background:rgba(248,113,113,.14); border-color:var(--cloud-wrong);   color:var(--cloud-wrong);   cursor:default; }
+        .choice-btn.reveal-correct   { background:rgba(52,211,153,.07);  border-color:rgba(52,211,153,.5);  color:rgba(52,211,153,.8);  cursor:default; }
+        .choice-btn:disabled { cursor:default; transform:none; }
+
+        .cloud-feedback { border-radius:10px; font-size:.875em; line-height:1.75; display:none; margin-bottom:26px; padding:18px 20px; animation:slideUp .3s cubic-bezier(.22,1,.36,1); }
+        .cloud-feedback.show    { display:block; }
+        .cloud-feedback.correct { background:var(--cloud-correct-bg); border:1px solid var(--cloud-correct-bdr); color:#a7f3d0; }
+        .cloud-feedback.wrong   { background:var(--cloud-wrong-bg);   border:1px solid var(--cloud-wrong-bdr);   color:#fecaca; }
+        .cloud-fb-title { font-weight:700; letter-spacing:.05em; font-size:.9em; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+        .cloud-badge { font-size:.62em; letter-spacing:.12em; padding:2px 8px; border-radius:4px; text-transform:uppercase; font-weight:500; }
+        .cloud-badge.iaas { background:rgba(108,143,255,.15); color:var(--iaas-color); }
+        .cloud-badge.paas { background:rgba(245,166,35,.15);  color:var(--paas-color); }
+        .cloud-badge.saas { background:rgba(52,211,153,.15);  color:var(--saas-color); }
+        .cloud-divider { border:none; border-top:1px solid rgba(248,113,113,.18); margin:14px 0 12px; }
+        .cloud-wrong-label  { font-size:.6em; letter-spacing:.15em; text-transform:uppercase; color:rgba(252,165,165,.55); margin-bottom:6px; }
+        .cloud-wrong-reason { color:rgba(252,165,165,.82); font-size:.845em; line-height:1.72; }
+
+        .cloud-next-row { display:flex; justify-content:flex-end; align-items:center; gap:16px; margin-top:6px; }
+        .cloud-next-hint { font-size:.6em; color:var(--cloud-text-dim); letter-spacing:.1em; text-transform:uppercase; }
+        .cloud-try-btn { background:transparent; color:var(--iaas-color); border:1.5px solid var(--iaas-color); font-family:'Syne','Inter',sans-serif; font-weight:700; font-size:.85em; letter-spacing:.1em; text-transform:uppercase; padding:12px 34px; border-radius:7px; cursor:pointer; transition:all .18s; }
+        .cloud-try-btn:hover { background:rgba(108,143,255,.1); transform:none; }
+
+        @media(max-width:640px) { .choices-grid { grid-template-columns:1fr; } .cloud-card { padding:24px 20px; } }
+
+        /* ═══════════════════════════════════════════
+           TAB 4 — AI EXERCISE: UNIQUE STYLES
+        ═══════════════════════════════════════════ */
+        .ref-panel  { background:var(--bg-secondary); border:2px solid var(--border-color); border-radius:12px; margin-bottom:24px; overflow:hidden; }
+        .ref-header { display:flex; justify-content:space-between; align-items:center; padding:16px 22px; cursor:pointer; background:var(--bg-tertiary); font-weight:700; color:var(--text-primary); user-select:none; transition:background .2s; }
+        .ref-header:hover { background:var(--bg-primary); }
+        .ref-toggle { color:var(--accent-primary); font-size:.85em; font-weight:700; }
+        .ref-body   { padding:18px 22px; overflow-x:auto; }
+        .ref-body.hidden { display:none; }
+        .ref-table  { width:100%; border-collapse:collapse; font-size:.88em; }
+        .ref-table th { background:var(--bg-tertiary); color:var(--accent-primary); padding:10px 14px; text-align:left; font-weight:700; letter-spacing:.04em; font-size:.82em; text-transform:uppercase; border-bottom:2px solid var(--border-color); }
+        .ref-table td { padding:10px 14px; border-bottom:1px solid var(--border-color); color:var(--text-secondary); vertical-align:top; }
+        .ref-table tr:last-child td { border-bottom:none; }
+        .ref-table tr:hover td { background:rgba(99,102,241,.06); color:var(--text-primary); }
+        .ref-table .term-name { color:var(--text-primary); font-weight:700; }
+        .ref-note { margin-top:12px; font-size:.82em; color:var(--text-secondary); font-style:italic; }
+
+        .quiz-grid    { display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
+        .scenario-col { display:flex; flex-direction:column; gap:16px; }
+        .scenario-card { background:var(--bg-secondary); border-radius:12px; padding:26px; border:2px solid var(--border-color); }
+        .scenario-tag  { display:inline-flex; align-items:center; gap:7px; background:rgba(99,102,241,.15); color:var(--accent-primary); font-size:.82em; font-weight:600; padding:4px 11px; border-radius:20px; margin-bottom:14px; width:fit-content; }
+        .scenario-tag .dot { width:7px; height:7px; border-radius:50%; background:var(--accent-primary); }
+        .scenario-desc { color:var(--text-secondary); font-size:.95em; line-height:1.75; }
+
+        .example-box { background:#0f1117; border:2px solid #252836; border-radius:10px; padding:18px 20px; margin:16px 0; overflow-x:auto; }
+        .ex-label { color:var(--text-secondary); font-size:.76em; text-transform:uppercase; letter-spacing:.09em; display:block; margin-bottom:10px; font-weight:600; }
+        .ex-row { display:flex; gap:10px; margin-bottom:6px; font-size:.87em; line-height:1.6; }
+        .ex-row:last-child { margin-bottom:0; }
+        .ex-who  { font-family:'JetBrains Mono',monospace; font-size:.78em; font-weight:700; white-space:nowrap; padding:2px 8px; border-radius:4px; align-self:flex-start; margin-top:2px; }
+        .ex-user { background:rgba(99,102,241,.2);  color:#a5b4fc; }
+        .ex-ai   { background:rgba(16,185,129,.2);  color:#6ee7b7; }
+        .ex-out  { background:rgba(139,92,246,.2);  color:#c4b5fd; }
+        .ex-text { color:#e2e8f0; white-space:pre-wrap; font-family:'JetBrains Mono',monospace; font-size:.85em; }
+        .ex-muted { color:#64748b; font-size:.84em; font-style:italic; }
+        .ex-sep  { border-top:1px solid #252836; margin:10px 0; }
+
+        .hint-btn    { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,.15); border:2px solid var(--accent-warning); color:var(--accent-warning); font-size:.85em; font-weight:600; padding:8px 14px; border-radius:6px; cursor:pointer; transition:all .2s; margin-top:4px; }
+        .hint-btn:hover { background:rgba(245,158,11,.25); transform:translateY(-1px); }
+        .hint-reveal { background:var(--bg-tertiary); border-radius:8px; padding:0 16px; border-left:4px solid var(--accent-warning); max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease, opacity .3s ease, padding .4s ease, margin-top .4s ease; }
+        .hint-reveal.show { max-height:160px; opacity:1; padding:14px 16px; margin-top:12px; }
+        .hint-reveal p { font-size:.9em; color:var(--text-secondary); }
+
+        .commands-col    { background:var(--bg-secondary); border-radius:12px; padding:20px; border:2px solid var(--border-color); height:fit-content; position:sticky; top:80px; }
+        .commands-header { font-size:.88em; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.08em; padding-bottom:12px; border-bottom:2px solid var(--border-color); margin-bottom:14px; text-align:center; }
+        .cmd-btn { display:block; width:100%; text-align:left; background:var(--bg-tertiary); border:2px solid var(--border-color); color:var(--text-primary); font-family:'Inter',sans-serif; font-size:.9em; font-weight:600; padding:11px 16px; border-radius:7px; cursor:pointer; transition:all .2s; margin-bottom:8px; }
+        .cmd-btn:last-of-type { margin-bottom:0; }
+        .cmd-btn:hover:not(:disabled):not(.correct):not(.incorrect) { border-color:var(--accent-primary); background:rgba(99,102,241,.1); }
+        .cmd-btn.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); color:var(--accent-success); pointer-events:none; }
+        .cmd-btn.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15);  color:var(--accent-error);   pointer-events:none; }
+        .cmd-btn:disabled { pointer-events:none; }
+        .cmd-btn:disabled:not(.correct):not(.incorrect) { opacity:.4; }
+
+        .feedback-strip { display:flex; align-items:flex-start; gap:12px; padding:13px 18px; border-radius:8px; font-size:.93em; font-weight:600; margin-top:14px; animation:slideIn .3s ease; }
+        .feedback-strip.correct   { background:rgba(16,185,129,.18); border:1px solid rgba(16,185,129,.35); color:var(--accent-success); }
+        .feedback-strip.incorrect { background:rgba(239,68,68,.18);  border:1px solid rgba(239,68,68,.35);  color:var(--accent-error); }
+        .feedback-strip .icon     { font-size:1.3em; flex-shrink:0; margin-top:2px; }
+        .feedback-strip .explain  { color:var(--text-secondary); font-weight:400; font-size:.92em; margin-top:3px; }
+
+        .explain-reveal { background:var(--bg-primary); border:2px solid var(--border-color); border-radius:10px; overflow:hidden; margin-top:14px; max-height:0; opacity:0; transition:max-height .5s cubic-bezier(.4,0,.2,1), opacity .35s ease; }
+        .explain-reveal.show { max-height:500px; opacity:1; }
+        .explain-reveal-header { display:flex; align-items:center; gap:10px; padding:11px 16px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); }
+        .explain-reveal-header .icon { font-size:1.1em; }
+        .explain-reveal-header span { font-size:.88em; font-weight:600; color:var(--accent-primary); }
+        .explain-block { padding:16px; font-size:.9em; line-height:1.8; color:var(--text-secondary); overflow-y:auto; max-height:380px; white-space:pre-line; }
+        .explain-block .label { color:var(--accent-success); font-weight:700; }
+
+        .reset-wrap { text-align:center; margin-top:28px; }
+        .btn-reset  { background:var(--bg-tertiary); color:var(--accent-warning); border:1px solid var(--accent-warning); font-family:'Inter',sans-serif; font-size:.93em; font-weight:600; padding:11px 24px; border-radius:7px; cursor:pointer; transition:all .2s; }
+        .btn-reset:hover { background:rgba(245,158,11,.12); }
+
+        @media(max-width:780px) { .quiz-grid { grid-template-columns:1fr; } .commands-col { position:static; } }
+
+        /* ═══════════════════════════════════════════
+           TAB 5 — SCENARIO QUIZ: UNIQUE STYLES
+        ═══════════════════════════════════════════ */
+        .sq-header-block { text-align:center; margin-bottom:28px; padding-top:10px; }
+        .sq-module-badge { display:inline-block; font-family:'Share Tech Mono','JetBrains Mono',monospace; font-size:.72em; color:var(--accent-primary); letter-spacing:.18em; text-transform:uppercase; border:1px solid var(--accent-primary); padding:4px 14px; border-radius:2px; margin-bottom:14px; opacity:.85; }
+        .sq-title    { font-family:'Rajdhani','Inter',sans-serif; font-weight:700; font-size:1.7em; margin-bottom:6px; }
+        .sq-title span { color:var(--accent-primary); }
+        .sq-subtitle { font-family:'Share Tech Mono','JetBrains Mono',monospace; font-size:.72em; color:var(--text-secondary); letter-spacing:.05em; }
+
+        .sq-card { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; padding:28px 32px; position:relative; }
+        .sq-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent-primary),var(--accent-secondary)); border-radius:6px 6px 0 0; }
+
+        .sq-label    { font-family:'Share Tech Mono','JetBrains Mono',monospace; font-size:.65em; letter-spacing:.2em; text-transform:uppercase; color:var(--accent-warning); margin-bottom:10px; }
+        .sq-scenario { background:var(--bg-primary); border-left:3px solid var(--accent-warning); border-radius:0 4px 4px 0; padding:18px 20px; margin-bottom:26px; font-size:1em; line-height:1.75; }
+        .sq-question { font-family:'Rajdhani','Inter',sans-serif; font-size:1.2em; font-weight:600; margin-bottom:20px; line-height:1.4; }
+
+        .sq-answers { display:grid; gap:10px; margin-bottom:24px; }
+        .sq-option   { background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:4px; padding:14px 18px; cursor:pointer; transition:border-color .2s, background .2s, transform .15s; font-size:.97em; display:flex; align-items:center; gap:14px; user-select:none; }
+        .sq-option:hover:not(.locked) { border-color:var(--accent-primary); background:rgba(45,51,72,.95); transform:translateX(4px); }
+        .sq-option-letter { font-family:'JetBrains Mono',monospace; font-size:.75em; color:var(--text-secondary); min-width:20px; letter-spacing:.05em; }
+        .sq-option.selected  { border-color:var(--accent-primary); background:rgba(99,102,241,.08); }
+        .sq-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.1); }
+        .sq-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.1); }
+        .sq-option.locked    { cursor:not-allowed; }
+        .sq-option.correct   .sq-option-letter { color:var(--accent-success); }
+        .sq-option.incorrect .sq-option-letter { color:var(--accent-error); }
+
+        #sq-submitBtn { display:block; width:100%; padding:14px; background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary)); border:none; border-radius:4px; color:#fff; font-family:'Rajdhani','Inter',sans-serif; font-size:1.05em; font-weight:700; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; transition:opacity .2s, transform .15s; margin:0 0 20px; }
+        #sq-submitBtn:disabled { opacity:.35; cursor:not-allowed; transform:none; }
+        #sq-submitBtn:not(:disabled):hover { opacity:.88; transform:translateY(-1px); }
+
+        .sq-feedback { display:none; background:var(--bg-primary); border-radius:4px; padding:22px 24px; animation:slideIn .3s ease; }
+        .sq-feedback.show { display:block; }
+        .sq-feedback.pass { border-left:3px solid var(--accent-success); }
+        .sq-feedback.fail { border-left:3px solid var(--accent-error); }
+        .sq-feedback-title { font-family:'Rajdhani','Inter',sans-serif; font-size:1.15em; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+        .sq-feedback.pass .sq-feedback-title { color:var(--accent-success); }
+        .sq-feedback.fail .sq-feedback-title { color:var(--accent-error); }
+        .sq-feedback-body { font-size:.95em; line-height:1.75; color:var(--text-secondary); }
+        .sq-feedback-body strong { color:var(--text-primary); display:block; margin-top:12px; margin-bottom:2px; font-family:'Rajdhani','Inter',sans-serif; font-size:1.05em; font-weight:600; }
+
+        #sq-resetBtn { display:none; margin-top:16px; width:100%; padding:11px; background:transparent; border:1px solid var(--border-color); border-radius:4px; color:var(--text-secondary); font-family:'Share Tech Mono','JetBrains Mono',monospace; font-size:.78em; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:border-color .2s, color .2s; }
+        #sq-resetBtn:hover { border-color:var(--accent-primary); color:var(--accent-primary); }
+        #sq-resetBtn.show { display:block; }
+
+        .sq-footer { margin-top:22px; text-align:center; font-family:'Share Tech Mono','JetBrains Mono',monospace; font-size:.64em; color:var(--border-color); letter-spacing:.12em; }
+    </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     PAGE HEADER
+════════════════════════════════════════ -->
+<div class="page-header">
+    <h1>☁️ Mod 9 – Virtualization, Cloud &amp; AI</h1>
+    <p class="subtitle">CompTIA Tech+ FC0-U71 Aligned | Full Module</p>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB NAVIGATION
+════════════════════════════════════════ -->
+<div class="tab-nav">
+    <button class="tab-btn active"  onclick="switchTab('instruction')">📚 Instruction</button>
+    <button class="tab-btn"         onclick="switchTab('reinforcement')">⚡ Challenge Tasks</button>
+    <button class="tab-btn"         onclick="switchTab('cloud-exercise')">☁️ Cloud Service Models</button>
+    <button class="tab-btn"         onclick="switchTab('ai-exercise')">🤖 AI Exercise</button>
+    <button class="tab-btn"         onclick="switchTab('scenario-quiz')">📝 Scenario Quiz</button>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     TAB 1 — INSTRUCTION
+════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="container">
+    <div class="main-content">
+        <div class="lesson" id="lesson1">
+            <h2>Lesson 1: Hypervisors</h2>
+
+            <div class="key-concept">
+                <strong>Core Principle:</strong> A hypervisor is software that allows multiple operating systems to share the same physical hardware simultaneously, managing the allocation of CPU, memory, storage, and network resources to each virtual machine.
+            </div>
+
+            <div class="problem-scenario">
+                <h3>📋 Scenario</h3>
+                <p>Your company has five servers that each run one operating system and sit mostly idle. The IT director wants to consolidate them onto a single powerful machine to save money, electricity, and rack space — without losing any of the five OS environments. How can this be done?</p>
+            </div>
+
+            <div class="visual-demo">
+                <h3>How a Hypervisor Works</h3>
+                <p style="color:var(--text-secondary); margin-bottom:16px;">Think of the hypervisor as a "traffic cop" between physical hardware and the virtual machines that want to use it.</p>
+
+                <div class="layer-diagram">
+                    <div class="layer-box layer-guest">
+                        🖥️ Guest OS 1 &nbsp;&nbsp;&nbsp; 🖥️ Guest OS 2 &nbsp;&nbsp;&nbsp; 🖥️ Guest OS 3
+                        <div class="layer-label">Virtual Machines — each thinks it owns the hardware</div>
+                    </div>
+                    <div style="text-align:center; font-size:1.5em; color:var(--accent-secondary);">⬇⬆</div>
+                    <div class="layer-box layer-hypervisor">
+                        🔧 Hypervisor (e.g., VMware ESXi, Hyper-V, KVM, VirtualBox)
+                        <div class="layer-label">Manages &amp; allocates physical resources to each VM</div>
+                    </div>
+                    <div style="text-align:center; font-size:1.5em; color:var(--accent-secondary);">⬇⬆</div>
+                    <div class="layer-box layer-hardware">
+                        💾 Physical Hardware — CPU, RAM, Storage, NIC
+                        <div class="layer-label">The real machine underneath</div>
+                    </div>
+                </div>
+
+                <div class="data-structure" style="margin-top:20px;">
+                    <div class="data-card">
+                        <h4>Type 1 – Bare-Metal</h4>
+                        <p style="font-size:.88em; color:var(--text-secondary);">Runs directly on hardware with no host OS. Used in data centers for maximum performance.</p>
+                        <p style="font-size:.82em; color:var(--text-secondary); margin-top:8px;"><em>Examples: VMware ESXi, Microsoft Hyper-V (Server), KVM</em></p>
+                    </div>
+                    <div class="data-card">
+                        <h4>Type 2 – Hosted</h4>
+                        <p style="font-size:.88em; color:var(--text-secondary);">Runs on top of an existing OS. Convenient for desktop virtualization and labs.</p>
+                        <p style="font-size:.82em; color:var(--text-secondary); margin-top:8px;"><em>Examples: Oracle VirtualBox, VMware Workstation</em></p>
+                    </div>
+                    <div class="data-card">
+                        <h4>Key Benefits</h4>
+                        <p style="font-size:.88em; color:var(--text-secondary);">Server consolidation, cost savings, easy snapshots &amp; rollback, hardware isolation, testing environments.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Challenge -->
+            <div class="interactive-section">
+                <h3>🎯 Interactive Challenge: True or False?</h3>
+                <p>Select ALL statements that are TRUE about hypervisors. Choose exactly 3:</p>
+                <div class="choice-grid" id="hypervisorGrid">
+                    <div class="choice-card" data-correct="true">
+                        <strong>Statement A</strong>
+                        <p>A hypervisor manages how physical resources are divided among virtual machines.</p>
+                    </div>
+                    <div class="choice-card" data-correct="false">
+                        <strong>Statement B</strong>
+                        <p>A hypervisor requires each virtual machine to have its own dedicated physical hard drive.</p>
+                    </div>
+                    <div class="choice-card" data-correct="true">
+                        <strong>Statement C</strong>
+                        <p>Multiple operating systems can run simultaneously on the same physical hardware using a hypervisor.</p>
+                    </div>
+                    <div class="choice-card" data-correct="false">
+                        <strong>Statement D</strong>
+                        <p>Type 1 hypervisors must be installed on top of an existing operating system to work.</p>
+                    </div>
+                    <div class="choice-card" data-correct="true">
+                        <strong>Statement E</strong>
+                        <p>VirtualBox is an example of a Type 2 (hosted) hypervisor.</p>
+                    </div>
+                    <div class="choice-card" data-correct="false">
+                        <strong>Statement F</strong>
+                        <p>A hypervisor and a virtual machine are the same thing.</p>
+                    </div>
+                </div>
+                <div class="choice-feedback" id="instFeedback"></div>
+            </div>
+
+            <!-- Concept Check -->
+            <div class="concept-check single-q" data-answer="2">
+                <h4>✅ Concept Check</h4>
+                <p><strong>Question:</strong> A hospital data center runs VMware ESXi directly on bare-metal servers to host dozens of virtual machines. What type of hypervisor is this?</p>
+                <div class="check-option">A) Type 2 — Hosted hypervisor</div>
+                <div class="check-option">B) Type 1 — Bare-metal hypervisor</div>
+                <div class="check-option">C) A guest operating system</div>
+                <div class="check-option">D) A software-defined network</div>
+                <div class="explanation">
+                    <strong>Explanation:</strong> VMware ESXi runs directly on the hardware with no underlying OS — that is the defining characteristic of a Type 1 bare-metal hypervisor. Type 2 hypervisors (like VirtualBox) run on top of an existing OS such as Windows or Linux.
+                </div>
+            </div>
+
+        </div><!-- /lesson1 -->
+    </div><!-- /main-content -->
+</div><!-- /container -->
+</div><!-- /tab-instruction -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 2 — REINFORCEMENT
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div class="container">
+    <div class="main-content">
+
+        <div class="rein-task-header">
+            <div class="rein-task-number">5</div>
+            <div class="rein-task-title">
+                <h2>Virtual Machine Setup Sequence</h2>
+                <span class="rein-task-badge">⬛ DRAG TO REORDER</span>
+            </div>
+        </div>
+
+        <div class="problem-scenario">
+            <h3>📋 Scenario</h3>
+            <p>A help desk technician is setting up a test environment on a Type 2 hypervisor (VirtualBox) on their workstation. They have the correct steps but need to put them in the right order. An out-of-sequence procedure could result in a failed installation or misconfigured VM.</p>
+        </div>
+
+        <div class="key-concept">
+            <strong>Task:</strong> Drag the steps below into the correct sequence for setting up a virtual machine using a Type 2 hypervisor. Step 1 should be at the top.
+        </div>
+
+        <ul class="order-list" id="reinSeqList">
+            <li class="order-item" draggable="true" data-order="4"><span class="order-handle">⠿</span><span class="order-badge">?</span>Allocate resources to the VM: set vCPU count, RAM, and virtual disk size</li>
+            <li class="order-item" draggable="true" data-order="6"><span class="order-handle">⠿</span><span class="order-badge">?</span>Boot the VM and complete the guest OS installation wizard</li>
+            <li class="order-item" draggable="true" data-order="2"><span class="order-handle">⠿</span><span class="order-badge">?</span>Download and install VirtualBox on the host Windows workstation</li>
+            <li class="order-item" draggable="true" data-order="5"><span class="order-handle">⠿</span><span class="order-badge">?</span>Mount the guest OS ISO file (e.g., Ubuntu .iso) to the virtual optical drive</li>
+            <li class="order-item" draggable="true" data-order="1"><span class="order-handle">⠿</span><span class="order-badge">?</span>Verify host machine meets minimum hardware requirements (RAM, storage, CPU virtualization support)</li>
+            <li class="order-item" draggable="true" data-order="3"><span class="order-handle">⠿</span><span class="order-badge">?</span>Create a new VM profile in VirtualBox and select the target OS type</li>
+        </ul>
+
+        <div class="action-row">
+            <button onclick="reinCheckTask()">Submit Sequence</button>
+            <button class="reset-btn" onclick="reinShuffle()">↺ Shuffle</button>
+        </div>
+
+        <div class="rein-feedback" id="reinFb">
+            <div class="rein-fb-header" id="reinFbHeader"></div>
+            <div class="rein-fb-body">
+                <div class="rein-fb-section">
+                    <h4>✅ Correct Sequence &amp; Reasoning</h4>
+                    <div class="why-correct">
+                        <ol style="margin-left:18px; font-size:.9em; color:var(--text-secondary);">
+                            <li style="margin-bottom:8px;"><strong>Verify host hardware requirements</strong> — You must confirm the physical machine has enough RAM, CPU with hardware virtualization (Intel VT-x / AMD-V enabled in BIOS), and storage before installing anything.</li>
+                            <li style="margin-bottom:8px;"><strong>Install VirtualBox on the host</strong> — The Type 2 hypervisor must be installed on the host OS before any VMs can be created. Without the hypervisor, there is no virtualization layer.</li>
+                            <li style="margin-bottom:8px;"><strong>Create a new VM profile</strong> — In VirtualBox, you create a VM "container" first and specify the target OS type so VirtualBox can configure default settings appropriately.</li>
+                            <li style="margin-bottom:8px;"><strong>Allocate resources</strong> — Assign vCPUs, RAM, and virtual disk space to the VM. This must happen before mounting any media or booting.</li>
+                            <li style="margin-bottom:8px;"><strong>Mount the ISO file</strong> — Attach the guest OS installation media (ISO) to the virtual optical drive so the VM has a source to boot from.</li>
+                            <li style="margin-bottom:8px;"><strong>Boot the VM and install</strong> — Power on the VM for the first time. It boots from the ISO, and you complete the OS installation wizard just as you would on physical hardware.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="rein-fb-section">
+                    <h4>❌ Common Sequencing Errors</h4>
+                    <div class="why-wrong">
+                        <ul>
+                            <li>Installing VirtualBox before checking hardware — if the CPU doesn't support hardware virtualization, the install fails or produces errors you can't resolve after the fact.</li>
+                            <li>Booting before mounting the ISO — the VM has no boot media and will display an error or attempt to PXE boot (network boot).</li>
+                            <li>Skipping resource allocation — VirtualBox won't let you create a VM without assigning at least minimal RAM and disk, but manually skipping or deferring this causes immediate errors.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="rein-fb-section">
+                    <h4>🌍 Real-World Application</h4>
+                    <p>This exact sequence applies whether you're using VirtualBox at home, Hyper-V on a workstation, or provisioning VMs in an enterprise VMware environment. The order of operations — verify hardware, install hypervisor, create VM, allocate resources, attach media, install OS — is universal across all Type 2 hypervisors.</p>
+                </div>
+                <div class="rein-fb-section pro-tip">
+                    <strong>💡 Pro Tip:</strong> Always enable hardware virtualization (Intel VT-x or AMD-V) in the BIOS/UEFI before installing a hypervisor. This is the most common reason VM installations fail in lab environments and on the CompTIA exam, this hardware requirement is a tested concept.
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /main-content -->
+</div><!-- /container -->
+</div><!-- /tab-reinforcement -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 3 — CLOUD SERVICE MODELS EXERCISE
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-cloud-exercise">
+<div class="container">
+    <div style="padding-top:10px;">
+
+        <!-- Score row -->
+        <div class="cloud-score-row">
+            <div class="cloud-score-board">
+                <div class="cloud-score-pill s-correct">
+                    <div class="val" id="cloudScoreCorrect">0</div>
+                    <div class="lbl">Correct</div>
+                </div>
+                <div class="cloud-score-pill s-wrong">
+                    <div class="val" id="cloudScoreWrong">0</div>
+                    <div class="lbl">Wrong</div>
+                </div>
+            </div>
+            <button class="cloud-reset-ghost" onclick="cloudResetScenario()">↺ Reset</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend-row">
+            <div class="legend-pill iaas"><div class="legend-dot iaas"></div>IaaS</div>
+            <div class="legend-pill paas"><div class="legend-dot paas"></div>PaaS</div>
+            <div class="legend-pill saas"><div class="legend-dot saas"></div>SaaS</div>
+        </div>
+
+        <!-- Scenario Card -->
+        <div class="cloud-card" id="cloudCard">
+            <div class="cloud-scenario-index">Scenario — Cloud Service Model Recognition</div>
+            <div class="cloud-scenario-text">
+                A company uses a managed container orchestration service to run its Docker containers.
+                Developers define container images and resource requirements in configuration files.
+                The platform automatically schedules containers across nodes, replaces failed containers,
+                and adjusts the number of running instances based on CPU metrics.
+            </div>
+
+            <div class="choices-grid" id="cloudChoicesGrid"></div>
+            <div class="cloud-feedback" id="cloudFeedback"></div>
+
+            <div class="cloud-next-row">
+                <span class="cloud-next-hint" id="cloudNextHint">SELECT THE CLOUD SERVICE MODEL</span>
+                <button class="cloud-try-btn" id="cloudTryBtn" style="display:none;" onclick="cloudResetScenario()">↺ Try Again</button>
+            </div>
+        </div>
+
+    </div>
+</div><!-- /container -->
+</div><!-- /tab-cloud-exercise -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 4 — AI EXERCISE
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-ai-exercise">
+<div class="container" style="max-width:1100px;">
+
+    <!-- Reference Table -->
+    <div class="ref-panel" style="margin-top:16px;">
+        <div class="ref-header" onclick="aiToggleRef()">
+            <span>📋 AI Types Reference Guide — Study this before you begin</span>
+            <span class="ref-toggle" id="aiRefToggle">▲ Hide Table</span>
+        </div>
+        <div class="ref-body" id="aiRefBody">
+            <table class="ref-table">
+                <thead>
+                    <tr><th>Term</th><th>What It Does</th><th>Key Characteristics</th><th>Examples</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="term-name">AI Assistant</span></td>
+                        <td>Performs tasks and responds to commands across multiple systems and apps on behalf of the user</td>
+                        <td>Voice or text input; integrates with calendars, apps, and smart devices; can take actions (send a message, set a reminder, control a device); proactive and multi-functional</td>
+                        <td>Siri, Alexa, Google Assistant, Cortana, Microsoft Copilot</td>
+                    </tr>
+                    <tr>
+                        <td><span class="term-name">AI Chatbot</span></td>
+                        <td>Holds text-based conversations with users, typically to answer questions or guide them to the right resource</td>
+                        <td>Text-based only; responds to questions; usually limited to a specific topic (support, FAQ, customer service); reactive rather than proactive; does not perform actions in other systems</td>
+                        <td>Website support chat, FAQ bots, help desk chat windows</td>
+                    </tr>
+                    <tr>
+                        <td><span class="term-name">Generative AI</span></td>
+                        <td>Creates new content — text, images, code, audio, or video — based on a prompt or input</td>
+                        <td>Produces original output; trained on large data sets; the output is new content that did not exist before; used for writing, art, code generation, and media creation</td>
+                        <td>ChatGPT (text), DALL-E / Midjourney (images), GitHub Copilot (code), Sora (video)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="term-name">Predictive AI</span></td>
+                        <td>Analyzes existing data to forecast future outcomes, detect patterns, or make recommendations</td>
+                        <td>Uses historical data and statistical models; identifies patterns; the output is a prediction, score, or recommendation — not new content; does not create anything new</td>
+                        <td>Fraud detection, spam filters, recommendation engines, weather forecasting</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="ref-note">💡 Tip — The most commonly confused pairs: AI Chatbot vs. AI Assistant (both conversational, but an Assistant takes actions across systems while a Chatbot only answers questions in a chat window), and Generative AI vs. Predictive AI (Generative creates new content from a prompt; Predictive forecasts outcomes from existing data — it does not create anything new).</p>
+        </div>
+    </div>
+
+    <!-- Quiz -->
+    <div class="quiz-grid">
+
+        <!-- Left: Scenario -->
+        <div class="scenario-col">
+            <div class="scenario-card">
+                <div class="scenario-tag"><span class="dot"></span>Scenario</div>
+                <p class="scenario-desc">A software developer is writing a function to sort a list of customer names alphabetically. As she types the first few lines, an AI tool built into her code editor watches her keystrokes and displays a shaded suggestion for the complete function — 12 lines of code she has not written yet. She presses Tab to accept it. The suggested code is a working solution that did not exist in her codebase before the AI produced it.</p>
+
+                <div class="example-box">
+                    <span class="ex-label">Code suggestion</span>
+                    <div class="ex-row">
+                        <span class="ex-who ex-user">User</span>
+                        <span class="ex-text">def sort_customers(customers):  [cursor]</span>
+                    </div>
+                    <div class="ex-row">
+                        <span class="ex-who ex-ai">AI</span>
+                        <span class="ex-text">    # Sort customer list alphabetically by last name
+    return sorted(customers, key=lambda x: x['last_name'].lower())
+
+[12 lines of complete working code suggested]</span>
+                    </div>
+                    <div class="ex-row">
+                        <span class="ex-who ex-out">note</span>
+                        <span class="ex-muted">Developer typed 1 line — AI produced 12 lines of original working code</span>
+                    </div>
+                    <div class="ex-sep"></div>
+                    <div class="ex-row">
+                        <span class="ex-who ex-out">note</span>
+                        <span class="ex-muted">The suggested code did not exist before the AI generated it</span>
+                    </div>
+                </div>
+
+                <button class="hint-btn" onclick="aiToggleHint()">💡 Need a hint?</button>
+                <div class="hint-reveal" id="aiHintReveal">
+                    <p><strong>Hint:</strong> Focus on &ldquo;a working solution that did not exist in her codebase before the AI produced it.&rdquo;</p>
+                </div>
+
+                <div id="aiFeedbackArea"></div>
+
+                <div class="explain-reveal" id="aiExplainReveal">
+                    <div class="explain-reveal-header">
+                        <span class="icon">📖</span>
+                        <span>Generative AI — Code Generation from Context</span>
+                    </div>
+                    <div class="explain-block"><span class="label">Type:</span> Generative AI
+<span class="label">Key identifiers:</span> Produces new code from developer input; the generated code did not exist before; the AI creates, not predicts.
+<span class="label">Why not AI Assistant?</span> An AI Assistant takes actions in external systems. This tool stays within the code editor and produces content.
+<span class="label">Examples in this category:</span> GitHub Copilot, Amazon CodeWhisperer, Tabnine.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Answer choices -->
+        <div class="commands-col">
+            <div class="commands-header">AI Type</div>
+            <button class="cmd-btn" id="ai-btn-assistant"  onclick="aiSelectAnswer('AI Assistant')">AI Assistant</button>
+            <button class="cmd-btn" id="ai-btn-chatbot"    onclick="aiSelectAnswer('AI Chatbot')">AI Chatbot</button>
+            <button class="cmd-btn" id="ai-btn-generative" onclick="aiSelectAnswer('Generative AI')">Generative AI</button>
+            <button class="cmd-btn" id="ai-btn-predictive" onclick="aiSelectAnswer('Predictive AI')">Predictive AI</button>
+        </div>
+
+    </div><!-- /quiz-grid -->
+
+    <div class="reset-wrap">
+        <button class="btn-reset" onclick="aiResetQuestion()">↺ Reset Question</button>
+    </div>
+
+</div><!-- /container -->
+</div><!-- /tab-ai-exercise -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 5 — SCENARIO QUIZ
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-scenario-quiz">
+<div style="max-width:780px; margin:0 auto; padding:32px 20px 48px;">
+
+    <div class="sq-header-block">
+        <div class="sq-module-badge">Module 9 · CompTIA Tech+ FC0-U71</div>
+        <h1 class="sq-title">☁️ Cloud Service Models <span>PBQ</span></h1>
+        <p class="sq-subtitle">IaaS · PaaS · SaaS — Performance-Based Question</p>
+    </div>
+
+    <div class="sq-card">
+        <div class="sq-label">// Scenario</div>
+
+        <div class="sq-scenario">
+            A startup's two-person development team wants to build and launch a Python web application.
+            They have no budget for servers and no system administration staff. They want to push code
+            and have the platform handle runtime, scaling, and OS patching automatically.
+        </div>
+
+        <div class="sq-question">Which cloud service model BEST fits their needs?</div>
+
+        <div class="sq-answers" id="sq-answers">
+            <div class="sq-option" data-index="0" onclick="sqSelectOption(0)">
+                <span class="sq-option-letter">A</span>
+                <span>IaaS</span>
+            </div>
+            <div class="sq-option" data-index="1" onclick="sqSelectOption(1)">
+                <span class="sq-option-letter">B</span>
+                <span>SaaS</span>
+            </div>
+            <div class="sq-option" data-index="2" onclick="sqSelectOption(2)">
+                <span class="sq-option-letter">C</span>
+                <span>PaaS</span>
+            </div>
+            <div class="sq-option" data-index="3" onclick="sqSelectOption(3)">
+                <span class="sq-option-letter">D</span>
+                <span>Hybrid cloud deployment</span>
+            </div>
+        </div>
+
+        <button id="sq-submitBtn" disabled onclick="sqSubmitAnswer()">Submit Answer</button>
+
+        <div class="sq-feedback" id="sq-feedback">
+            <div class="sq-feedback-title" id="sq-feedbackTitle"></div>
+            <div class="sq-feedback-body"  id="sq-feedbackBody"></div>
+        </div>
+
+        <button id="sq-resetBtn" onclick="sqReset()">↺ &nbsp; Try Again</button>
+    </div>
+
+    <div class="sq-footer">Mach IT Training · Module 9 · Lesson 3: IaaS, PaaS &amp; SaaS</div>
+
+</div>
+</div><!-- /tab-scenario-quiz -->
+
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────
+   TAB SWITCHING
+───────────────────────────────────────── */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    var activeTab = document.getElementById('tab-' + tabId);
+    if (activeTab) activeTab.classList.add('active');
+    var btns = document.querySelectorAll('.tab-btn');
+    var map  = { 'instruction':0, 'reinforcement':1, 'cloud-exercise':2, 'ai-exercise':3, 'scenario-quiz':4 };
+    if (map[tabId] !== undefined && btns[map[tabId]]) btns[map[tabId]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 1: INSTRUCTION — Hypervisor Multi-Select
+───────────────────────────────────────── */
+(function() {
+    var cards    = document.querySelectorAll('#hypervisorGrid .choice-card');
+    var selected = [];
+    var max      = 3;
+
+    cards.forEach(function(card, i) {
+        card.addEventListener('click', function() {
+            var id        = String(i);
+            var isCorrect = (card.getAttribute('data-correct') === 'true');
+            var idx       = selected.indexOf(id);
+
+            if (idx > -1) {
+                card.classList.remove('selected', 'wrong');
+                selected.splice(idx, 1);
+                document.getElementById('instFeedback').classList.remove('show');
+                return;
+            }
+            if (selected.length >= max) {
+                var fb = document.getElementById('instFeedback');
+                fb.className = 'choice-feedback error show';
+                fb.innerHTML = '❌ You can only select ' + max + ' options. Deselect one first.';
+                return;
+            }
+            card.classList.add(isCorrect ? 'selected' : 'wrong');
+            selected.push(id);
+
+            if (selected.length === max) {
+                var correctCount = 0;
+                selected.forEach(function(sid) {
+                    if (cards[parseInt(sid)].getAttribute('data-correct') === 'true') correctCount++;
+                });
+                var fb2 = document.getElementById('instFeedback');
+                if (correctCount === max) {
+                    fb2.className = 'choice-feedback success show';
+                    fb2.innerHTML = '✅ Correct! The three true statements are: A — hypervisors manage resource allocation; C — multiple OSes can run simultaneously; E — VirtualBox is a Type 2 hypervisor. Statements B, D, and F are false.';
+                } else {
+                    fb2.className = 'choice-feedback error show';
+                    fb2.innerHTML = '❌ Review the correct answers. Remember: Type 1 runs on bare metal (not on a host OS), VMs share physical storage, and hypervisors and VMs are different things.';
+                }
+            } else {
+                document.getElementById('instFeedback').classList.remove('show');
+            }
+        });
+    });
+})();
+
+
+/* ─────────────────────────────────────────
+   TAB 1: INSTRUCTION — Single-Select Concept Check
+───────────────────────────────────────── */
+(function() {
+    document.querySelectorAll('.single-q').forEach(function(qBlock) {
+        var answer      = qBlock.getAttribute('data-answer');
+        var options     = qBlock.querySelectorAll('.check-option');
+        var explanation = qBlock.querySelector('.explanation');
+
+        options.forEach(function(opt, idx) {
+            opt.addEventListener('click', function() {
+                if (this.classList.contains('disabled')) return;
+                options.forEach(function(o) { o.classList.add('disabled'); });
+                var chosen = idx + 1;
+                if (String(chosen) === answer) {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    options[parseInt(answer) - 1].classList.add('correct');
+                }
+                if (explanation) explanation.classList.add('show');
+            });
+        });
+    });
+})();
+
+
+/* ─────────────────────────────────────────
+   TAB 2: REINFORCEMENT — VM Sequence Ordering
+───────────────────────────────────────── */
+var reinSeqDragging = null;
+
+(function reinInit() {
+    var list = document.getElementById('reinSeqList');
+    list.querySelectorAll('.order-item').forEach(function(item) {
+        item.addEventListener('dragstart', function(e) {
+            reinSeqDragging = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        item.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+            reinUpdateBadges();
+        });
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (reinSeqDragging && reinSeqDragging !== this) {
+                var rect = this.getBoundingClientRect();
+                var mid  = rect.top + rect.height / 2;
+                if (e.clientY < mid) { list.insertBefore(reinSeqDragging, this); }
+                else                 { list.insertBefore(reinSeqDragging, this.nextSibling); }
+            }
+        });
+    });
+    reinShuffle();
+})();
+
+function reinUpdateBadges() {
+    var items = document.querySelectorAll('#reinSeqList .order-item');
+    items.forEach(function(item, i) { item.querySelector('.order-badge').textContent = i + 1; });
+}
+
+function reinCheckTask() {
+    var items       = document.querySelectorAll('#reinSeqList .order-item');
+    var correctOrder = [1, 2, 3, 4, 5, 6];
+    var placed       = [];
+    items.forEach(function(item) { placed.push(parseInt(item.getAttribute('data-order'))); });
+    var correct = placed.every(function(val, i) { return val === correctOrder[i]; });
+
+    var header = document.getElementById('reinFbHeader');
+    var panel  = document.getElementById('reinFb');
+    header.className   = 'rein-fb-header ' + (correct ? 'success' : 'error');
+    header.textContent = correct ? '✅ Correct! Perfect sequence.' : '❌ Sequence incorrect — review the reasoning below.';
+    panel.classList.add('show');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function reinShuffle() {
+    var list  = document.getElementById('reinSeqList');
+    var items = Array.from(list.querySelectorAll('.order-item'));
+    for (var i = items.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        list.insertBefore(items[j], items[i]);
+        var tmp = items[i]; items[i] = items[j]; items[j] = tmp;
+    }
+    items.forEach(function(item) { list.appendChild(item); });
+    reinUpdateBadges();
+    document.getElementById('reinFb').classList.remove('show');
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 3: CLOUD SERVICE MODELS EXERCISE
+───────────────────────────────────────── */
+var cloudSCENARIO = {
+    answer: 'PaaS',
+    explanation: 'Managed container platforms like AWS ECS/EKS (managed), Azure Kubernetes Service, and Google Kubernetes Engine are PaaS. The customer provides container images and configuration; the platform manages the underlying node pool, scheduling, health monitoring, and auto-scaling. This contrasts with running self-managed Kubernetes on IaaS VMs, where the customer manages the control plane.',
+    wrongReasons: {
+        'IaaS': 'Self-managed Kubernetes on IaaS VMs requires provisioning worker nodes, maintaining the control plane, managing etcd, and handling node failures manually. When the provider manages the orchestration cluster and the customer only deploys containers, that management layer makes it PaaS.',
+        'SaaS': 'SaaS is a finished application delivered to end users — not a platform where developers deploy containerized microservices with custom resource configurations. Defining container specs and having a platform manage their execution is developer-facing PaaS activity.'
+    }
+};
+
+var cloudSERVICE_TYPES = ['IaaS', 'PaaS', 'SaaS'];
+var cloudTYPE_CLASS    = { 'IaaS': 'iaas', 'PaaS': 'paas', 'SaaS': 'saas' };
+var cloudCorrectCount  = 0;
+var cloudWrongCount    = 0;
+var cloudAnswered      = false;
+
+function cloudBuildChoices() {
+    var grid = document.getElementById('cloudChoicesGrid');
+    grid.innerHTML = '';
+    cloudSERVICE_TYPES.forEach(function(type) {
+        var btn = document.createElement('button');
+        btn.className   = 'choice-btn ' + cloudTYPE_CLASS[type] + '-btn';
+        btn.textContent = type;
+        btn.id          = 'cloud-choice-' + type;
+        btn.onclick     = function() { cloudHandleChoice(type); };
+        grid.appendChild(btn);
+    });
+}
+
+function cloudHandleChoice(chosen) {
+    if (cloudAnswered) return;
+    cloudAnswered = true;
+
+    var isCorrect = (chosen === cloudSCENARIO.answer);
+    var answerCls = cloudTYPE_CLASS[cloudSCENARIO.answer];
+
+    if (isCorrect) cloudCorrectCount++; else cloudWrongCount++;
+    document.getElementById('cloudScoreCorrect').textContent = cloudCorrectCount;
+    document.getElementById('cloudScoreWrong').textContent   = cloudWrongCount;
+
+    var card = document.getElementById('cloudCard');
+    card.classList.add(isCorrect ? 'correct' : 'wrong');
+
+    cloudSERVICE_TYPES.forEach(function(type) {
+        var btn = document.getElementById('cloud-choice-' + type);
+        btn.disabled = true;
+        if      (type === chosen && isCorrect)               btn.classList.add('selected-correct');
+        else if (type === chosen && !isCorrect)              btn.classList.add('selected-wrong');
+        else if (type === cloudSCENARIO.answer && !isCorrect) btn.classList.add('reveal-correct');
+    });
+
+    var fb = document.getElementById('cloudFeedback');
+    fb.classList.add('show', isCorrect ? 'correct' : 'wrong');
+
+    if (isCorrect) {
+        fb.innerHTML =
+            '<div class="cloud-fb-title">&#x2713; Correct &nbsp;<span class="cloud-badge ' + answerCls + '">' + cloudSCENARIO.answer + '</span></div>' +
+            cloudSCENARIO.explanation;
+    } else {
+        var wrongReason = cloudSCENARIO.wrongReasons && cloudSCENARIO.wrongReasons[chosen]
+            ? cloudSCENARIO.wrongReasons[chosen] : '';
+        var html =
+            '<div class="cloud-fb-title">&#x2717; Incorrect — the answer is &nbsp;<span class="cloud-badge ' + answerCls + '">' + cloudSCENARIO.answer + '</span></div>';
+        if (wrongReason) {
+            html += '<hr class="cloud-divider"><div class="cloud-wrong-label">Why not ' + chosen + '?</div>' +
+                    '<div class="cloud-wrong-reason">' + wrongReason + '</div><hr class="cloud-divider">';
+        }
+        html += cloudSCENARIO.explanation;
+        fb.innerHTML = html;
+    }
+
+    document.getElementById('cloudNextHint').textContent  = '';
+    document.getElementById('cloudTryBtn').style.display = 'inline-block';
+}
+
+function cloudResetScenario() {
+    cloudAnswered = false;
+
+    var card = document.getElementById('cloudCard');
+    card.className = 'cloud-card';
+    void card.offsetWidth; // reflow for re-animation
+
+    var fb = document.getElementById('cloudFeedback');
+    fb.className = 'cloud-feedback';
+    fb.innerHTML = '';
+
+    document.getElementById('cloudNextHint').textContent  = 'SELECT THE CLOUD SERVICE MODEL';
+    document.getElementById('cloudTryBtn').style.display = 'none';
+
+    cloudBuildChoices();
+}
+
+// Boot cloud exercise
+cloudBuildChoices();
+
+
+/* ─────────────────────────────────────────
+   TAB 4: AI EXERCISE
+───────────────────────────────────────── */
+var aiCORRECT = 'Generative AI';
+var aiAnswered = false;
+
+function aiToggleRef() {
+    var body   = document.getElementById('aiRefBody');
+    var toggle = document.getElementById('aiRefToggle');
+    var hidden = body.classList.toggle('hidden');
+    toggle.textContent = hidden ? '▼ Show Table' : '▲ Hide Table';
+}
+
+function aiToggleHint() {
+    document.getElementById('aiHintReveal').classList.toggle('show');
+}
+
+function aiSelectAnswer(term) {
+    if (aiAnswered) return;
+    aiAnswered = true;
+
+    var correct = (term === aiCORRECT);
+    var idMap   = {
+        'AI Assistant':  'ai-btn-assistant',
+        'AI Chatbot':    'ai-btn-chatbot',
+        'Generative AI': 'ai-btn-generative',
+        'Predictive AI': 'ai-btn-predictive'
+    };
+
+    Object.keys(idMap).forEach(function(t) {
+        var btn = document.getElementById(idMap[t]);
+        btn.disabled = true;
+        if (t === aiCORRECT) btn.classList.add('correct');
+        else if (t === term) btn.classList.add('incorrect');
+    });
+
+    var fb = document.getElementById('aiFeedbackArea');
+    var wrongDetail = '';
+    if (!correct) {
+        if (term === 'Predictive AI')  wrongDetail = 'Predictive AI forecasts outcomes; it does not write or produce new content.';
+        else if (term === 'AI Assistant') wrongDetail = 'An AI Assistant takes actions in external systems. This tool only produces content inside the code editor.';
+        else wrongDetail = 'A Chatbot answers questions in a conversation window. This tool creates new code from developer context.';
+    }
+
+    fb.innerHTML = correct
+        ? '<div class="feedback-strip correct"><span class="icon">✓</span><div><div>Correct!</div><div class="explain">Generative AI produces new content from input — the developer typed one line and the AI created 12 lines of working code that did not exist before.</div></div></div>'
+        : '<div class="feedback-strip incorrect"><span class="icon">✗</span><div><div>Incorrect — the correct answer is Generative AI.</div><div class="explain">The AI created original code that did not exist before — that is the defining characteristic of Generative AI. ' + wrongDetail + '</div></div></div>';
+
+    document.getElementById('aiExplainReveal').classList.add('show');
+}
+
+function aiResetQuestion() {
+    aiAnswered = false;
+
+    var idMap = {
+        'AI Assistant':  'ai-btn-assistant',
+        'AI Chatbot':    'ai-btn-chatbot',
+        'Generative AI': 'ai-btn-generative',
+        'Predictive AI': 'ai-btn-predictive'
+    };
+    Object.keys(idMap).forEach(function(t) {
+        var btn = document.getElementById(idMap[t]);
+        btn.disabled = false;
+        btn.classList.remove('correct', 'incorrect');
+    });
+
+    document.getElementById('aiFeedbackArea').innerHTML = '';
+    document.getElementById('aiExplainReveal').classList.remove('show');
+    document.getElementById('aiHintReveal').classList.remove('show');
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 5: SCENARIO QUIZ
+───────────────────────────────────────── */
+var sqCORRECT_INDEX = 2; // PaaS
+var sqSelected      = null;
+var sqLocked        = false;
+
+var sqEXPLANATION =
+    '<strong>✅ Correct Answer: PaaS — deploy code to a managed platform</strong>' +
+    'PaaS (Platform as a Service) provides a complete runtime environment — the startup just writes and pushes code. ' +
+    'The platform handles OS, runtime, scaling, patching, and load balancing. ' +
+    'Examples: Heroku, Google App Engine, AWS Elastic Beanstalk.' +
+    '<strong>Why the others are wrong:</strong>' +
+    'IaaS gives them raw VMs — they\'d still need sysadmins to manage the OS and runtime, which they don\'t have. ' +
+    'SaaS is a finished application they\'d use, not build. ' +
+    'Hybrid cloud is a deployment location model, not a service model.' +
+    '<strong>Pro Tip:</strong>' +
+    'The deciding question is "What does the team NOT want to manage?" ' +
+    'If they don\'t want servers → PaaS. ' +
+    'If they don\'t want the application either → SaaS. ' +
+    'If they want full control → IaaS.';
+
+function sqSelectOption(index) {
+    if (sqLocked) return;
+    sqSelected = index;
+
+    document.querySelectorAll('.sq-option').forEach(function(el, i) {
+        el.classList.toggle('selected', i === index);
+    });
+
+    document.getElementById('sq-submitBtn').disabled = false;
+}
+
+function sqSubmitAnswer() {
+    if (sqSelected === null || sqLocked) return;
+    sqLocked = true;
+
+    var options = document.querySelectorAll('.sq-option');
+    options.forEach(function(el, i) {
+        el.classList.add('locked');
+        if (i === sqCORRECT_INDEX) el.classList.add('correct');
+        if (i === sqSelected && i !== sqCORRECT_INDEX) el.classList.add('incorrect');
+    });
+
+    var isCorrect   = (sqSelected === sqCORRECT_INDEX);
+    var feedbackEl  = document.getElementById('sq-feedback');
+    var titleEl     = document.getElementById('sq-feedbackTitle');
+    var bodyEl      = document.getElementById('sq-feedbackBody');
+
+    feedbackEl.className = 'sq-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    titleEl.textContent  = isCorrect ? '✅  Correct!' : '❌  Incorrect';
+    bodyEl.innerHTML     = sqEXPLANATION;
+
+    document.getElementById('sq-submitBtn').disabled = true;
+    document.getElementById('sq-resetBtn').classList.add('show');
+
+    setTimeout(function() { feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+}
+
+function sqReset() {
+    sqSelected = null;
+    sqLocked   = false;
+
+    document.querySelectorAll('.sq-option').forEach(function(el) {
+        el.className = 'sq-option';
+    });
+
+    document.getElementById('sq-feedback').className = 'sq-feedback';
+    document.getElementById('sq-submitBtn').disabled = true;
+    document.getElementById('sq-resetBtn').classList.remove('show');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+</script>
+</body>
+</html>

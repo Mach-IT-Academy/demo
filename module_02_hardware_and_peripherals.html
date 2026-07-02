@@ -1,0 +1,818 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod 2 – Hardware &amp; Peripherals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#6366f1; --accent-secondary:#8b5cf6;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(-8px)}  to{opacity:1;transform:translateY(0)} }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        }
+        .page-header h1 { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:0.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px; border-radius:8px;
+            font-weight:600; cursor:pointer; transition:all .2s;
+            font-family:'Inter',sans-serif; font-size:.88em; white-space:nowrap;
+        }
+        .tab-btn:hover  { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content        { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           GLOBAL BUTTON
+        ═══════════════════════════════════════════ */
+        button {
+            background:var(--accent-primary); color:#fff; border:none; padding:11px 22px;
+            border-radius:6px; font-weight:600; cursor:pointer; transition:all .25s;
+            font-family:'Inter',sans-serif; font-size:.95em; margin:5px 5px 5px 0;
+        }
+        button:hover    { background:var(--accent-secondary); transform:translateY(-2px); }
+        button.secondary { background:var(--bg-tertiary); color:var(--text-primary); border:2px solid var(--border-color); }
+        button.secondary:hover { background:var(--bg-primary); border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           SHARED COMPONENTS
+        ═══════════════════════════════════════════ */
+        .container    { max-width:1400px; margin:0 auto; padding:20px; }
+        .main-content { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .lesson h2    { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+
+        .problem-scenario    { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+
+        .visual-demo    { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .visual-demo h3 { margin-bottom:12px; }
+
+        .key-concept       { background:rgba(99,102,241,.1); padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid var(--accent-primary); }
+        .key-concept strong { color:var(--accent-primary); }
+
+        .interactive-section    { background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+
+        .data-structure { display:flex; gap:18px; margin:18px 0; flex-wrap:wrap; }
+        .data-card      { background:var(--bg-tertiary); padding:16px; border-radius:8px; flex:1; min-width:200px; border:2px solid var(--border-color); transition:all .25s; }
+        .data-card:hover { border-color:var(--accent-primary); transform:translateY(-4px); }
+        .data-card h4   { color:var(--accent-secondary); margin-bottom:8px; }
+
+        .concept-check    { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .concept-check h4 { color:var(--accent-warning); margin-bottom:12px; }
+        .check-option          { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .check-option:hover    { border-color:var(--accent-primary); }
+        .check-option.correct  { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .check-option.incorrect{ border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .check-option.disabled { pointer-events:none; }
+        .explanation      { background:rgba(139,92,246,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-secondary); display:none; }
+        .explanation.show { display:block; animation:fadeIn .3s ease; }
+
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th,td { padding:11px; text-align:left; border-bottom:1px solid var(--border-color); }
+        th    { background:var(--accent-primary); color:#fff; font-weight:600; }
+        tr:hover { background:var(--bg-tertiary); }
+
+        .feedback-box-shared       { margin-top:14px; padding:14px; border-radius:8px; display:none; }
+        .feedback-box-shared.show  { display:block; animation:slideIn .3s ease; }
+        .feedback-box-shared.success { background:rgba(16,185,129,.2); border-left:4px solid var(--accent-success); }
+        .feedback-box-shared.error   { background:rgba(239,68,68,.2);  border-left:4px solid var(--accent-error); }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION SPECIFIC
+        ═══════════════════════════════════════════ */
+        .matching-container  { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:18px 0; }
+        .draggable-items     { display:flex; flex-direction:column; gap:10px; }
+        .drag-item           { background:var(--bg-tertiary); padding:14px; border-radius:8px; border:2px solid var(--border-color); cursor:move; transition:all .25s; user-select:none; }
+        .drag-item:hover     { border-color:var(--accent-primary); }
+        .drag-item.dragging  { opacity:0.5; }
+        .drop-zone           { background:var(--bg-primary); padding:14px; border-radius:8px; border:2px dashed var(--border-color); min-height:60px; margin-bottom:10px; transition:all .25s; }
+        .drop-zone.drag-over { border-color:var(--accent-primary); background:rgba(99,102,241,.1); }
+        .drop-zone.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.1); }
+        .drop-zone.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.1); }
+        .drop-zone-label     { font-weight:600; color:var(--accent-secondary); margin-bottom:8px; }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT SPECIFIC
+        ═══════════════════════════════════════════ */
+        .scenario-box    { background:var(--bg-secondary); border-radius:12px; padding:25px; margin-bottom:25px; border-left:5px solid var(--accent-warning); }
+        .scenario-box h2 { color:var(--accent-warning); margin-bottom:12px; font-size:1.4em; }
+
+        .task-container  { background:var(--bg-secondary); border-radius:12px; padding:25px; margin-bottom:25px; }
+        .task-header     { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+        .task-number     { background:var(--accent-primary); color:#fff; padding:8px 16px; border-radius:20px; font-weight:700; }
+        .instructions    { background:rgba(99,102,241,.1); padding:15px; border-radius:8px; margin:15px 0; border-left:4px solid var(--accent-primary); }
+        .instructions ul { margin-left:20px; margin-top:8px; }
+        .instructions li { margin:5px 0; }
+
+        .workspace   { background:var(--bg-primary); border:2px solid var(--border-color); border-radius:8px; padding:20px; margin:20px 0; min-height:200px; }
+        .port-visual { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:15px; margin:20px 0; }
+        .port-card   { background:var(--bg-tertiary); padding:18px; border-radius:8px; border:2px solid var(--border-color); text-align:center; cursor:pointer; transition:all .25s; }
+        .port-card:hover    { border-color:var(--accent-primary); transform:scale(1.05); }
+        .port-card.selected { border-color:var(--accent-success); background:rgba(16,185,129,.15); }
+        .port-card.wrong    { border-color:var(--accent-error);   background:rgba(239,68,68,.15); }
+        .port-icon  { font-size:2.5em; margin-bottom:10px; }
+        .port-name  { font-weight:700; color:var(--accent-primary); margin-bottom:6px; }
+        .port-specs { font-size:.85em; color:var(--text-secondary); }
+
+        .feedback      { margin-top:15px; padding:15px; border-radius:8px; display:none; }
+        .feedback.show { display:block; animation:slideIn .3s ease; }
+        .feedback.success { background:rgba(16,185,129,.2); border-left:4px solid var(--accent-success); }
+        .feedback.error   { background:rgba(239,68,68,.2);  border-left:4px solid var(--accent-error); }
+
+        /* ═══════════════════════════════════════════
+           TAB 3 — CONNECTIONS EXERCISE SPECIFIC
+        ═══════════════════════════════════════════ */
+        .quiz-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
+        @media(max-width:680px){ .quiz-grid { grid-template-columns:1fr; } }
+
+        .ce-scenario-card {
+            background:var(--bg-secondary); border-radius:12px; padding:26px;
+            border:2px solid var(--border-color); animation:fadeIn .4s ease;
+        }
+        .ce-scenario-tag {
+            display:inline-flex; align-items:center; gap:7px;
+            background:rgba(99,102,241,.15); color:var(--accent-primary);
+            font-size:.82em; font-weight:600; padding:4px 11px; border-radius:20px;
+            margin-bottom:14px; width:fit-content;
+        }
+        .ce-scenario-tag .dot { width:7px; height:7px; border-radius:50%; background:var(--accent-primary); }
+        .ce-scenario-title { color:var(--accent-warning); font-weight:700; font-size:1.05em; margin-bottom:8px; }
+        .ce-scenario-desc  { color:var(--text-secondary); font-size:.95em; line-height:1.7; }
+        .ce-question-prompt {
+            margin-top:14px; padding:12px 16px; background:rgba(99,102,241,.1);
+            border-radius:8px; border-left:4px solid var(--accent-primary);
+            color:var(--text-primary); font-weight:600; font-size:.95em; line-height:1.6;
+        }
+
+        .hint-btn {
+            display:inline-flex; align-items:center; gap:6px;
+            background:rgba(245,158,11,.15); border:2px solid var(--accent-warning);
+            color:var(--accent-warning); font-size:.85em; font-weight:600;
+            padding:8px 14px; border-radius:6px; cursor:pointer;
+            transition:all .2s; margin-top:14px;
+        }
+        .hint-btn:hover { background:rgba(245,158,11,.25); transform:translateY(-1px); }
+        .hint-reveal {
+            background:var(--bg-tertiary); border-radius:8px; padding:14px 16px;
+            border-left:4px solid var(--accent-warning); margin-top:10px;
+            max-height:0; overflow:hidden; opacity:0;
+            transition:max-height .4s ease, opacity .3s ease;
+        }
+        .hint-reveal.show { max-height:180px; opacity:1; }
+        .hint-reveal strong { color:var(--accent-warning); }
+
+        .commands-col    { background:var(--bg-secondary); border-radius:12px; border:2px solid var(--border-color); overflow:hidden; display:flex; flex-direction:column; }
+        .commands-header { background:var(--bg-tertiary); padding:14px 18px; font-size:.82em; font-weight:700; color:var(--accent-primary); letter-spacing:.06em; text-transform:uppercase; border-bottom:2px solid var(--border-color); }
+        .commands-list   { padding:12px; display:flex; flex-direction:column; gap:8px; }
+
+        .cmd-btn { background:var(--bg-tertiary); border:2px solid var(--border-color); color:var(--text-primary); padding:11px 16px; border-radius:8px; text-align:left; font-size:.92em; font-weight:600; cursor:pointer; transition:all .18s; font-family:'Inter',sans-serif; }
+        .cmd-btn:hover:not(:disabled)  { border-color:var(--accent-primary); background:rgba(99,102,241,.1); transform:translateX(2px); }
+        .cmd-btn.selected { border-color:var(--accent-primary); background:rgba(99,102,241,.18); color:var(--accent-primary); }
+        .cmd-btn.correct  { border-color:var(--accent-success); background:rgba(16,185,129,.15); color:var(--accent-success); }
+        .cmd-btn.wrong    { border-color:var(--accent-error);   background:rgba(239,68,68,.12);  color:var(--accent-error); }
+        .cmd-btn:disabled { cursor:default; opacity:.7; }
+
+        .feedback-strip      { display:none; align-items:flex-start; gap:12px; padding:13px 18px; border-radius:8px; font-size:.93em; font-weight:600; margin-top:14px; animation:slideIn .3s ease; }
+        .feedback-strip.show { display:flex; }
+        .feedback-strip.correct-fb { background:rgba(16,185,129,.12); border:1.5px solid var(--accent-success); color:var(--accent-success); }
+        .feedback-strip.wrong-fb   { background:rgba(239,68,68,.1);   border:1.5px solid var(--accent-error);   color:var(--accent-error); }
+        .feedback-strip .fb-icon   { font-size:1.3em; flex-shrink:0; }
+        .feedback-strip .fb-msg    { line-height:1.5; }
+        .feedback-strip .fb-msg small { display:block; font-weight:400; font-size:.88em; opacity:.85; margin-top:2px; }
+
+        .explain-reveal {
+            background:var(--bg-primary); border:2px solid var(--border-color); border-radius:10px;
+            overflow:hidden; margin-top:14px; max-height:0;
+            transition:max-height .5s cubic-bezier(.4,0,.2,1), opacity .35s ease; opacity:0;
+        }
+        .explain-reveal.show { max-height:500px; opacity:1; }
+        .explain-reveal-header { display:flex; align-items:center; gap:10px; padding:11px 16px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); }
+        .explain-reveal-header span { font-size:.88em; font-weight:600; color:var(--accent-primary); }
+        .explain-block { padding:16px; font-size:.9em; line-height:1.8; color:var(--text-secondary); overflow-y:auto; max-height:360px; }
+        .explain-block .label { color:var(--accent-success); font-weight:700; }
+
+        .btn-reset {
+            background:transparent; border:2px solid var(--accent-warning);
+            color:var(--accent-warning); font-size:.9em; font-weight:700;
+            padding:10px 26px; border-radius:8px; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif;
+        }
+        .btn-reset:hover { background:rgba(245,158,11,.12); transform:translateY(-1px); }
+        .ce-controls { display:flex; justify-content:center; margin-top:24px; }
+
+        /* ═══════════════════════════════════════════
+           TAB 4 — SCENARIO QUIZ SPECIFIC
+        ═══════════════════════════════════════════ */
+        .quiz-container  { background:var(--bg-secondary); border-radius:12px; padding:28px; margin-bottom:24px; }
+        .topic-badge     { display:inline-block; background:var(--accent-warning); color:#1a1d29; font-weight:700; font-size:.85em; padding:5px 14px; border-radius:20px; margin-bottom:20px; letter-spacing:.03em; }
+        #tab-quiz .scenario-text { background:var(--bg-tertiary); padding:20px; border-radius:8px; border-left:4px solid var(--accent-warning); margin-bottom:24px; font-size:1.05em; line-height:1.7; }
+        .question-text  { font-size:1.1em; font-weight:600; color:var(--text-primary); margin-bottom:20px; }
+        .answers-grid   { display:grid; gap:12px; margin-bottom:20px; }
+        .answer-option  { background:var(--bg-tertiary); border:2px solid var(--border-color); padding:16px 20px; border-radius:8px; cursor:pointer; transition:all .2s; font-size:1em; }
+        .answer-option:hover:not(.disabled) { border-color:var(--accent-primary); transform:translateX(4px); }
+        .answer-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); }
+        .answer-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15); }
+        .answer-option.disabled  { cursor:not-allowed; opacity:.8; }
+
+        .sq-feedback-box       { background:var(--bg-primary); border-radius:8px; padding:20px; margin-top:20px; border-left:4px solid var(--accent-success); display:none; animation:slideIn .3s ease; }
+        .sq-feedback-box.show  { display:block; }
+        .sq-feedback-box.incorrect-feedback { border-left-color:var(--accent-error); }
+        .sq-feedback-header    { display:flex; align-items:center; gap:10px; font-size:1.2em; font-weight:700; margin-bottom:12px; }
+        .sq-feedback-icon      { font-size:1.4em; }
+        .sq-feedback-explanation { color:var(--text-secondary); line-height:1.7; margin-top:12px; }
+        .sq-feedback-explanation strong { color:var(--text-primary); display:block; margin-bottom:6px; }
+        .quiz-controls { display:flex; justify-content:center; margin-top:24px; }
+        .quiz-reset-btn { background:var(--accent-warning); color:#1a1d29; }
+        .quiz-reset-btn:hover { background:#d97706; }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <h1>🔌 Mod 2 – Hardware &amp; Peripherals</h1>
+    <p class="subtitle">CompTIA Tech+ FC0-U71 Aligned | Full Module</p>
+</div>
+
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('instruction')">📚 Instruction</button>
+    <button class="tab-btn"        onclick="switchTab('reinforcement')">⚡ Challenge Tasks</button>
+    <button class="tab-btn"        onclick="switchTab('connections')">🔌 Connections Exercise</button>
+    <button class="tab-btn"        onclick="switchTab('quiz')">📝 Scenario Quiz</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB 1 — INSTRUCTION (Instr Pt 2 — Lesson 7)
+════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="container">
+    <div class="main-content">
+        <div class="lesson" id="lesson7">
+            <h2>Lesson 7: Wired Networking and Telephone Connectors</h2>
+
+            <div class="key-concept">
+                <strong>Network Connection Types:</strong> Wired networks use <strong>RJ45</strong> (Ethernet) connectors for twisted-pair copper cables, and <strong>SFP</strong> (Small Form-Factor Pluggable) connectors for fiber-optic cables. Telephone modems use <strong>RJ11</strong> connectors. Understanding these connectors is essential for network troubleshooting.
+            </div>
+
+            <div class="problem-scenario">
+                <h3>📋 Scenario</h3>
+                <p>A small business owner accidentally plugged their telephone cable into their computer's Ethernet port and can't get online. Meanwhile, IT is installing fiber connections in the server room. You need to explain the different network and telephone connectors to prevent confusion.</p>
+            </div>
+
+            <div class="visual-demo">
+                <h3>Network and Telephone Connector Comparison</h3>
+                <div class="data-structure">
+                    <div class="data-card">
+                        <h4>🔌 RJ45 (Ethernet Connector)</h4>
+                        <p><strong>Use:</strong> Twisted-pair copper network cables</p>
+                        <ul style="margin-top:8px;font-size:.88em;color:var(--text-secondary);padding-left:20px;">
+                            <li><strong>Pins:</strong> 8 pins (8P8C modular connector)</li>
+                            <li><strong>Cable Type:</strong> Cat5e, Cat6, Cat6a, Cat7</li>
+                            <li><strong>Speed:</strong> 1 Gbps (Cat5e), 10 Gbps (Cat6a), up to 100 Gbps (Cat8)</li>
+                            <li><strong>Purpose:</strong> Ethernet networking (LAN connections)</li>
+                            <li><strong>Max Distance:</strong> 100 meters (328 feet) typical</li>
+                            <li><strong>Found on:</strong> Computers, switches, routers, access points</li>
+                            <li><strong>Note:</strong> Larger than RJ11, won't fit in phone jacks</li>
+                        </ul>
+                    </div>
+                    <div class="data-card">
+                        <h4>📞 RJ11 (Telephone Connector)</h4>
+                        <p><strong>Use:</strong> Telephone lines and DSL modems</p>
+                        <ul style="margin-top:8px;font-size:.88em;color:var(--text-secondary);padding-left:20px;">
+                            <li><strong>Pins:</strong> 4 or 6 pins (4P4C or 6P4C), only 2 used for phone</li>
+                            <li><strong>Cable Type:</strong> Standard telephone cable</li>
+                            <li><strong>Speed:</strong> Up to 56 Kbps (dial-up), 24 Mbps (DSL)</li>
+                            <li><strong>Purpose:</strong> Landline telephones, dial-up/DSL modems, fax</li>
+                            <li><strong>Found on:</strong> Phones, modems, wall phone jacks</li>
+                            <li><strong>Note:</strong> Smaller than RJ45, WILL physically fit in Ethernet port (but won't work)</li>
+                        </ul>
+                    </div>
+                    <div class="data-card">
+                        <h4>💡 SFP (Small Form-Factor Pluggable)</h4>
+                        <p><strong>Use:</strong> Fiber-optic network connections</p>
+                        <ul style="margin-top:8px;font-size:.88em;color:var(--text-secondary);padding-left:20px;">
+                            <li><strong>Type:</strong> Hot-swappable transceiver module</li>
+                            <li><strong>Cable:</strong> Fiber-optic cable (glass/plastic fiber)</li>
+                            <li><strong>Speed:</strong> 1 Gbps (SFP), 10 Gbps (SFP+), 25/100 Gbps (newer)</li>
+                            <li><strong>Purpose:</strong> High-speed, long-distance data transmission</li>
+                            <li><strong>Max Distance:</strong> Up to 40–80 km (depending on fiber type)</li>
+                            <li><strong>Found on:</strong> Enterprise switches, routers, fiber patch panels</li>
+                            <li><strong>Advantages:</strong> Immune to EMI, very high bandwidth, long distance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="margin-top:18px;padding:14px;background:var(--bg-tertiary);border-radius:8px;">
+                    <strong style="color:var(--accent-primary);">🔍 Quick Visual Identification:</strong>
+                    <table style="margin-top:10px;">
+                        <tr><th>Connector</th><th>Size</th><th>Pins Visible</th><th>Where You'll See It</th></tr>
+                        <tr><td>RJ45</td><td>Larger (~11.7mm wide)</td><td>8 gold pins in clear plastic</td><td>Computer Ethernet port, network cables</td></tr>
+                        <tr><td>RJ11</td><td>Smaller (~9.7mm wide)</td><td>4 or 6 pins (2 used), often gold</td><td>Telephone wall jack, landline phones</td></tr>
+                        <tr><td>SFP</td><td>Module format</td><td>Optical connectors (LC/SC)</td><td>Enterprise switches/routers, data centers</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="interactive-section">
+                <h3>🎯 Interactive Challenge: Match Connector to Cable Type</h3>
+                <p>Drag each cable type to its correct connector:</p>
+
+                <div class="matching-container">
+                    <div class="draggable-items" id="cableItems">
+                        <div class="drag-item" data-cable="rj45" draggable="true">Cat6 twisted-pair copper cable</div>
+                        <div class="drag-item" data-cable="rj11" draggable="true">Standard telephone line</div>
+                        <div class="drag-item" data-cable="sfp"  draggable="true">Fiber-optic cable</div>
+                        <div class="drag-item" data-cable="rj45" draggable="true">Ethernet network cable</div>
+                        <div class="drag-item" data-cable="rj11" draggable="true">DSL modem connection</div>
+                    </div>
+                    <div id="cableZones">
+                        <div class="drop-zone" data-correct="rj45"><div class="drop-zone-label">🔌 RJ45 (8-pin, Ethernet)</div></div>
+                        <div class="drop-zone" data-correct="rj11"><div class="drop-zone-label">📞 RJ11 (4/6-pin, Phone)</div></div>
+                        <div class="drop-zone" data-correct="sfp"><div class="drop-zone-label">💡 SFP (Fiber Module)</div></div>
+                    </div>
+                </div>
+                <button id="checkCables" style="margin-top:12px;">Check My Answers</button>
+                <div class="feedback-box-shared" id="feedback7"></div>
+            </div>
+
+            <div class="concept-check single-q" data-answer="2">
+                <h4>✅ Concept Check</h4>
+                <p><strong>Question:</strong> Which connector is used for connecting computers to Ethernet networks using twisted-pair copper cables?</p>
+                <div class="check-option">A) RJ11 (smaller phone connector)</div>
+                <div class="check-option">B) RJ45 (8-pin Ethernet connector)</div>
+                <div class="check-option">C) SFP (fiber-optic module)</div>
+                <div class="check-option">D) USB-C (multipurpose connector)</div>
+                <div class="explanation">
+                    <strong>Explanation:</strong> <strong>RJ45</strong> is the standard Ethernet connector used for twisted-pair copper cables (Cat5e, Cat6, etc.). It has 8 pins and is found on computers, switches, and routers for LAN connections. RJ11 is for telephones. SFP is for fiber optics. USB-C can carry Ethernet via adapters but isn't the direct Ethernet connector.
+                </div>
+            </div>
+
+        </div><!-- /lesson7 -->
+    </div>
+</div>
+</div><!-- /tab-instruction -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 2 — REINFORCEMENT (Rein Pt 2)
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div style="max-width:1200px;margin:0 auto;padding:20px;">
+
+    <div class="scenario-box">
+        <h2>📋 Scenario</h2>
+        <p>You are an IT support technician setting up a new office. You need to identify connectors, select appropriate cables and tools, configure peripherals, and ensure all equipment is properly connected. Complete each task using the interactive simulations below.</p>
+    </div>
+
+    <div class="task-container">
+        <div class="task-header">
+            <div class="task-number">Task 1</div>
+            <h3>Identify Input Device Connectors</h3>
+        </div>
+        <p><strong>Scenario:</strong> You have three different keyboards and mice to connect. Identify the correct connector type for each device based on the description.</p>
+
+        <div class="instructions">
+            <strong>Instructions:</strong>
+            <ul>
+                <li>Read each device description carefully</li>
+                <li>Select the appropriate connector type from the options</li>
+                <li>Consider both modern and legacy connection standards</li>
+            </ul>
+        </div>
+
+        <div class="workspace">
+            <div style="margin-bottom:25px;padding:15px;background:var(--bg-tertiary);border-radius:8px;">
+                <strong style="color:var(--accent-warning);">Device 1:</strong> Modern wireless keyboard with USB dongle receiver
+                <div class="port-visual" style="margin-top:15px;grid-template-columns:repeat(3,1fr);">
+                    <div class="port-card" onclick="selectPort(this, 1, 'usb-a')"><div class="port-icon">🔌</div><div class="port-name">USB-A</div><div class="port-specs">Rectangular, 4 pins</div></div>
+                    <div class="port-card" onclick="selectPort(this, 1, 'ps2')"><div class="port-icon">⚫</div><div class="port-name">PS/2</div><div class="port-specs">Round, 6 pins</div></div>
+                    <div class="port-card" onclick="selectPort(this, 1, 'serial')"><div class="port-icon">🔧</div><div class="port-name">Serial (DB9)</div><div class="port-specs">D-shaped, 9 pins</div></div>
+                </div>
+            </div>
+            <div style="margin-bottom:25px;padding:15px;background:var(--bg-tertiary);border-radius:8px;">
+                <strong style="color:var(--accent-warning);">Device 2:</strong> Legacy mouse from 2002 with purple round connector
+                <div class="port-visual" style="margin-top:15px;grid-template-columns:repeat(3,1fr);">
+                    <div class="port-card" onclick="selectPort(this, 2, 'usb-a')"><div class="port-icon">🔌</div><div class="port-name">USB-A</div><div class="port-specs">Rectangular, 4 pins</div></div>
+                    <div class="port-card" onclick="selectPort(this, 2, 'ps2')"><div class="port-icon">⚫</div><div class="port-name">PS/2</div><div class="port-specs">Round, 6 pins</div></div>
+                    <div class="port-card" onclick="selectPort(this, 2, 'serial')"><div class="port-icon">🔧</div><div class="port-name">Serial (DB9)</div><div class="port-specs">D-shaped, 9 pins</div></div>
+                </div>
+            </div>
+            <div style="padding:15px;background:var(--bg-tertiary);border-radius:8px;">
+                <strong style="color:var(--accent-warning);">Device 3:</strong> Modern laptop with USB-C only, need to connect wired keyboard
+                <div class="port-visual" style="margin-top:15px;grid-template-columns:repeat(3,1fr);">
+                    <div class="port-card" onclick="selectPort(this, 3, 'usb-a')"><div class="port-icon">🔌</div><div class="port-name">USB-A to USB-C</div><div class="port-specs">With adapter</div></div>
+                    <div class="port-card" onclick="selectPort(this, 3, 'usb-c')"><div class="port-icon">🔄</div><div class="port-name">USB-C</div><div class="port-specs">Reversible, oval</div></div>
+                    <div class="port-card" onclick="selectPort(this, 3, 'ps2')"><div class="port-icon">⚫</div><div class="port-name">PS/2 to USB-C</div><div class="port-specs">With adapter</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center;margin-top:20px;">
+            <button onclick="checkTask1()">Check Answers</button>
+            <button class="secondary" onclick="resetTask1()">Reset</button>
+        </div>
+        <div id="feedback1" class="feedback"></div>
+    </div>
+
+</div>
+</div><!-- /tab-reinforcement -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 3 — CONNECTIONS EXERCISE
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-connections">
+<div style="max-width:1100px;margin:0 auto;padding:24px 20px;">
+
+    <div class="quiz-grid">
+        <!-- LEFT: Scenario -->
+        <div class="ce-scenario-card">
+            <div class="ce-scenario-tag"><span class="dot"></span> Scenario — Graphics Card Upgrade</div>
+            <div class="ce-scenario-title">Graphics Card Upgrade Compatibility</div>
+            <p class="ce-scenario-desc">
+                A technician is upgrading the graphics card in a small business workstation. The existing monitor has a single video input: a wide, rectangular multi-pin connector that the manufacturer states supports both analog and digital video signals. The replacement graphics card must include a matching output port to avoid purchasing an adapter.
+            </p>
+            <div class="ce-question-prompt">
+                Which connector type must the new graphics card include to remain compatible with the existing monitor?
+            </div>
+
+            <button class="hint-btn" id="hintBtn" onclick="toggleHint()">💡 Need a hint?</button>
+            <div class="hint-reveal" id="hintReveal">
+                <strong>Hint:</strong> Focus on &ldquo;supports both analog and digital video signals.&rdquo;
+            </div>
+
+            <div class="feedback-strip" id="ceFeedback">
+                <span class="fb-icon" id="ceFbIcon"></span>
+                <div class="fb-msg" id="ceFbMsg"></div>
+            </div>
+
+            <div class="explain-reveal" id="explainReveal">
+                <div class="explain-reveal-header">
+                    <span>📖 DVI — Transition Between Analog and Digital Eras</span>
+                </div>
+                <div class="explain-block">
+                    <p><span class="label">Explanation:</span> DVI connectors were the industry's transition technology between analog VGA and modern digital-only standards. A monitor with a DVI input that supports both signal types requires a matching DVI port on the graphics card for an adapter-free connection. Without it, the technician would need a DVI-to-HDMI or DVI-to-DisplayPort adapter.</p>
+                    <br>
+                    <p><span class="label">Function:</span> Provides backward compatibility between analog and digital video equipment through a single connector.</p>
+                    <br>
+                    <p><span class="label">In this scenario:</span> The workstation's monitor requires DVI because it was manufactured before HDMI and DisplayPort became universal standards.</p>
+                    <br>
+                    <p><span class="label">Key distinction:</span> DVI bridges the CRT-to-LCD transition; HDMI and DisplayPort replaced it for purely digital connections on newer equipment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Connector choices -->
+        <div class="commands-col">
+            <div class="commands-header">Connector Types</div>
+            <div class="commands-list" id="commandsList">
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'DisplayPort')">DisplayPort</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'DVI')">DVI</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'HDMI')">HDMI</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'Lightning')">Lightning</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'Parallel')">Parallel</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'PS/2')">PS/2</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'RJ11')">RJ11</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'RJ45')">RJ45</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'Serial (RS-232)')">Serial (RS-232)</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'Thunderbolt')">Thunderbolt</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'USB-A')">USB-A</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'USB-C')">USB-C</button>
+                <button class="cmd-btn" onclick="ceSelectAnswer(this, 'VGA')">VGA</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ce-controls">
+        <button class="btn-reset" onclick="ceResetQuestion()">↺ Reset Question</button>
+    </div>
+
+</div>
+</div><!-- /tab-connections -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 4 — SCENARIO QUIZ
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+<div style="max-width:800px;margin:0 auto;padding:20px;">
+
+    <div class="quiz-container">
+        <div class="scenario-text">
+            Mach Regional Medical Center is installing contactless payment terminals in the hospital gift shop and cafeteria. Customers make purchases by tapping their smartphone or credit card against the terminal from about 4 centimeters away. The IT team needs to identify the wireless technology that enables this.
+        </div>
+        <div class="question-text">Which wireless technology enables this very short-range, tap-to-pay communication?</div>
+        <div class="answers-grid" id="sqAnswersGrid">
+            <!-- rendered by sqRenderAnswers() -->
+        </div>
+        <div class="sq-feedback-box" id="sqFeedbackBox">
+            <div class="sq-feedback-header">
+                <span class="sq-feedback-icon" id="sqFeedbackIcon"></span>
+                <span id="sqFeedbackLabel"></span>
+            </div>
+            <div class="sq-feedback-explanation" id="sqFeedbackExplanation"></div>
+        </div>
+    </div>
+
+    <div class="quiz-controls">
+        <button class="quiz-reset-btn" onclick="sqResetQuestion()">🔄 Try Again</button>
+    </div>
+
+</div>
+</div><!-- /tab-quiz -->
+
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────
+   TAB SWITCHING
+───────────────────────────────────────── */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    var el = document.getElementById('tab-' + tabId);
+    if (el) el.classList.add('active');
+    var map = { instruction:0, reinforcement:1, connections:2, quiz:3 };
+    var btns = document.querySelectorAll('.tab-btn');
+    if (map[tabId] !== undefined && btns[map[tabId]]) btns[map[tabId]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─────────────────────────────────────────
+   TAB 1: INSTRUCTION — Cable Drag-Drop + Concept Check
+───────────────────────────────────────── */
+(function () {
+    var draggedItem = null;
+    var items = document.querySelectorAll('#cableItems .drag-item');
+    var zones = document.querySelectorAll('#cableZones .drop-zone');
+
+    items.forEach(function (item) {
+        item.addEventListener('dragstart', function (e) { draggedItem = this; this.classList.add('dragging'); });
+        item.addEventListener('dragend',   function ()  { this.classList.remove('dragging'); });
+    });
+
+    zones.forEach(function (zone) {
+        zone.addEventListener('dragover', function (e) { e.preventDefault(); });
+        zone.addEventListener('drop',     function (e) {
+            e.preventDefault();
+            if (draggedItem) this.appendChild(draggedItem);
+        });
+    });
+
+    document.getElementById('checkCables').addEventListener('click', function () {
+        var correct = true;
+        var rj45Count = 0, rj11Count = 0, sfpCount = 0;
+
+        zones.forEach(function (zone) {
+            var expectedType = zone.getAttribute('data-correct');
+            zone.querySelectorAll('.drag-item').forEach(function (item) {
+                var cableType = item.getAttribute('data-cable');
+                if (cableType === 'rj45') rj45Count++;
+                if (cableType === 'rj11') rj11Count++;
+                if (cableType === 'sfp')  sfpCount++;
+                if (cableType !== expectedType) correct = false;
+            });
+        });
+
+        if (rj45Count !== 2 || rj11Count !== 2 || sfpCount !== 1) correct = false;
+
+        zones.forEach(function (zone) {
+            zone.classList.remove('correct', 'incorrect');
+            var expectedType = zone.getAttribute('data-correct');
+            var zoneItems    = zone.querySelectorAll('.drag-item');
+            var zoneCorrect  = true;
+            zoneItems.forEach(function (item) {
+                if (item.getAttribute('data-cable') !== expectedType) zoneCorrect = false;
+            });
+            if (zoneCorrect && zoneItems.length > 0) zone.classList.add('correct');
+            else zone.classList.add('incorrect');
+        });
+
+        var fb = document.getElementById('feedback7');
+        if (correct) {
+            fb.className = 'feedback-box-shared success show';
+            fb.innerHTML = '✅ Excellent! RJ45 uses twisted-pair copper (Cat5e/Cat6) for Ethernet networking. RJ11 uses telephone lines for phones and DSL modems. SFP uses fiber-optic cables for high-speed, long-distance connections.';
+        } else {
+            fb.className = 'feedback-box-shared error show';
+            fb.innerHTML = '❌ Review the matches. RJ45 = Ethernet/network cables, RJ11 = telephone/DSL, SFP = fiber optics. Think about what each connector is designed for.';
+        }
+    });
+})();
+
+(function () {
+    document.querySelectorAll('.single-q').forEach(function (qBlock) {
+        var answer  = qBlock.getAttribute('data-answer');
+        var options = qBlock.querySelectorAll('.check-option');
+        var explanation = qBlock.querySelector('.explanation');
+
+        options.forEach(function (opt, idx) {
+            opt.addEventListener('click', function () {
+                if (this.classList.contains('disabled')) return;
+                options.forEach(function (o) { o.classList.add('disabled'); });
+                var chosen = idx + 1;
+                if (String(chosen) === answer) {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    options[parseInt(answer) - 1].classList.add('correct');
+                }
+                if (explanation) explanation.classList.add('show');
+            });
+        });
+    });
+})();
+
+/* ─────────────────────────────────────────
+   TAB 2: REINFORCEMENT — Port Selection
+───────────────────────────────────────── */
+let portSelections = { device1: null, device2: null, device3: null };
+
+function selectPort(element, deviceNum, port) {
+    const deviceKey = 'device' + deviceNum;
+    const parent = element.parentElement;
+    parent.querySelectorAll('.port-card').forEach(card => { card.classList.remove('selected'); });
+    element.classList.add('selected');
+    portSelections[deviceKey] = port;
+}
+
+function checkTask1() {
+    const feedback = document.getElementById('feedback1');
+    if (!portSelections.device1 || !portSelections.device2 || !portSelections.device3) {
+        feedback.className = 'feedback show error';
+        feedback.textContent = '⚠ Please select a connector for all three devices.';
+        return;
+    }
+    const correctAnswers = { device1:'usb-a', device2:'ps2', device3:'usb-c' };
+    const allCorrect = portSelections.device1 === correctAnswers.device1 &&
+                       portSelections.device2 === correctAnswers.device2 &&
+                       portSelections.device3 === correctAnswers.device3;
+
+    feedback.className = 'feedback show ' + (allCorrect ? 'success' : 'error');
+    if (allCorrect) {
+        feedback.innerHTML = `<strong>✓ Perfect! All connector identifications are correct.</strong><br><br>
+        <strong>Device 1: Modern wireless keyboard → USB-A ✓</strong> — Wireless peripherals use USB dongles (receivers) that plug into USB-A ports. Plug-and-play; no drivers needed.<br><br>
+        <strong>Device 2: Legacy mouse, purple round connector → PS/2 ✓</strong> — Purple PS/2 = Mouse. Green PS/2 = Keyboard. Not hot-swappable. Legacy standard from mid-1990s to mid-2000s.<br><br>
+        <strong>Device 3: Modern laptop (USB-C only) → USB-C ✓</strong> — Modern laptops (2018+) often have only USB-C ports. Reversible connector; supports data, video, and power delivery.`;
+    } else {
+        const results = [];
+        if (portSelections.device1 !== correctAnswers.device1) results.push('<strong>Device 1 (Modern wireless):</strong> Should be <strong>USB-A</strong> — Wireless dongles plug into USB ports.');
+        if (portSelections.device2 !== correctAnswers.device2) results.push('<strong>Device 2 (Purple round):</strong> Should be <strong>PS/2</strong> — Purple round connector is the PS/2 mouse port.');
+        if (portSelections.device3 !== correctAnswers.device3) results.push('<strong>Device 3 (Modern laptop):</strong> Should be <strong>USB-C</strong> — Modern laptops use USB-C exclusively.');
+        feedback.innerHTML = '<strong>✗ Some identifications need correction.</strong><br><br>' + results.join('<br><br>');
+    }
+}
+
+function resetTask1() {
+    portSelections = { device1: null, device2: null, device3: null };
+    document.querySelectorAll('.port-card').forEach(card => { card.classList.remove('selected', 'wrong'); });
+    document.getElementById('feedback1').className = 'feedback';
+}
+
+/* ─────────────────────────────────────────
+   TAB 3: CONNECTIONS EXERCISE — DVI Scenario
+───────────────────────────────────────── */
+const CE_CORRECT_ANSWER = 'DVI';
+let ceAnswered = false;
+
+function toggleHint() {
+    const reveal = document.getElementById('hintReveal');
+    const btn    = document.getElementById('hintBtn');
+    reveal.classList.toggle('show');
+    btn.textContent = reveal.classList.contains('show') ? '💡 Hide hint' : '💡 Need a hint?';
+}
+
+function ceSelectAnswer(btn, choice) {
+    if (ceAnswered) return;
+    ceAnswered = true;
+
+    document.querySelectorAll('.cmd-btn').forEach(b => b.disabled = true);
+
+    const feedback      = document.getElementById('ceFeedback');
+    const fbIcon        = document.getElementById('ceFbIcon');
+    const fbMsg         = document.getElementById('ceFbMsg');
+    const explainReveal = document.getElementById('explainReveal');
+
+    if (choice === CE_CORRECT_ANSWER) {
+        btn.classList.add('correct');
+        feedback.className = 'feedback-strip show correct-fb';
+        fbIcon.textContent = '✅';
+        fbMsg.innerHTML    = 'Correct! <small>DVI is the only standard video connector that supports both digital and analog signals — exactly what this monitor requires.</small>';
+    } else {
+        btn.classList.add('wrong');
+        document.querySelectorAll('.cmd-btn').forEach(b => {
+            if (b.textContent.trim() === CE_CORRECT_ANSWER) b.classList.add('correct');
+        });
+        feedback.className = 'feedback-strip show wrong-fb';
+        fbIcon.textContent = '❌';
+        fbMsg.innerHTML    = `Incorrect — you selected <strong>${choice}</strong>. <small>The correct answer is <strong>DVI</strong>. It is the only video connector that natively supports both analog and digital video through a single interface.</small>`;
+    }
+    setTimeout(() => explainReveal.classList.add('show'), 350);
+}
+
+function ceResetQuestion() {
+    ceAnswered = false;
+    document.querySelectorAll('.cmd-btn').forEach(b => {
+        b.disabled = false;
+        b.classList.remove('correct', 'wrong', 'selected');
+    });
+    document.getElementById('ceFeedback').className = 'feedback-strip';
+    document.getElementById('explainReveal').classList.remove('show');
+    const hintReveal = document.getElementById('hintReveal');
+    hintReveal.classList.remove('show');
+    document.getElementById('hintBtn').textContent = '💡 Need a hint?';
+}
+
+/* ─────────────────────────────────────────
+   TAB 4: SCENARIO QUIZ — NFC Contactless
+───────────────────────────────────────── */
+const sqAnswers = [
+    { text: 'Bluetooth',      correct: false },
+    { text: 'Infrared (IR)',  correct: false },
+    { text: 'NFC',            correct: true  },
+    { text: 'Wi-Fi',          correct: false }
+];
+
+const sqExplanation = '<strong>Correct Answer: NFC (Near Field Communication)</strong> NFC is a short-range wireless standard that operates at distances of 4 centimeters or less. It enables communication between two NFC-capable devices when they are brought very close together or physically tapped. Common uses include contactless payments (Apple Pay, Google Pay, credit card tap), transit cards, hotel key cards, and quick device pairing. Bluetooth operates at ranges of 10–100 meters and requires a pairing process — it is not used for tap-to-pay. Wi-Fi operates at 30–90+ meters and requires authentication — not suited for payment taps. Infrared (IR) requires direct line-of-sight and is used for remote controls, not payment terminals. NFC\'s very short range is a deliberate security feature — devices must be nearly touching, which makes accidental or unauthorized communication difficult.';
+
+let sqAnswered = false;
+
+function sqRenderAnswers(selectedIndex) {
+    selectedIndex = (selectedIndex !== undefined) ? selectedIndex : null;
+    var grid = document.getElementById('sqAnswersGrid');
+    grid.innerHTML = sqAnswers.map(function (a, i) {
+        var cls = 'answer-option';
+        if (selectedIndex !== null) {
+            cls += ' disabled';
+            if (i === selectedIndex) cls += a.correct ? ' correct' : ' incorrect selected';
+            else if (a.correct) cls += ' correct';
+        }
+        return '<div class="' + cls + '" onclick="sqSelectAnswer(' + i + ')">' + a.text + '</div>';
+    }).join('');
+}
+
+function sqSelectAnswer(index) {
+    if (sqAnswered) return;
+    sqAnswered = true;
+    sqRenderAnswers(index);
+
+    var isCorrect = sqAnswers[index].correct;
+    var box  = document.getElementById('sqFeedbackBox');
+    box.classList.add('show');
+    if (!isCorrect) box.classList.add('incorrect-feedback');
+
+    document.getElementById('sqFeedbackIcon').textContent  = isCorrect ? '✅' : '❌';
+    document.getElementById('sqFeedbackLabel').textContent = isCorrect ? 'Correct!' : 'Incorrect';
+    document.getElementById('sqFeedbackExplanation').innerHTML = sqExplanation;
+    box.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function sqResetQuestion() {
+    sqAnswered = false;
+    sqRenderAnswers();
+    var box = document.getElementById('sqFeedbackBox');
+    box.classList.remove('show', 'incorrect-feedback');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+sqRenderAnswers();
+</script>
+</body>
+</html>

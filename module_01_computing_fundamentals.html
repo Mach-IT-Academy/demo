@@ -1,0 +1,766 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod 1 – Computing Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#6366f1; --accent-secondary:#8b5cf6;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes cardIn  { from{opacity:0;transform:translateY(20px) scale(.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes pulseBorder {
+            0%,100% { box-shadow: 0 0 12px rgba(99,102,241,.3), inset 0 0 8px rgba(99,102,241,.05); }
+            50%      { box-shadow: 0 0 24px rgba(99,102,241,.5), inset 0 0 12px rgba(99,102,241,.1); }
+        }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        }
+        .page-header h1 { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:0.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px; border-radius:8px;
+            font-weight:600; cursor:pointer; transition:all .2s;
+            font-family:'Inter',sans-serif; font-size:.88em; white-space:nowrap;
+        }
+        .tab-btn:hover  { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content        { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           GLOBAL BUTTON
+        ═══════════════════════════════════════════ */
+        button {
+            background:var(--accent-primary); color:#fff; border:none; padding:11px 22px;
+            border-radius:6px; font-weight:600; cursor:pointer; transition:all .25s;
+            font-family:'Inter',sans-serif; font-size:.95em; margin:5px 5px 5px 0;
+        }
+        button:hover    { background:var(--accent-secondary); transform:translateY(-2px); }
+        button.secondary { background:var(--bg-tertiary); color:var(--text-primary); border:2px solid var(--border-color); margin:5px 5px 5px 0; }
+        button.secondary:hover { background:var(--bg-primary); border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           SHARED COMPONENTS
+        ═══════════════════════════════════════════ */
+        .container    { max-width:960px; margin:0 auto; padding:20px; }
+        .main-content { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .lesson h2    { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+
+        .problem-scenario    { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+
+        .visual-demo    { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .visual-demo h3 { margin-bottom:12px; }
+
+        .key-concept        { background:rgba(99,102,241,.1); padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid var(--accent-primary); }
+        .key-concept strong  { color:var(--accent-primary); }
+
+        .interactive-section    { background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+
+        .concept-check    { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .concept-check h4 { color:var(--accent-warning); margin-bottom:12px; }
+        .check-option          { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .check-option:hover    { border-color:var(--accent-primary); }
+        .check-option.correct  { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .check-option.incorrect{ border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .check-option.disabled { pointer-events:none; }
+        .explanation      { background:rgba(139,92,246,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-secondary); display:none; }
+        .explanation.show { display:block; animation:fadeIn .3s ease; }
+
+        /* Shared feedback */
+        .feedback-box       { margin-top:14px; padding:14px; border-radius:8px; display:none; }
+        .feedback-box.show  { display:block; animation:slideIn .3s ease; }
+        .feedback-box.success { background:rgba(16,185,129,.2); border-left:4px solid var(--accent-success); }
+        .feedback-box.error   { background:rgba(239,68,68,.2);  border-left:4px solid var(--accent-error); }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION SPECIFIC
+        ═══════════════════════════════════════════ */
+        .component-diagram { display:flex; justify-content:center; align-items:center; gap:28px; margin:26px 0; flex-wrap:wrap; }
+        .component-box     { background:var(--bg-tertiary); padding:18px; border-radius:8px; border:3px solid var(--accent-primary); min-width:180px; text-align:center; }
+        .component-box h4  { color:var(--accent-primary); margin-bottom:8px; }
+        .arrow             { font-size:2em; color:var(--accent-secondary); }
+
+        .choice-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:14px; }
+        .choice-card { background:var(--bg-secondary); padding:18px; border-radius:8px; cursor:pointer; border:2px solid var(--border-color); transition:all .25s; user-select:none; }
+        .choice-card:hover    { border-color:var(--accent-primary); transform:scale(1.03); }
+        .choice-card.selected { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .choice-card.wrong    { border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .choice-card strong   { display:block; margin-bottom:6px; }
+        .choice-card p        { font-size:.88em; color:var(--text-secondary); margin:0; }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT SPECIFIC
+        ═══════════════════════════════════════════ */
+        .scenario-box    { background:var(--bg-secondary); border-radius:12px; padding:25px; margin-bottom:25px; border-left:5px solid var(--accent-warning); }
+        .scenario-box h2 { color:var(--accent-warning); margin-bottom:12px; font-size:1.4em; }
+
+        .task-container  { background:var(--bg-secondary); border-radius:12px; padding:25px; margin-bottom:25px; }
+        .task-header     { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+        .task-number     { background:var(--accent-primary); color:#fff; padding:8px 16px; border-radius:20px; font-weight:700; }
+        .instructions    { background:rgba(99,102,241,.1); padding:15px; border-radius:8px; margin:15px 0; border-left:4px solid var(--accent-primary); }
+
+        .workspace       { background:var(--bg-primary); border:2px solid var(--border-color); border-radius:8px; padding:20px; margin:20px 0; min-height:200px; }
+        .component-item  { background:var(--bg-tertiary); padding:14px; border-radius:8px; border:2px solid var(--border-color); cursor:move; text-align:center; transition:all .25s; user-select:none; }
+        .component-item:hover   { border-color:var(--accent-primary); transform:translateY(-2px); }
+        .component-item.dragging{ opacity:0.5; }
+
+        .drop-zone            { background:var(--bg-primary); border:2px dashed var(--border-color); border-radius:8px; padding:20px; margin:10px 0; min-height:80px; transition:all .25s; }
+        .drop-zone.drag-over  { border-color:var(--accent-primary); background:rgba(99,102,241,.1); }
+        .drop-zone.filled     { border-color:var(--accent-success); border-style:solid; }
+        .drop-zone-label      { font-weight:600; color:var(--accent-secondary); margin-bottom:8px; font-size:1.05em; }
+
+        .feedback      { margin-top:15px; padding:15px; border-radius:8px; display:none; }
+        .feedback.show { display:block; animation:slideIn .3s ease; }
+        .feedback.success { background:rgba(16,185,129,.2); border-left:4px solid var(--accent-success); }
+        .feedback.error   { background:rgba(239,68,68,.2);  border-left:4px solid var(--accent-error); }
+
+        /* ═══════════════════════════════════════════
+           TAB 3 — UNITS EXERCISE (reskinned)
+        ═══════════════════════════════════════════ */
+        .units-section    { max-width:860px; margin:0 auto; padding:24px 20px 60px; }
+
+        .units-top-bar    { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+        .units-logo-block { display:flex; align-items:center; gap:14px; }
+        .units-logo-icon  {
+            width:42px; height:42px; border:1.5px solid var(--accent-primary); border-radius:8px;
+            display:flex; align-items:center; justify-content:center; font-size:18px;
+            animation:pulseBorder 3s ease-in-out infinite;
+        }
+        .units-logo-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; letter-spacing:.08em; color:var(--accent-primary); text-transform:uppercase; line-height:1; }
+        .units-logo-sub   { font-family:'Share Tech Mono',monospace; font-size:.62rem; color:var(--text-secondary); letter-spacing:.12em; margin-top:3px; }
+
+        .scenario-card     { background:var(--bg-secondary); border:2px solid var(--border-color); border-radius:12px; padding:34px 38px 30px; transition:border-color .3s,background .3s; animation:cardIn .38s cubic-bezier(.22,1,.36,1) both; }
+        .scenario-card.correct { border-color:var(--accent-success); background:rgba(16,185,129,.04); }
+        .scenario-card.wrong   { border-color:var(--accent-error);   background:rgba(239,68,68,.04); }
+
+        .scenario-index    { font-family:'Share Tech Mono',monospace; font-size:.6rem; color:var(--text-secondary); letter-spacing:.16em; text-transform:uppercase; margin-bottom:18px; }
+        .units-scenario-text { font-size:1.02rem; line-height:1.78; color:var(--text-primary); font-weight:400; margin-bottom:30px; }
+
+        .choices-grid    { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:22px; }
+        @media(max-width:600px){ .choices-grid { grid-template-columns:repeat(2,1fr); } }
+
+        .choice-btn { background:var(--bg-tertiary); border:2px solid var(--border-color); border-radius:8px; padding:13px 8px; color:var(--text-secondary); font-family:'Rajdhani',sans-serif; font-weight:600; font-size:.85rem; letter-spacing:.06em; cursor:pointer; transition:all .18s; text-align:center; }
+        .choice-btn:hover:not(:disabled)  { background:rgba(99,102,241,.1); border-color:var(--accent-primary); color:var(--accent-primary); transform:translateY(-2px); }
+        .choice-btn.selected-correct { background:rgba(16,185,129,.12); border-color:var(--accent-success); color:var(--accent-success); cursor:default; }
+        .choice-btn.selected-wrong   { background:rgba(239,68,68,.12);  border-color:var(--accent-error);   color:var(--accent-error);   cursor:default; }
+        .choice-btn.reveal-correct   { background:rgba(16,185,129,.05); border-color:rgba(16,185,129,.5); color:rgba(16,185,129,.8); cursor:default; }
+        .choice-btn:disabled { cursor:default; transform:none; }
+
+        .feedback-block       { border-radius:8px; font-size:.88rem; line-height:1.72; display:none; margin-bottom:26px; padding:16px 18px; animation:slideDown .28s ease; }
+        .feedback-block.show  { display:block; }
+        .feedback-block.correct { background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.3); color:var(--text-primary); }
+        .feedback-block.wrong   { background:rgba(239,68,68,.06);  border:1px solid rgba(239,68,68,.3);  color:var(--text-primary); }
+
+        .feedback-title      { font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:.07em; font-size:.95rem; margin-bottom:8px; }
+        .feedback-divider    { border:none; border-top:1px solid rgba(255,68,68,.2); margin:14px 0 12px; }
+        .feedback-wrong-reason-label { font-family:'Share Tech Mono',monospace; font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-secondary); margin-bottom:6px; }
+        .feedback-wrong-reason       { color:var(--text-secondary); font-size:.85rem; line-height:1.68; }
+
+        .next-row  { display:flex; justify-content:flex-end; align-items:center; gap:16px; margin-top:4px; }
+        .next-hint { font-family:'Share Tech Mono',monospace; font-size:.63rem; color:var(--text-secondary); letter-spacing:.1em; }
+
+        .complete-banner      { display:none; margin-top:28px; background:var(--bg-secondary); border:2px solid var(--border-color); border-radius:10px; padding:28px 32px; text-align:center; animation:cardIn .38s cubic-bezier(.22,1,.36,1) both; }
+        .complete-banner.show { display:block; }
+        .complete-banner .cb-icon  { font-size:2rem; margin-bottom:10px; }
+        .complete-banner .cb-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; letter-spacing:.1em; color:var(--accent-primary); text-transform:uppercase; margin-bottom:10px; }
+        .complete-banner .cb-msg   { font-size:.88rem; color:var(--text-secondary); line-height:1.7; margin-bottom:20px; }
+
+        .btn            { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; padding:8px 16px; border-radius:6px; border:1.5px solid; cursor:pointer; transition:all .2s; margin:0; }
+        .btn-secondary  { background:transparent; border-color:var(--border-color); color:var(--text-secondary); }
+        .btn-secondary:hover { border-color:var(--text-secondary); color:var(--text-primary); background:transparent; transform:none; }
+        .btn-next       { background:transparent; border-color:var(--accent-primary); color:var(--accent-primary); font-size:.9rem; padding:12px 36px; letter-spacing:.13em; }
+        .btn-next:hover:not(:disabled) { background:rgba(99,102,241,.1); box-shadow:0 0 20px rgba(99,102,241,.3); transform:none; }
+        .btn-next:disabled { opacity:.2; cursor:not-allowed; }
+
+        /* ═══════════════════════════════════════════
+           TAB 4 — SCENARIO QUIZ SPECIFIC
+        ═══════════════════════════════════════════ */
+        .quiz-container  { background:var(--bg-secondary); border-radius:12px; padding:28px; margin-bottom:24px; }
+        #tab-quiz .scenario-text { background:var(--bg-tertiary); padding:20px; border-radius:8px; border-left:4px solid var(--accent-warning); margin-bottom:24px; font-size:1.05em; line-height:1.75; }
+        .question-text   { font-size:1.1em; font-weight:600; color:var(--text-primary); margin-bottom:20px; }
+        .answers-grid    { display:grid; gap:12px; margin-bottom:20px; }
+        .answer-option   { background:var(--bg-tertiary); border:2px solid var(--border-color); padding:16px 20px; border-radius:8px; cursor:pointer; transition:all .2s; }
+        .answer-option:hover:not(.disabled) { border-color:var(--accent-primary); transform:translateX(4px); }
+        .answer-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); }
+        .answer-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15); }
+        .answer-option.disabled  { cursor:not-allowed; }
+
+        .sq-feedback-box       { background:var(--bg-primary); border-radius:8px; padding:20px; margin-top:20px; border-left:4px solid var(--accent-success); display:none; animation:slideIn .3s ease; }
+        .sq-feedback-box.show  { display:block; }
+        .sq-feedback-box.incorrect-feedback { border-left-color:var(--accent-error); }
+        .sq-feedback-header    { display:flex; align-items:center; gap:10px; font-size:1.2em; font-weight:700; margin-bottom:10px; }
+        .sq-feedback-icon      { font-size:1.4em; }
+        .sq-feedback-explanation { color:var(--text-secondary); line-height:1.75; margin-top:10px; }
+        .sq-feedback-explanation strong { color:var(--text-primary); display:block; margin-top:10px; }
+        .quiz-controls { display:flex; justify-content:center; margin-top:28px; }
+        .quiz-reset-btn { background:var(--accent-warning); color:#1a1d29; }
+        .quiz-reset-btn:hover { background:#d97706; }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <h1>💻 Mod 1 – Computing Fundamentals</h1>
+    <p class="subtitle">CompTIA Tech+ FC0-U71 Aligned | Full Module</p>
+</div>
+
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('instruction')">📚 Instruction</button>
+    <button class="tab-btn"        onclick="switchTab('reinforcement')">⚡ Challenge Tasks</button>
+    <button class="tab-btn"        onclick="switchTab('units-exer')">🔢 Units Exercise</button>
+    <button class="tab-btn"        onclick="switchTab('quiz')">📝 Scenario Quiz</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB 1 — INSTRUCTION (Instr Pt 1)
+════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="container">
+    <div class="main-content">
+        <div class="lesson">
+            <h2>Lesson 1: The Four Functions of Computing</h2>
+
+            <div class="key-concept">
+                <strong>Core Principle:</strong> At a fundamental level, computers perform four essential operations: INPUT, PROCESSING, OUTPUT, and STORAGE.
+            </div>
+
+            <div class="problem-scenario">
+                <h3>📋 Scenario</h3>
+                <p>You're setting up a new workstation for a data analyst. She needs to understand how her computer processes information from start to finish. Help her identify the four core computing functions.</p>
+            </div>
+
+            <div class="visual-demo">
+                <h3>The Input-Process-Output-Storage Cycle</h3>
+                <div class="component-diagram">
+                    <div class="component-box"><h4>INPUT</h4><p style="font-size:.85em;color:var(--text-secondary);">Keyboard, Mouse, Scanner</p></div>
+                    <div class="arrow">→</div>
+                    <div class="component-box"><h4>PROCESSING</h4><p style="font-size:.85em;color:var(--text-secondary);">CPU executes instructions</p></div>
+                    <div class="arrow">→</div>
+                    <div class="component-box"><h4>OUTPUT</h4><p style="font-size:.85em;color:var(--text-secondary);">Monitor, Printer, Speakers</p></div>
+                    <div class="arrow">↓</div>
+                    <div class="component-box"><h4>STORAGE</h4><p style="font-size:.85em;color:var(--text-secondary);">Hard Drive, SSD, Cloud</p></div>
+                </div>
+            </div>
+
+            <div class="interactive-section">
+                <h3>🎯 Interactive Challenge: Identify the Computing Functions</h3>
+                <p>Select ALL computing activities that represent the four core functions. Choose exactly 4 items:</p>
+                <div class="choice-grid" id="multiChoiceGrid">
+                    <div class="choice-card" data-correct="true"><strong>📥 Taking Input</strong><p>User types on keyboard to enter data</p></div>
+                    <div class="choice-card" data-correct="false"><strong>🔌 Connecting Cables</strong><p>Plugging in peripheral devices</p></div>
+                    <div class="choice-card" data-correct="true"><strong>⚙️ Processing Data</strong><p>CPU performs calculations on data</p></div>
+                    <div class="choice-card" data-correct="false"><strong>🔄 Updating Software</strong><p>Installing operating system patches</p></div>
+                    <div class="choice-card" data-correct="true"><strong>📤 Producing Output</strong><p>Display shows results on monitor</p></div>
+                    <div class="choice-card" data-correct="true"><strong>💾 Storing Data</strong><p>Saving files to hard drive for later use</p></div>
+                </div>
+                <div class="feedback-box" id="feedback1"></div>
+            </div>
+
+            <div class="concept-check single-q" data-answer="2">
+                <h4>✅ Concept Check</h4>
+                <p><strong>Question:</strong> Which component is responsible for PROCESSING in a computer system?</p>
+                <div class="check-option">A) Hard Disk Drive</div>
+                <div class="check-option">B) Central Processing Unit (CPU)</div>
+                <div class="check-option">C) Random Access Memory (RAM)</div>
+                <div class="check-option">D) Graphics Card</div>
+                <div class="explanation">
+                    <strong>Explanation:</strong> The CPU (Central Processing Unit) is the "brain" of the computer responsible for executing instructions and performing mathematical and logical operations on data. RAM provides temporary storage, the hard drive provides long-term storage, and the graphics card handles video processing.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div><!-- /tab-instruction -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 2 — REINFORCEMENT (Rein Pt 1)
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div style="max-width:1200px;margin:0 auto;padding:20px;">
+
+    <div class="scenario-box">
+        <h2>📋 Scenario</h2>
+        <p>You are an IT support technician for a small company. You've been asked to perform several hardware-related tasks and calculations to help with equipment planning and troubleshooting. Complete each task using the interactive simulations below.</p>
+    </div>
+
+    <div class="task-container">
+        <div class="task-header">
+            <h3>Task 1: Classify Computer Components by Function</h3>
+            <span class="task-number">PBQ 1 of 5</span>
+        </div>
+
+        <div class="instructions">
+            <strong>Instructions:</strong> A user is setting up a new workstation. Drag each component to the correct computing function category.
+        </div>
+
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start;">
+            <div>
+                <div style="font-weight:600;color:var(--accent-secondary);margin-bottom:10px;font-size:.95em;text-transform:uppercase;letter-spacing:.05em;">Components</div>
+                <div id="componentPool1" style="display:flex;flex-direction:column;gap:10px;margin:0;">
+                    <div class="component-item" draggable="true" data-function="input">Barcode Scanner</div>
+                    <div class="component-item" draggable="true" data-function="output">Bluetooth Speakers</div>
+                    <div class="component-item" draggable="true" data-function="storage">Cloud Backup Service</div>
+                    <div class="component-item" draggable="true" data-function="processing">CPU (Processor)</div>
+                    <div class="component-item" draggable="true" data-function="storage">External SSD</div>
+                    <div class="component-item" draggable="true" data-function="processing">Graphics Card GPU</div>
+                    <div class="component-item" draggable="true" data-function="output">Laser Printer</div>
+                    <div class="component-item" draggable="true" data-function="input">Microphone</div>
+                </div>
+            </div>
+            <div class="workspace" style="margin:0;">
+                <div class="drop-zone-label">INPUT (Data enters system)</div>
+                <div class="drop-zone" data-function="input" id="inputZone"></div>
+                <div class="drop-zone-label">PROCESSING (Data is manipulated)</div>
+                <div class="drop-zone" data-function="processing" id="processingZone"></div>
+                <div class="drop-zone-label">OUTPUT (Results are displayed)</div>
+                <div class="drop-zone" data-function="output" id="outputZone"></div>
+                <div class="drop-zone-label">STORAGE (Data is saved)</div>
+                <div class="drop-zone" data-function="storage" id="storageZone"></div>
+            </div>
+        </div>
+
+        <button onclick="m1CheckTask1()">Submit Task 1</button>
+        <button class="secondary" onclick="m1ResetTask1()">Reset</button>
+        <div class="feedback" id="m1ReinFb1"></div>
+    </div>
+
+</div>
+</div><!-- /tab-reinforcement -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 3 — UNITS EXERCISE (reskinned)
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-units-exer">
+<div class="units-section">
+
+    <div class="units-top-bar">
+        <div class="units-logo-block">
+            <div class="units-logo-icon">✂</div>
+            <div>
+                <div class="units-logo-title">Mod 1 – Computing Fundamentals Units Exer</div>
+                <div class="units-logo-sub">Aligned to CompTIA Tech+ &nbsp;|&nbsp; Data Measurement Training</div>
+            </div>
+        </div>
+        <button class="btn btn-secondary" onclick="resetUnitsExer()">Reset</button>
+    </div>
+
+    <div class="scenario-card" id="scenarioCard">
+        <div class="scenario-index">Scenario — CPU Clock Speed</div>
+        <div class="units-scenario-text" id="scenarioText"></div>
+        <div class="choices-grid" id="choicesGrid"></div>
+        <div class="feedback-block" id="feedbackBlock"></div>
+        <div class="next-row">
+            <span class="next-hint" id="nextHint">SELECT AN ANSWER TO CONTINUE</span>
+            <button class="btn btn-next" id="nextBtn" onclick="unitsMarkComplete()" disabled>Finish</button>
+        </div>
+    </div>
+
+    <div class="complete-banner" id="completeBanner">
+        <div class="cb-icon" id="cbIcon"></div>
+        <div class="cb-title">Scenario Complete</div>
+        <div class="cb-msg" id="cbMsg"></div>
+        <button class="btn btn-secondary" onclick="resetUnitsExer()">Try Again</button>
+    </div>
+
+</div>
+</div><!-- /tab-units-exer -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 4 — SCENARIO QUIZ
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+<div style="max-width:800px;margin:0 auto;padding:20px;">
+
+    <div class="quiz-container">
+        <div class="scenario-text">
+            An IT manager needs to back up 8,500 GB of company data. They're considering purchasing either a 10 TB external drive or multiple smaller drives.
+        </div>
+        <div class="question-text">Will the 10 TB drive have enough capacity for all the data?</div>
+        <div class="answers-grid" id="answersGrid">
+            <div class="answer-option" onclick="m1SelectAnswer(this, false)">No — 8,500 GB exceeds 10 TB</div>
+            <div class="answer-option" onclick="m1SelectAnswer(this, true)">Yes — the 10 TB drive has enough capacity</div>
+            <div class="answer-option" onclick="m1SelectAnswer(this, false)">Yes — but only if the data is compressed first</div>
+            <div class="answer-option" onclick="m1SelectAnswer(this, false)">No — a 10 TB drive can only hold 1,000 GB</div>
+        </div>
+        <div class="sq-feedback-box" id="m1FeedbackBox">
+            <div class="sq-feedback-header">
+                <span class="sq-feedback-icon" id="m1FeedbackIcon"></span>
+                <span id="m1FeedbackLabel"></span>
+            </div>
+            <div class="sq-feedback-explanation">
+                <strong>Correct Answer: Yes, 8,500 GB equals 8.5 TB</strong>
+                <strong>Explanation:</strong>
+                To convert GB to TB, divide by 1,000: 8,500 GB ÷ 1,000 = 8.5 TB. Since 8.5 TB &lt; 10 TB, the drive has sufficient capacity with 1.5 TB (1,500 GB) to spare. Remember: 1 TB = 1,000 GB in decimal notation (which manufacturers use). The 10 TB drive is the right choice and provides headroom for future growth.
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-controls">
+        <button class="quiz-reset-btn" onclick="m1ResetQuestion()">🔄 Reset Question</button>
+    </div>
+
+</div>
+</div><!-- /tab-quiz -->
+
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────
+   TAB SWITCHING
+───────────────────────────────────────── */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    var el = document.getElementById('tab-' + tabId);
+    if (el) el.classList.add('active');
+    var map = { instruction:0, reinforcement:1, 'units-exer':2, quiz:3 };
+    var btns = document.querySelectorAll('.tab-btn');
+    if (map[tabId] !== undefined && btns[map[tabId]]) btns[map[tabId]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─────────────────────────────────────────
+   TAB 1: INSTRUCTION — Multi-select + Single-select
+───────────────────────────────────────── */
+(function () {
+    var multiSelected = [];
+    var multiMax = 4;
+    var cards = document.querySelectorAll('#multiChoiceGrid .choice-card');
+
+    cards.forEach(function (card, i) {
+        card.addEventListener('click', function () {
+            var id = String(i);
+            var isCorrect = (card.getAttribute('data-correct') === 'true');
+            var idx = multiSelected.indexOf(id);
+
+            if (idx > -1) {
+                card.classList.remove('selected', 'wrong');
+                multiSelected.splice(idx, 1);
+                document.getElementById('feedback1').classList.remove('show');
+                return;
+            }
+
+            if (multiSelected.length >= multiMax) {
+                var fb = document.getElementById('feedback1');
+                fb.className = 'feedback-box error show';
+                fb.innerHTML = '❌ You can only select ' + multiMax + ' options. Deselect one first.';
+                return;
+            }
+
+            card.classList.add(isCorrect ? 'selected' : 'wrong');
+            multiSelected.push(id);
+
+            if (multiSelected.length === multiMax) {
+                var correctCount = 0;
+                multiSelected.forEach(function (sid) {
+                    if (cards[parseInt(sid)].getAttribute('data-correct') === 'true') correctCount++;
+                });
+                var fb2 = document.getElementById('feedback1');
+                if (correctCount === multiMax) {
+                    fb2.className = 'feedback-box success show';
+                    fb2.innerHTML = '✅ Perfect! You correctly identified the four core computing functions: INPUT (keyboard/mouse), PROCESSING (CPU calculations), OUTPUT (display results), and STORAGE (save to hard drive). These are the fundamental operations all computers perform.';
+                } else {
+                    fb2.className = 'feedback-box error show';
+                    fb2.innerHTML = '❌ Not quite. Focus on the four essential operations: taking input, processing data, producing output, and storing information long-term.';
+                }
+            } else {
+                document.getElementById('feedback1').classList.remove('show');
+            }
+        });
+    });
+})();
+
+(function () {
+    document.querySelectorAll('.single-q').forEach(function (qBlock) {
+        var answer = qBlock.getAttribute('data-answer');
+        var options = qBlock.querySelectorAll('.check-option');
+        var explanation = qBlock.querySelector('.explanation');
+
+        options.forEach(function (opt, idx) {
+            opt.addEventListener('click', function () {
+                if (this.classList.contains('disabled')) return;
+                options.forEach(function (o) { o.classList.add('disabled'); });
+                var chosen = idx + 1;
+                if (String(chosen) === answer) {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    options[parseInt(answer) - 1].classList.add('correct');
+                }
+                if (explanation) explanation.classList.add('show');
+            });
+        });
+    });
+})();
+
+/* ─────────────────────────────────────────
+   TAB 2: REINFORCEMENT — Drag & Drop
+───────────────────────────────────────── */
+var m1DraggedElement = null;
+
+function m1SetupDragAndDrop() {
+    var items = document.querySelectorAll('.component-item');
+    items.forEach(function (item) {
+        item.addEventListener('dragstart', function (e) {
+            m1DraggedElement = e.target;
+            e.target.classList.add('dragging');
+        });
+        item.addEventListener('dragend', function (e) {
+            e.target.classList.remove('dragging');
+        });
+    });
+
+    var zones = document.querySelectorAll('.drop-zone');
+    zones.forEach(function (zone) {
+        zone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', function () {
+            zone.classList.remove('drag-over');
+        });
+        zone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            if (m1DraggedElement) {
+                zone.appendChild(m1DraggedElement);
+                if (zone.children.length > 0) zone.classList.add('filled');
+            }
+        });
+    });
+}
+m1SetupDragAndDrop();
+
+function m1CheckTask1() {
+    var zones = document.querySelectorAll('#inputZone, #processingZone, #outputZone, #storageZone');
+    var correct = 0, total = 8;
+
+    zones.forEach(function (zone) {
+        var items = zone.querySelectorAll('.component-item');
+        items.forEach(function (item) {
+            if (item.dataset.function === zone.dataset.function) {
+                correct++;
+                item.style.borderColor = 'var(--accent-success)';
+            } else {
+                item.style.borderColor = 'var(--accent-error)';
+            }
+        });
+    });
+
+    var feedback = document.getElementById('m1ReinFb1');
+    feedback.className = 'feedback show ' + (correct === total ? 'success' : 'error');
+
+    if (correct === total) {
+        feedback.innerHTML = '<strong>✓ Excellent! All components correctly classified.</strong><br><br>' +
+            '<strong>Detailed Explanation:</strong><br>' +
+            '<strong>INPUT devices</strong> (Barcode Scanner, Microphone): Capture data and send it INTO the computer system.<br><br>' +
+            '<strong>PROCESSING components</strong> (CPU, Graphics Card GPU): Manipulate and transform data.<br><br>' +
+            '<strong>OUTPUT devices</strong> (Laser Printer, Bluetooth Speakers): Display or present processed results TO the user.<br><br>' +
+            '<strong>STORAGE devices</strong> (External SSD, Cloud Backup): Save data for later retrieval.<br><br>' +
+            '<em>Key Concept: Some devices can serve multiple functions (e.g., touchscreens are both INPUT and OUTPUT), but each component here has one PRIMARY function.</em>';
+    } else {
+        feedback.innerHTML = '<strong>You correctly classified ' + correct + ' out of ' + total + ' components.</strong><br><br>' +
+            '<strong>Review Guide:</strong><br>' +
+            '• <strong>INPUT</strong> = Data enters (scanner reads, microphone captures)<br>' +
+            '• <strong>PROCESSING</strong> = Data is manipulated (CPU calculates, GPU renders)<br>' +
+            '• <strong>OUTPUT</strong> = Results displayed (printer prints, speakers play)<br>' +
+            '• <strong>STORAGE</strong> = Data preserved (SSD saves, cloud backs up)';
+    }
+}
+
+function m1ResetTask1() {
+    var pool  = document.getElementById('componentPool1');
+    var zones = document.querySelectorAll('.drop-zone');
+    zones.forEach(function (zone) {
+        var items = zone.querySelectorAll('.component-item');
+        items.forEach(function (item) {
+            item.style.borderColor = '';
+            pool.appendChild(item);
+        });
+        zone.classList.remove('filled');
+    });
+    document.getElementById('m1ReinFb1').className = 'feedback';
+}
+
+/* ─────────────────────────────────────────
+   TAB 3: UNITS EXERCISE
+   (render renamed → renderUnitsExer)
+───────────────────────────────────────── */
+var UNIT_TYPES = ['b', 'B', 'GB', 'GHz', 'KB', 'MB', 'MHz', 'TB'];
+
+var UNITS_SCENARIO = {
+    answer: 'GHz',
+    text: 'A Mach IT Training curriculum developer is building a processor specification comparison exercise. A sample CPU datasheet lists a numerical base clock speed of 3.2 and a numerical boost clock of 4.8. What unit must the developer use for the clocks?',
+    explanation: 'CPU base and boost clock speeds are both expressed in gigahertz. Base clock is the standard operating speed; boost clock is the maximum speed reached under load when thermal and power headroom allows. Distinguishing between GHz (frequency/speed) and GB (storage capacity) on a hardware spec sheet is a practical CompTIA Tech+ knowledge area relevant to hardware selection and troubleshooting.',
+    wrongReasons: {
+        'b':   'A bit is a data unit. CPU clock speed is a frequency — how many billions of times per second the processor cycles. This is measured in gigahertz, not bits.',
+        'B':   'A byte is an 8-bit data unit. Processor clock speed is expressed in gigahertz (frequency), not bytes (storage). A CPU cycling at 3.2 GHz completes 3.2 billion operations per second — "GHz" describes that rate, not a storage amount.',
+        'KB':  'A kilobyte is a data storage unit. CPU base and boost clock speeds are frequency measurements expressed in gigahertz. File size and processor speed are entirely different specifications measured in different units.',
+        'MB':  'A megabyte is a data storage unit. A CPU specification listing clock speeds in GHz is describing frequency — not storage. Both appear in hardware documentation, but they describe different hardware properties.',
+        'GB':  'A gigabyte is a data unit. Although both gigabyte and gigahertz use the "giga" prefix, they are different units measuring different physical quantities. CPU clock speed is expressed in GHz (frequency), not GB (data storage capacity).',
+        'TB':  'A terabyte is a large data storage unit. CPU clock speed is a frequency measurement in gigahertz. Terabytes describe storage, not processor performance.',
+        'MHz': 'Megahertz is a frequency unit — 1,000 times smaller than gigahertz. A 3.2 GHz base clock could be expressed as 3,200 MHz, but modern CPU specifications use gigahertz as the standard. The answer key should label CPU speed as GHz, not MHz.'
+    }
+};
+
+function renderUnitsExer() {
+    document.getElementById('scenarioText').textContent = UNITS_SCENARIO.text;
+
+    var grid = document.getElementById('choicesGrid');
+    grid.innerHTML = '';
+    UNIT_TYPES.forEach(function (type) {
+        var btn = document.createElement('button');
+        btn.className   = 'choice-btn';
+        btn.textContent = type;
+        btn.id          = 'choice-' + type.replace(/[^a-zA-Z0-9]/g, '_');
+        btn.onclick     = function () { unitsHandleChoice(type); };
+        grid.appendChild(btn);
+    });
+
+    var fb = document.getElementById('feedbackBlock');
+    fb.className = 'feedback-block';
+    fb.innerHTML = '';
+
+    var nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = true;
+    document.getElementById('nextHint').textContent = 'SELECT AN ANSWER TO CONTINUE';
+    document.getElementById('scenarioCard').className = 'scenario-card';
+    document.getElementById('completeBanner').className = 'complete-banner';
+}
+
+function unitsHandleChoice(chosen) {
+    var isCorrect = (chosen === UNITS_SCENARIO.answer);
+    var card = document.getElementById('scenarioCard');
+    card.classList.add(isCorrect ? 'correct' : 'wrong');
+
+    UNIT_TYPES.forEach(function (type) {
+        var safeId = 'choice-' + type.replace(/[^a-zA-Z0-9]/g, '_');
+        var btn = document.getElementById(safeId);
+        if (!btn) return;
+        btn.disabled = true;
+        if      (type === chosen && isCorrect)                     btn.classList.add('selected-correct');
+        else if (type === chosen && !isCorrect)                    btn.classList.add('selected-wrong');
+        else if (type === UNITS_SCENARIO.answer && !isCorrect)     btn.classList.add('reveal-correct');
+    });
+
+    var fb = document.getElementById('feedbackBlock');
+    fb.classList.add('show', isCorrect ? 'correct' : 'wrong');
+
+    if (isCorrect) {
+        fb.innerHTML = '<div class="feedback-title">✓ Correct — ' + UNITS_SCENARIO.answer + '</div>' + UNITS_SCENARIO.explanation;
+    } else {
+        var wrongReason = UNITS_SCENARIO.wrongReasons[chosen] || '';
+        var html = '<div class="feedback-title">✗ Incorrect — The answer is ' + UNITS_SCENARIO.answer + '</div>';
+        if (wrongReason) {
+            html += '<hr class="feedback-divider">'
+                + '<div class="feedback-wrong-reason-label">Why not ' + chosen + '?</div>'
+                + '<div class="feedback-wrong-reason">' + wrongReason + '</div>'
+                + '<hr class="feedback-divider">';
+        }
+        html += UNITS_SCENARIO.explanation;
+        fb.innerHTML = html;
+    }
+
+    document.getElementById('nextBtn').disabled = false;
+    document.getElementById('nextHint').textContent = '';
+}
+
+function unitsMarkComplete() {
+    var banner = document.getElementById('completeBanner');
+    banner.classList.add('show');
+    document.getElementById('cbIcon').textContent = '🎯';
+    document.getElementById('cbMsg').textContent = 'You completed this scenario. The correct unit for CPU base and boost clock speeds is GHz (gigahertz). Hit Reset to try again.';
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function resetUnitsExer() { renderUnitsExer(); }
+
+renderUnitsExer();
+
+/* ─────────────────────────────────────────
+   TAB 4: SCENARIO QUIZ
+───────────────────────────────────────── */
+var m1QuizAnswered = false;
+
+function m1SelectAnswer(el, isCorrect) {
+    if (m1QuizAnswered) return;
+    m1QuizAnswered = true;
+
+    var allOptions = document.querySelectorAll('#tab-quiz .answer-option');
+    allOptions.forEach(function (opt) {
+        opt.classList.add('disabled');
+        opt.onclick = null;
+    });
+
+    el.classList.add(isCorrect ? 'correct' : 'incorrect');
+    if (!isCorrect) allOptions[1].classList.add('correct');
+
+    var box   = document.getElementById('m1FeedbackBox');
+    var icon  = document.getElementById('m1FeedbackIcon');
+    var label = document.getElementById('m1FeedbackLabel');
+
+    icon.textContent  = isCorrect ? '✅' : '❌';
+    label.textContent = isCorrect ? 'Correct!' : 'Incorrect';
+    if (!isCorrect) box.classList.add('incorrect-feedback');
+    box.classList.add('show');
+}
+
+function m1ResetQuestion() {
+    m1QuizAnswered = false;
+    var allOptions = document.querySelectorAll('#tab-quiz .answer-option');
+    allOptions.forEach(function (opt, i) {
+        opt.className = 'answer-option';
+        var ic = (i === 1);
+        opt.onclick = function () { m1SelectAnswer(this, ic); };
+    });
+    var box = document.getElementById('m1FeedbackBox');
+    box.classList.remove('show', 'incorrect-feedback');
+}
+</script>
+</body>
+</html>

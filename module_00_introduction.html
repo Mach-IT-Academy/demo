@@ -1,0 +1,888 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome | Mach IT Academy – Tech+ Edition Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark:      #0a0c10;
+      --bg-panel:     #0f1318;
+      --bg-card:      #131820;
+      --border:       #1e2d40;
+      --border-glow:  #00aaff44;
+      --accent-blue:  #00aaff;
+      --accent-cyan:  #00e5ff;
+      --accent-green: #00ff88;
+      --accent-amber: #ffaa00;
+      --accent-red:   #ff4466;
+      --accent-purple:#aa66ff;
+      --text-primary: #e8f2ff;
+      --text-secondary:#a8c4dc;
+      --text-dim:     #6a8faa;
+      --glow-blue:    0 0 18px #00aaff55;
+      --glow-green:   0 0 18px #00ff8855;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 17px;
+      line-height: 1.75;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* -- GRID OVERLAY -- */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,170,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,170,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* -- SCAN LINE -- */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* -- WRAPPER -- */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* -- HEADER -- */
+    header {
+      text-align: center;
+      padding: 60px 0 40px;
+      position: relative;
+    }
+
+    .header-badge {
+      display: inline-block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+      padding: 4px 16px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      box-shadow: var(--glow-blue);
+      animation: fadeSlideDown 0.6s ease both;
+    }
+
+    h1.main-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      line-height: 1.15;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      animation: fadeSlideDown 0.7s ease 0.1s both;
+    }
+
+    h1.main-title span {
+      color: var(--accent-blue);
+      text-shadow: 0 0 24px var(--accent-blue);
+    }
+
+    .sub-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+      letter-spacing: 2px;
+      margin-top: 12px;
+      animation: fadeSlideDown 0.7s ease 0.2s both;
+    }
+
+    .header-line {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+      margin-top: 36px;
+      animation: expandWidth 1s ease 0.4s both;
+    }
+
+    /* -- SECTIONS -- */
+    section {
+      margin-top: 52px;
+      animation: fadeSlideUp 0.6s ease both;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    h2.section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: var(--text-primary);
+      font-size: 1.08rem;
+      font-weight: 500;
+      margin-bottom: 14px;
+      line-height: 1.75;
+    }
+
+    p strong {
+      color: var(--accent-cyan);
+    }
+
+    /* -- DIFFERENTIATORS GRID -- */
+    .diff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .diff-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-blue);
+      padding: 18px 20px;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .diff-card:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: var(--glow-blue);
+    }
+
+    .diff-card .diff-icon {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .diff-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+    }
+
+    .diff-card p {
+      font-size: 0.97rem;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    /* -- CONTENT TYPE CARDS -- */
+    .content-types {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .ct-card {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .ct-card:hover {
+      box-shadow: 0 0 20px rgba(0,170,255,0.12);
+    }
+
+    .ct-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 8px;
+      font-size: 1.4rem;
+      min-height: 80px;
+    }
+
+    .ct-body {
+      padding: 16px 20px;
+      border-left: 1px solid var(--border);
+    }
+
+    .ct-body h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 4px;
+    }
+
+    .ct-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .ct-body p {
+      font-size: 0.97rem;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    /* Color themes per card */
+    .ct-ibi   { border-left: 3px solid var(--accent-blue);   }
+    .ct-rpbq  { border-left: 3px solid var(--accent-cyan);   }
+    .ct-epbq  { border-left: 3px solid var(--accent-amber);  }
+    .ct-lab   { border-left: 3px solid var(--accent-green);  }
+    .ct-quiz  { border-left: 3px solid var(--accent-red);    }
+
+    .ct-ibi  .ct-badge { background: rgba(0,170,255,0.07); }
+    .ct-rpbq .ct-badge { background: rgba(0,229,255,0.07); }
+    .ct-epbq .ct-badge { background: rgba(255,170,0,0.07); }
+    .ct-lab  .ct-badge { background: rgba(0,255,136,0.07); }
+    .ct-quiz .ct-badge { background: rgba(255,68,102,0.07); }
+
+    .ct-ibi  .ct-body h3 { color: var(--accent-blue);   }
+    .ct-rpbq .ct-body h3 { color: var(--accent-cyan);   }
+    .ct-epbq .ct-body h3 { color: var(--accent-amber);  }
+    .ct-lab  .ct-body h3 { color: var(--accent-green);  }
+    .ct-quiz .ct-body h3 { color: var(--accent-red);    }
+
+    /* -- WHO THIS IS FOR -- */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .audience-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .audience-item:hover { border-color: var(--accent-blue); }
+
+    .audience-item .aud-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+    .audience-item p {
+      font-size: 0.97rem;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    /* -- CTA -- */
+    .cta-bar {
+      margin-top: 56px;
+      background: linear-gradient(135deg, #0d1a2a, #0f1820);
+      border: 1px solid var(--accent-blue);
+      box-shadow: var(--glow-blue);
+      padding: 36px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-bar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+    }
+
+    .cta-bar h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .cta-bar p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 28px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 12px 28px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: #000;
+    }
+    .btn-primary:hover {
+      background: var(--accent-cyan);
+      box-shadow: var(--glow-blue);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent-blue);
+      border: 1px solid var(--accent-blue);
+    }
+    .btn-secondary:hover {
+      background: rgba(0,170,255,0.1);
+      box-shadow: var(--glow-blue);
+    }
+
+    /* -- FOOTER -- */
+    footer {
+      margin-top: 60px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    footer .footer-brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      color: var(--accent-blue);
+      letter-spacing: 2px;
+    }
+
+    /* -- ANIMATIONS -- */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes expandWidth {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+
+    section:nth-child(1) { animation-delay: 0.3s; }
+    section:nth-child(2) { animation-delay: 0.4s; }
+    section:nth-child(3) { animation-delay: 0.5s; }
+    section:nth-child(4) { animation-delay: 0.6s; }
+
+    /* -- CONTENT DESCRIPTION PANEL -- */
+    .content-desc-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+      background: transparent;
+      padding: 6px 16px;
+      cursor: pointer;
+      margin-top: 4px;
+      margin-bottom: 0;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .content-desc-toggle:hover {
+      background: rgba(0,229,255,0.08);
+      box-shadow: 0 0 14px rgba(0,229,255,0.25);
+    }
+    .content-desc-toggle .toggle-arrow {
+      display: inline-block;
+      transition: transform 0.3s ease;
+      font-style: normal;
+    }
+    .content-desc-toggle.open .toggle-arrow {
+      transform: rotate(180deg);
+    }
+
+    .content-desc-panel {
+      display: none;
+      margin-top: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 22px 24px 24px;
+      overflow: hidden;
+    }
+    .content-desc-panel.visible {
+      display: block;
+      animation: fadeSlideUp 0.35s ease both;
+    }
+
+    .cdp-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cdp-mod {
+      margin-bottom: 18px;
+    }
+    .cdp-mod:last-child {
+      margin-bottom: 0;
+    }
+    .cdp-mod-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .cdp-items {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cdp-items li {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 14px;
+      position: relative;
+    }
+    .cdp-items li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--accent-blue);
+    }
+    .cdp-items li strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* -- RESPONSIVE -- */
+    @media (max-width: 600px) {
+      .ct-card { grid-template-columns: 48px 1fr; }
+      .cta-bar { padding: 28px 20px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <h1 class="main-title">Mach IT Academy:<br><span>Tech+ Edition Demo</span></h1>
+    <p class="sub-title">CompTIA Tech+ &nbsp;—&nbsp; Self-Paced &nbsp;—&nbsp; Browser-Based &nbsp;—&nbsp; No Software Required</p>
+    <div class="header-line"></div>
+  </header>
+
+  <!-- INTRO -->
+  <section>
+    <div class="section-label">// Overview</div>
+    <h2 class="section-title">Built for People Who Learn by Doing</h2>
+    <p>
+      Most study guides hand you a wall of text and wish you luck. This one is different.
+    </p>
+    <p>
+      <strong>Note:</strong> This is a <strong>demo</strong> of the full Mach IT Academy: Tech+ Edition Interactive Training Guide. It includes one representative activity from each of the five content types — an Instructional PBQ, a Challenge Tasks PBQ, an Exercise PBQ, a Lab PBQ, and a Scenario Quiz. The complete guide contains multiple activities of each type across all 12 modules, covering every FC0-U71 exam objective.
+    </p>
+
+    <button class="content-desc-toggle" id="cdpToggle" onclick="toggleContentDesc()" aria-expanded="false">
+      <span class="toggle-arrow">?</span>&nbsp; View Complete Guide Contents
+    </button>
+
+    <div class="content-desc-panel" id="cdpPanel" aria-hidden="true">
+      <div class="cdp-title">// Mach IT Academy: Tech+ Edition Interactive Training Guide — Complete Content Descriptions</div>
+
+      <!-- MOD 00 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 00 — Introduction</div>
+      </div>
+
+      <!-- MOD 01 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 01 — Computing Fundamentals</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>Units Exercise:</strong> 24 scenarios</li>
+          <li><strong>Scenario Quiz:</strong> 30 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 02 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 02 — Hardware &amp; Peripherals</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>Connections Exercise:</strong> 33 scenarios</li>
+          <li><strong>Scenario Quiz:</strong> 32 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 03 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 03 — Computing Devices &amp; IoT</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>IoT Exercise</strong></li>
+          <li><strong>IoT Mobile Setup Lab:</strong> 7 steps</li>
+          <li><strong>Scenario Quiz:</strong> 31 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 04 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 04 — Operating Systems</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>OS Types Exercise:</strong> 28 scenarios</li>
+          <li><strong>OS &amp; Device Exercise:</strong> 33 scenarios</li>
+          <li><strong>OS Functions Exercise:</strong> 32 scenarios</li>
+          <li><strong>Utilities Exercise:</strong> 27 scenarios</li>
+          <li><strong>Scenario Quiz:</strong> 24 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 05 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 05 — Software Applications</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>Software Categories Exercise:</strong> 17 scenarios</li>
+          <li><strong>Executable File Extensions Exercise:</strong> 26 scenarios</li>
+          <li><strong>File Compression Format Exercise:</strong> 30 scenarios</li>
+          <li><strong>Scenario Quiz:</strong> 24 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 06 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 06 — Programming &amp; Scripting</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>Data Types Exercise:</strong> 30 scenarios</li>
+          <li><strong>Language Classes Exercise:</strong> 20 scenarios</li>
+          <li><strong>Logic &amp; Code Exercise:</strong> 26 scenarios</li>
+          <li><strong>Architecture Exercise:</strong> 31 scenarios</li>
+          <li><strong>Tech Ecosystem Exercise:</strong> 24 scenarios</li>
+          <li><strong>C++ Compiler Lab</strong></li>
+          <li><strong>HTML Markup Lab</strong></li>
+          <li><strong>JavaScript Engine Scripting Lab</strong></li>
+          <li><strong>Linux Bash Shell Scripting Lab</strong></li>
+          <li><strong>PowerShell Console Scripting Lab</strong></li>
+          <li><strong>Python Scripting Lab</strong></li>
+          <li><strong>Module Quiz:</strong> 20 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 07 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 07 — Database Fundamentals</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks Pt 1:</strong> Lesson 1: Flat Files vs. Relational; Lesson 2: Data Characteristics; Lesson 3: Non-Relational Databases; Challenge Tasks: Flat File vs. Database: Choose the Right Tool; Structured Database — Component Hierarchy; Unstructured vs. Semi-Structured Data Classification</li>
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>SQL Exercise:</strong> 20 scenarios</li>
+          <li><strong>MySQL Workbench Constructing Tables Design Lab</strong></li>
+          <li><strong>MySQL Workbench Inserting Data Design Lab</strong></li>
+          <li><strong>MySQL Workbench Manipulating Data Design Lab</strong></li>
+          <li><strong>Scenario Quiz:</strong> 32 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 08 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 08 — Networking Concepts &amp; Technologies</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>Ports Exercise:</strong> 18 scenarios</li>
+          <li><strong>Configuration Settings &amp; Devices Exercise:</strong> 33 scenarios</li>
+          <li><strong>Networking Labs:</strong></li>
+          <li><strong>Wireless Router Setup Lab</strong></li>
+          <li><strong>Windows Administration Utilities Lab</strong></li>
+          <li><strong>macOS Administration Lab</strong></li>
+          <li><strong>Scenario Quiz:</strong> 34 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 09 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 09 — Virtualization, Cloud &amp; AI</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>Virtual Machine (VM) Exercise:</strong> 30 scenarios</li>
+          <li><strong>Cloud Service Model Exercise:</strong> 24 scenarios</li>
+          <li><strong>AI Exercise:</strong> 18 scenarios</li>
+          <li><strong>Scenario Quiz:</strong> 26 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 10 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 10 — Security Concepts &amp; Threats</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>Availability Exercise:</strong> 25 scenarios</li>
+          <li><strong>Confidentiality Exercise:</strong> 31 scenarios</li>
+          <li><strong>Integrity Exercise:</strong> 20 scenarios</li>
+          <li><strong>CIA Triad Exercise:</strong> 38 scenarios</li>
+          <li><strong>Software-Based Security Threats Exercise:</strong> 15 scenarios</li>
+          <li><strong>Malware Identification Exercise:</strong> 30 scenarios</li>
+          <li><strong>Scenario Quiz:</strong> 40 questions</li>
+        </ul>
+      </div>
+
+      <!-- MOD 11 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 11 — Security Best Practices</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>System Hardening &amp; Threat Mitigation Lab</strong></li>
+          <li><strong>Endpoint Security &amp; Privacy Hardening Lab</strong></li>
+          <li><strong>Scenario Quiz</strong></li>
+        </ul>
+      </div>
+
+      <!-- MOD 12 -->
+      <div class="cdp-mod">
+        <div class="cdp-mod-title">Module 12 — Data Continuity &amp; Computer Support</div>
+        <ul class="cdp-items">
+          <li><strong>Instruction / Challenge Tasks</strong></li>
+          <li><strong>RAID Exercise:</strong> 18 scenarios</li>
+          <li><strong>Backup Exercise:</strong> 30 scenarios</li>
+          <li><strong>Troubleshooting Methodology Exercise:</strong> 26 scenarios</li>
+          <li><strong>Diagnostic Tools Exercise:</strong> 19 scenarios</li>
+          <li><strong>Troubleshooting Exercise:</strong> 17 scenarios</li>
+          <li><strong>Utilities Exercise:</strong> 18 scenarios</li>
+          <li><strong>Full Backup Lab</strong></li>
+          <li><strong>Differential Backup Lab</strong></li>
+          <li><strong>Incremental Backup Lab</strong></li>
+          <li><strong>Scenario Quiz:</strong> 24 questions</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <script>
+      function toggleContentDesc() {
+        const btn   = document.getElementById('cdpToggle');
+        const panel = document.getElementById('cdpPanel');
+        const open  = btn.classList.toggle('open');
+        panel.classList.toggle('visible', open);
+        btn.setAttribute('aria-expanded', open);
+        panel.setAttribute('aria-hidden', !open);
+        btn.querySelector('.toggle-arrow').textContent = open ? '?' : '?';
+        const label = btn.childNodes[1];
+        label.textContent = open ? '\u00a0 Hide Complete Guide Contents' : '\u00a0 View Complete Guide Contents';
+      }
+    </script>
+    <p>
+      The <strong>Mach IT Academy: Tech+ Edition Interactive Training Guide</strong> is a fully browser-based, self-paced training experience built around a single philosophy: understand the concept, then prove it. Every module moves you from instruction to application — because recognition is not the same as competency, and the CompTIA Tech+ exam knows the difference.
+    </p>
+    <p>
+      This guide was built by a certified IT professional and educator who has personally sat for and passed the CompTIA Tech+ exam and the CompTIA A+ exam. Every objective, every scenario, and every question reflects what you will actually encounter — not what textbooks assume you will encounter.
+    </p>
+  </section>
+
+  <!-- DIFFERENTIATORS -->
+  <section>
+    <div class="section-label">// What Sets This Apart</div>
+    <h2 class="section-title">Why This Guide Is Different</h2>
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-icon">???</div>
+        <h3>Fully Self-Contained</h3>
+        <p>Everything runs in your browser. No installs, no virtual machines, no accounts required.</p>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">??</div>
+        <h3>Realistic Context</h3>
+        <p>Exercises are set inside a fictional corporate ecosystem — Mach Manufacturing, Mach Regional Medical Center, Mach Credit Union, and Mach Financial Services.</p>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">??</div>
+        <h3>Exam-Aligned</h3>
+        <p>Every activity maps directly to FC0-U71 objectives, built by someone who has taken the exam.</p>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">??</div>
+        <h3>Learn ? Reinforce</h3>
+        <p>You never jump straight to practice. Instruction comes first, application follows — every time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT TYPES -->
+  <section>
+    <div class="section-label">// Study Guide Structure</div>
+    <h2 class="section-title">Five Content Types. One Proven Path.</h2>
+    <p>Each module follows a deliberate learning progression through five activity types:</p>
+
+    <div class="content-types">
+
+      <div class="ct-card ct-ibi">
+        <div class="ct-badge">??</div>
+        <div class="ct-body">
+          <span class="ct-tag">STEP 01 &nbsp;—&nbsp; INSTRUCTION</span>
+          <h3>INSTR — Interactive Blended Instruction</h3>
+          <p>Instructional lessons that teach the core concept and include an embedded interactive activity to reinforce it before you move on. This is where learning begins.</p>
+        </div>
+      </div>
+
+      <div class="ct-card ct-rpbq">
+        <div class="ct-badge">??</div>
+        <div class="ct-body">
+          <span class="ct-tag">STEP 02 &nbsp;—&nbsp; REINFORCEMENT</span>
+          <h3>REIN PBQ</h3>
+          <p>Performance-based questions that expand on the concepts introduced in the Instr. These bridge instruction and application by challenging you to recall and apply what you just learned.</p>
+        </div>
+      </div>
+
+      <div class="ct-card ct-epbq">
+        <div class="ct-badge">??</div>
+        <div class="ct-body">
+          <span class="ct-tag">STEP 03 &nbsp;—&nbsp; APPLICATION</span>
+          <h3>EXER PBQ</h3>
+          <p>Scenario-based exercises that connect real-world workplace situations to the underlying IT concepts. You are not just answering a question — you are solving a problem in context.</p>
+        </div>
+      </div>
+
+      <div class="ct-card ct-lab">
+        <div class="ct-badge">???</div>
+        <div class="ct-body">
+          <span class="ct-tag">STEP 04 &nbsp;—&nbsp; HANDS-ON</span>
+          <h3>Lab PBQ</h3>
+          <p>Self-contained, browser-based simulations for setting up devices, configuring systems, and completing technical tasks — entirely in the browser. No external tools required.</p>
+        </div>
+      </div>
+
+      <div class="ct-card ct-quiz">
+        <div class="ct-badge">??</div>
+        <div class="ct-body">
+          <span class="ct-tag">STEP 05 &nbsp;—&nbsp; EXAM READINESS</span>
+          <h3>SCEN QUIZ</h3>
+          <p>Exam-style quizzes for each CompTIA objective modeled after the CompTIA Tech+ exam. These test your readiness across a mix of concept knowledge, applied reasoning, and scenario interpretation.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AUDIENCE -->
+  <section>
+    <div class="section-label">// Who This Is For</div>
+    <h2 class="section-title">Your Starting Point Does Not Matter. Your Destination Does.</h2>
+    <div class="audience-grid">
+      <div class="audience-item">
+        <span class="aud-icon">??</span>
+        <p>Career changers building foundational IT knowledge</p>
+      </div>
+      <div class="audience-item">
+        <span class="aud-icon">??</span>
+        <p>Students pursuing their first CompTIA certification</p>
+      </div>
+      <div class="audience-item">
+        <span class="aud-icon">??</span>
+        <p>IT professionals filling in knowledge gaps</p>
+      </div>
+      <div class="audience-item">
+        <span class="aud-icon">??</span>
+        <p>Educators and trainers looking for structured, interactive content</p>
+      </div>
+    </div>
+    <p style="margin-top:20px; color: var(--text-secondary);">
+      If your goal is to pass the CompTIA Tech+ exam <em>and</em> walk away with knowledge that actually transfers to the job — you are in the right place.
+    </p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-brand">MACH IT TRAINING</span>
+    <p>CompTIA Tech+ (FC0-U71) &nbsp;—&nbsp; Interactive Training Guide &nbsp;—&nbsp; All Rights Reserved</p>
+  </footer>
+
+</div>
+</body>
+</html>

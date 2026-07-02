@@ -1,0 +1,1022 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mach IT Training | Mod 11 – Security Best Practices</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#dc2626; --accent-secondary:#7c3aed;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+            /* Rein vars — Mod 11 red/purple palette */
+            --rein-bg-deep:#0b0f1a; --rein-bg-panel:#111827; --rein-bg-card:#1a2235;
+            --rein-bg-input:#0f1620; --rein-accent:#00d4ff; --rein-accent2:#dc2626;
+            --rein-success:#10b981; --rein-error:#f43f5e; --rein-warning:#f59e0b;
+            --rein-text-hi:#f0f4ff; --rein-text-mid:#94a3b8; --rein-text-lo:#475569;
+            --rein-border:#1e3a5f;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn   { from{opacity:0;transform:translateY(10px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn  { from{opacity:0;transform:translateY(-8px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideUp  { from{opacity:0;transform:translateY(10px)}  to{opacity:1;transform:translateY(0)} }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,#dc2626,#7c3aed);
+        }
+        .page-header h1   { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px;
+            border-radius:8px; font-weight:600; cursor:pointer;
+            transition:all .2s; font-family:'Inter',sans-serif; font-size:.88em; white-space:nowrap;
+        }
+        .tab-btn:hover  { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content        { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION (PART 2)
+        ═══════════════════════════════════════════ */
+        .instr-outer { max-width:960px; margin:0 auto; padding:20px; }
+        .instr-main  { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .instr-main .lesson h2 { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+        .instr-main .problem-scenario { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .instr-main .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+        .instr-main .visual-demo { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .instr-main .visual-demo h3 { margin-bottom:12px; }
+        .instr-main .key-concept { background:rgba(220,38,38,.1); padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid var(--accent-primary); }
+        .instr-main .key-concept strong { color:var(--accent-primary); }
+        .instr-main .interactive-section { background:linear-gradient(135deg,rgba(220,38,38,.08),rgba(124,58,237,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .instr-main .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+        /* Data cards */
+        .instr-main .data-structure { display:flex; gap:18px; margin:18px 0; flex-wrap:wrap; }
+        .instr-main .data-card { background:var(--bg-tertiary); padding:16px; border-radius:8px; flex:1; min-width:200px; border:2px solid var(--border-color); transition:all .25s; }
+        .instr-main .data-card:hover { border-color:var(--accent-primary); transform:translateY(-4px); }
+        .instr-main .data-card h4 { color:var(--accent-secondary); margin-bottom:8px; }
+        .instr-main .data-card ul { padding-left:18px; font-size:.88em; color:var(--text-secondary); margin-top:6px; }
+        /* Drag-and-drop (instruction) */
+        .instr-main .matching-container { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:18px 0; }
+        .instr-main .draggable-items { display:flex; flex-direction:column; gap:10px; }
+        .instr-main .drag-item { background:var(--bg-tertiary); padding:12px 14px; border-radius:8px; border:2px solid var(--border-color); cursor:move; transition:all .25s; user-select:none; font-size:.9em; }
+        .instr-main .drag-item:hover { border-color:var(--accent-primary); }
+        .instr-main .drag-item.dragging { opacity:.5; }
+        .instr-main .drop-zone { background:var(--bg-primary); padding:14px; border-radius:8px; border:2px dashed var(--border-color); min-height:56px; margin-bottom:10px; transition:all .25s; }
+        .instr-main .drop-zone.drag-over { border-color:var(--accent-primary); background:rgba(220,38,38,.06); }
+        .instr-main .drop-zone.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.1); }
+        .instr-main .drop-zone.incorrect  { border-color:var(--accent-error);   background:rgba(239,68,68,.1); }
+        .instr-main .drop-zone-label { font-weight:600; color:var(--accent-secondary); margin-bottom:8px; font-size:.88em; }
+        /* Feedback (instruction) */
+        .instr-main .feedback-box { margin-top:14px; padding:14px; border-radius:8px; display:none; }
+        .instr-main .feedback-box.show    { display:block; animation:slideIn .3s ease; }
+        .instr-main .feedback-box.success { background:rgba(16,185,129,.2); border-left:4px solid var(--accent-success); }
+        .instr-main .feedback-box.error   { background:rgba(239,68,68,.2);  border-left:4px solid var(--accent-error); }
+        /* Concept check */
+        .instr-main .concept-check { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .instr-main .concept-check h4 { color:var(--accent-warning); margin-bottom:12px; }
+        .instr-main .check-option { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .instr-main .check-option:hover     { border-color:var(--accent-primary); }
+        .instr-main .check-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .instr-main .check-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .instr-main .check-option.disabled  { pointer-events:none; }
+        .instr-main .explanation { background:rgba(124,58,237,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-secondary); display:none; }
+        .instr-main .explanation.show { display:block; animation:fadeIn .3s ease; }
+        .instr-main button { background:var(--accent-primary); color:#fff; border:none; padding:11px 22px; border-radius:6px; font-weight:600; cursor:pointer; transition:all .25s; font-family:'Inter',sans-serif; font-size:.95em; }
+        .instr-main button:hover { background:var(--accent-secondary); transform:translateY(-2px); }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT (PART 1)
+        ═══════════════════════════════════════════ */
+        .rein-wrapper {
+            font-family:'Exo 2',sans-serif; background:var(--rein-bg-deep);
+            color:var(--rein-text-hi); min-height:60vh; position:relative;
+            --bg-deep:var(--rein-bg-deep); --bg-panel:var(--rein-bg-panel);
+            --bg-card:var(--rein-bg-card); --bg-input:var(--rein-bg-input);
+            --accent:var(--rein-accent);   --accent2:var(--rein-accent2);
+            --success:var(--rein-success); --error:var(--rein-error);
+            --warning:var(--rein-warning); --text-hi:var(--rein-text-hi);
+            --text-mid:var(--rein-text-mid); --text-lo:var(--rein-text-lo);
+            --border:var(--rein-border);
+            --font-mono:'Share Tech Mono',monospace; --font-main:'Exo 2',sans-serif;
+        }
+        .rein-wrapper::before {
+            content:''; position:absolute; inset:0;
+            background-image:linear-gradient(rgba(220,38,38,.025) 1px,transparent 1px),
+                             linear-gradient(90deg,rgba(220,38,38,.025) 1px,transparent 1px);
+            background-size:40px 40px; pointer-events:none; z-index:0;
+        }
+        .rein-inner { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:24px 20px 60px; }
+        /* Score bar */
+        .rein-wrapper .score-bar { display:flex; align-items:center; gap:16px; background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:14px 22px; margin-bottom:28px; flex-wrap:wrap; }
+        .rein-wrapper .score-label { font-family:var(--font-mono); font-size:.85em; color:var(--text-mid); }
+        .rein-wrapper .score-value { font-family:var(--font-mono); font-size:1.1em; color:var(--accent); font-weight:700; }
+        .rein-wrapper .score-pips  { display:flex; gap:6px; margin-left:auto; }
+        .rein-wrapper .pip { width:12px; height:12px; border-radius:50%; background:var(--bg-card); border:1px solid var(--border); transition:background .3s; }
+        .rein-wrapper .pip.correct   { background:var(--success); border-color:var(--success); box-shadow:0 0 6px var(--success); }
+        .rein-wrapper .pip.incorrect { background:var(--error);   border-color:var(--error);   box-shadow:0 0 6px var(--error); }
+        /* Task card */
+        .rein-wrapper .task-card   { background:var(--bg-panel); border:1px solid var(--border); border-radius:16px; margin-bottom:28px; overflow:hidden; }
+        .rein-wrapper .task-header { display:flex; align-items:center; gap:14px; padding:18px 22px; background:rgba(220,38,38,.04); border-bottom:1px solid var(--border); flex-wrap:wrap; }
+        .rein-wrapper .task-num    { font-family:var(--font-mono); font-size:.78em; color:var(--accent2); background:rgba(220,38,38,.10); border:1px solid var(--accent2); padding:3px 10px; border-radius:6px; white-space:nowrap; }
+        .rein-wrapper .task-title  { font-size:1.05em; font-weight:700; color:var(--text-hi); flex:1; }
+        .rein-wrapper .task-objective { font-family:var(--font-mono); font-size:.7em; color:#7c3aed; border:1px solid #7c3aed; padding:3px 10px; border-radius:6px; white-space:nowrap; background:rgba(124,58,237,.06); }
+        .rein-wrapper .task-type   { font-family:var(--font-mono); font-size:.7em; color:var(--text-lo); border:1px solid var(--border); padding:3px 10px; border-radius:6px; white-space:nowrap; }
+        .rein-wrapper .task-body   { padding:22px 24px; }
+        .rein-wrapper .scenario-box { background:rgba(245,158,11,.07); border-left:4px solid var(--warning); border-radius:0 8px 8px 0; padding:14px 16px; margin-bottom:20px; }
+        .rein-wrapper .scenario-box .sc-label { font-family:var(--font-mono); font-size:.75em; color:var(--warning); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+        .rein-wrapper .scenario-box p { font-size:.93em; color:var(--text-mid); }
+        .rein-wrapper .task-instructions { font-size:.95em; color:var(--text-mid); margin-bottom:18px; }
+        .rein-wrapper .task-instructions strong { color:var(--accent); }
+        /* Drag chips */
+        .rein-wrapper .drag-chip { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:10px 14px; font-size:.88em; color:var(--text-hi); cursor:grab; user-select:none; transition:border-color .2s,transform .15s,box-shadow .2s; }
+        .rein-wrapper .drag-chip:hover { border-color:#7c3aed; transform:translateX(3px); box-shadow:0 0 10px rgba(124,58,237,.2); }
+        .rein-wrapper .drag-chip.dragging { opacity:.4; cursor:grabbing; }
+        /* Drop zone rows (Mod 11 DnD style) */
+        .rein-wrapper .dz-row { display:grid; grid-template-columns:auto 1fr; gap:8px; margin-bottom:10px; align-items:start; }
+        .rein-wrapper .dz-label-box { font-family:var(--font-mono); font-size:.78em; font-weight:700; color:#7c3aed; background:rgba(124,58,237,.10); border:1px solid #7c3aed; border-radius:7px; padding:10px 14px; text-align:center; min-width:130px; display:flex; align-items:center; justify-content:center; }
+        .rein-wrapper .dz-drop { background:var(--bg-input); border:2px dashed var(--border); border-radius:8px; padding:8px 12px; min-height:50px; transition:border-color .2s,background .2s; display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+        .rein-wrapper .dz-drop.drag-over     { border-color:#7c3aed; background:rgba(124,58,237,.06); }
+        .rein-wrapper .dz-drop.correct-zone  { border-color:var(--success); border-style:solid; background:rgba(16,185,129,.06); }
+        .rein-wrapper .dz-drop.incorrect-zone{ border-color:var(--error);   border-style:solid; background:rgba(244,63,94,.06); }
+        /* Buttons */
+        .rein-wrapper .btn-submit { background:linear-gradient(135deg,var(--accent2),#7c3aed); color:#fff; border:none; border-radius:8px; padding:11px 26px; font-family:var(--font-main); font-size:.92em; font-weight:700; cursor:pointer; transition:opacity .2s,transform .15s; }
+        .rein-wrapper .btn-submit:hover:not(:disabled) { opacity:.88; transform:translateY(-1px); }
+        .rein-wrapper .btn-submit:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+        .rein-wrapper .btn-reset  { background:transparent; color:var(--text-mid); border:1px solid var(--border); border-radius:8px; padding:10px 20px; font-family:var(--font-main); font-size:.85em; cursor:pointer; transition:border-color .2s,color .2s; margin-left:10px; }
+        .rein-wrapper .btn-reset:hover { border-color:var(--accent); color:var(--text-hi); }
+        .rein-wrapper .task-actions { display:flex; align-items:center; gap:8px; margin-top:16px; }
+        /* Feedback */
+        .rein-wrapper .feedback-panel { display:none; margin-top:16px; border-radius:10px; overflow:hidden; }
+        .rein-wrapper .feedback-panel.show { display:block; animation:slideUp .35s ease; }
+        .rein-wrapper .fb-header { display:flex; align-items:center; gap:10px; padding:13px 18px; }
+        .rein-wrapper .fb-header.success { background:rgba(16,185,129,.15); border-bottom:1px solid rgba(16,185,129,.3); }
+        .rein-wrapper .fb-header.error   { background:rgba(244,63,94,.12);  border-bottom:1px solid rgba(244,63,94,.3); }
+        .rein-wrapper .fb-icon    { font-size:1.3em; }
+        .rein-wrapper .fb-verdict { font-weight:700; font-size:.95em; }
+        .rein-wrapper .fb-header.success .fb-verdict { color:var(--success); }
+        .rein-wrapper .fb-header.error   .fb-verdict { color:var(--error); }
+        .rein-wrapper .fb-body { background:var(--bg-card); padding:18px; }
+        .rein-wrapper .fb-section { margin-bottom:14px; }
+        .rein-wrapper .fb-section:last-child { margin-bottom:0; }
+        .rein-wrapper .fb-section-title { font-family:var(--font-mono); font-size:.72em; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; margin-bottom:6px; }
+        .rein-wrapper .fb-section-body  { font-size:.88em; color:var(--text-mid); line-height:1.6; }
+        .rein-wrapper .fb-section-body strong { color:var(--text-hi); }
+        .rein-wrapper .fb-tip { background:rgba(124,58,237,.10); border-left:3px solid #7c3aed; padding:10px 14px; border-radius:0 6px 6px 0; font-size:.87em; color:var(--text-mid); margin-top:10px; }
+        .rein-wrapper .fb-tip strong { color:#7c3aed; }
+        /* Completion card */
+        .rein-wrapper .completion-card { text-align:center; background:var(--bg-panel); border:1px solid var(--border); border-radius:16px; padding:48px 32px; margin-top:28px; display:none; }
+        .rein-wrapper .completion-card.show { display:block; animation:slideUp .4s ease; }
+        .rein-wrapper .comp-icon  { font-size:4em; margin-bottom:16px; }
+        .rein-wrapper .comp-title { font-size:2em; font-weight:800; margin-bottom:8px; background:linear-gradient(135deg,var(--accent2),#7c3aed,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .rein-wrapper .comp-subtitle { color:var(--text-mid); margin-bottom:24px; }
+        .rein-wrapper .comp-stats    { display:flex; justify-content:center; gap:32px; margin-bottom:28px; flex-wrap:wrap; }
+        .rein-wrapper .comp-stat     { text-align:center; }
+        .rein-wrapper .comp-stat-val { font-family:var(--font-mono); font-size:2.2em; color:var(--accent); font-weight:700; }
+        .rein-wrapper .comp-stat-lbl { font-size:.82em; color:var(--text-lo); }
+        .rein-wrapper .comp-congrats { background:linear-gradient(135deg,rgba(220,38,38,.06),rgba(124,58,237,.08)); border:1px solid var(--border); border-radius:10px; padding:18px; max-width:640px; margin:0 auto; font-size:.92em; color:var(--text-mid); }
+        .rein-wrapper .comp-next { display:inline-block; margin-top:18px; background:linear-gradient(135deg,var(--accent2),#7c3aed); color:#fff; border:none; border-radius:10px; padding:14px 32px; font-family:var(--font-main); font-size:1em; font-weight:700; cursor:pointer; transition:opacity .2s,transform .15s; }
+        .rein-wrapper .comp-next:hover { opacity:.88; transform:translateY(-2px); }
+        @media(max-width:680px){ .rein-wrapper .dz-row{grid-template-columns:1fr} .rein-wrapper .task-header{flex-wrap:wrap} }
+
+        /* ═══════════════════════════════════════════
+           TAB 3 — SETUP LAB (PT A)
+        ═══════════════════════════════════════════ */
+        .setup-wrap {
+            background:#050a0f; color:#c8e0f0; font-family:'Exo 2',sans-serif;
+            position:relative; overflow:hidden; min-height:60vh;
+        }
+        .setup-wrap::before {
+            content:''; position:absolute; inset:0; z-index:0;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,200,255,.012) 2px,rgba(0,200,255,.012) 4px);
+            pointer-events:none;
+        }
+        .setup-wrap::after {
+            content:''; position:absolute; inset:0; z-index:0;
+            background-image:linear-gradient(rgba(0,200,255,.03) 1px,transparent 1px),
+                             linear-gradient(90deg,rgba(0,200,255,.03) 1px,transparent 1px);
+            background-size:40px 40px; pointer-events:none;
+        }
+        /* Sub-header */
+        .sw-header { position:relative; padding:28px 40px 20px; border-bottom:1px solid #1a3a55; background:linear-gradient(180deg,rgba(0,200,255,.06) 0%,transparent 100%); overflow:hidden; z-index:2; }
+        .sw-header-bg-text { position:absolute; right:40px; top:50%; transform:translateY(-50%); font-family:'Share Tech Mono',monospace; font-size:4.5rem; color:rgba(0,200,255,.04); letter-spacing:.4rem; pointer-events:none; white-space:nowrap; }
+        .sw-header-badge { display:inline-flex; align-items:center; gap:8px; font-family:'Share Tech Mono',monospace; font-size:.7rem; color:#00c8ff; border:1px solid rgba(0,200,255,.3); padding:4px 12px; letter-spacing:.1em; margin-bottom:12px; animation:swPulse 2s ease infinite; }
+        @keyframes swPulse { 0%,100%{border-color:rgba(0,200,255,.3)} 50%{border-color:rgba(0,200,255,.7)} }
+        .sw-dot-live { width:6px; height:6px; border-radius:50%; background:#00ff9d; animation:swBlink 1.2s ease infinite; }
+        @keyframes swBlink { 0%,100%{opacity:1} 50%{opacity:.2} }
+        .sw-header h1 { font-family:'Rajdhani',sans-serif; font-size:2.4rem; font-weight:700; color:#e8f4ff; letter-spacing:.05em; line-height:1.1; }
+        .sw-header h1 span { color:#00c8ff; }
+        .sw-header-sub { font-family:'Share Tech Mono',monospace; font-size:.75rem; color:#5a8099; margin-top:8px; letter-spacing:.08em; }
+        /* Content area */
+        .sw-content-area { padding:32px 40px; max-width:900px; margin:0 auto; position:relative; z-index:2; }
+        .setup-wrap .task-header-row { display:flex; align-items:flex-start; gap:16px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #1a3a55; }
+        .setup-wrap .task-icon-box  { width:52px; height:52px; border:1px solid #1a3a55; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; background:#0f1e2e; position:relative; overflow:hidden; }
+        .setup-wrap .task-icon-box::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,200,255,.1),transparent); }
+        .setup-wrap .task-meta       { flex:1; }
+        .setup-wrap .task-num-label  { font-family:'Share Tech Mono',monospace; font-size:.65rem; color:#5a8099; letter-spacing:.1em; margin-bottom:4px; }
+        .setup-wrap .task-title-label{ font-family:'Rajdhani',sans-serif; font-size:1.5rem; font-weight:700; color:#e8f4ff; letter-spacing:.03em; line-height:1.2; }
+        .setup-wrap .task-cat        { display:inline-block; font-family:'Share Tech Mono',monospace; font-size:.6rem; letter-spacing:.12em; padding:3px 10px; border:1px solid rgba(0,200,255,.3); color:#00c8ff; margin-top:6px; }
+        .setup-wrap .sw-section      { margin-bottom:28px; }
+        .setup-wrap .sw-section-label{ font-family:'Share Tech Mono',monospace; font-size:.65rem; letter-spacing:.15em; color:#5a8099; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+        .setup-wrap .sw-section-label::after { content:''; flex:1; height:1px; background:#1a3a55; }
+        .setup-wrap .objective-box   { border:1px solid rgba(0,200,255,.2); background:rgba(0,200,255,.04); padding:16px 20px; font-size:.9rem; line-height:1.6; color:#c8e0f0; position:relative; }
+        .setup-wrap .objective-box::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,#00c8ff,transparent); }
+        .setup-wrap .sw-scenario-box { border:1px solid rgba(255,107,53,.3); background:rgba(255,107,53,.04); padding:14px 18px; margin:14px 0; font-size:.85rem; line-height:1.6; position:relative; }
+        .setup-wrap .sw-scenario-box::before { content:'SCENARIO'; font-family:'Share Tech Mono',monospace; font-size:.55rem; letter-spacing:.15em; color:#ff6b35; position:absolute; top:-8px; left:12px; background:#050a0f; padding:0 6px; }
+        .setup-wrap .steps-list { list-style:none; }
+        .setup-wrap .step-item  { display:flex; gap:14px; margin-bottom:14px; align-items:flex-start; }
+        .setup-wrap .step-num-circle { flex-shrink:0; width:28px; height:28px; border:1px solid #1a3a55; display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:.65rem; color:#00c8ff; background:#0f1e2e; margin-top:1px; }
+        .setup-wrap .step-content { flex:1; font-size:.88rem; line-height:1.6; color:#c8e0f0; padding-top:4px; }
+        .setup-wrap .step-content strong { color:#e8f4ff; font-weight:600; }
+        .setup-wrap .callout     { display:flex; gap:12px; padding:14px 16px; border:1px solid; margin:14px 0; font-size:.82rem; line-height:1.5; }
+        .setup-wrap .callout.warn{ border-color:rgba(255,184,0,.25); background:rgba(255,184,0,.04); }
+        /* Lab */
+        .setup-wrap .lab-area   { border:1px solid #1a3a55; background:#0a1520; margin-top:28px; }
+        .setup-wrap .lab-header { background:#0f1e2e; padding:12px 20px; font-family:'Share Tech Mono',monospace; font-size:.65rem; letter-spacing:.15em; color:#00c8ff; text-transform:uppercase; border-bottom:1px solid #1a3a55; }
+        .setup-wrap .lab-body   { padding:20px; }
+        .setup-wrap .lab-inst   { font-size:.82rem; color:#5a8099; margin-bottom:16px; line-height:1.5; }
+        /* Toggles */
+        .setup-wrap .tog-row { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border:1px solid #1a3a55; background:#0f1e2e; margin-bottom:6px; cursor:pointer; transition:border-color .2s; user-select:none; }
+        .setup-wrap .tog-row:hover { border-color:rgba(0,200,255,.3); }
+        .setup-wrap .tog-row.on { border-color:#00ff9d; }
+        .setup-wrap .tog-lbl { font-size:.85rem; color:#c8e0f0; font-weight:500; }
+        .setup-wrap .tog-sub { font-size:.72rem; color:#5a8099; margin-top:2px; }
+        .setup-wrap .tog-sw  { width:42px; height:22px; border-radius:11px; background:#1a3040; border:1px solid #1a3a55; position:relative; transition:all .3s; flex-shrink:0; }
+        .setup-wrap .tog-sw::after { content:''; position:absolute; width:16px; height:16px; border-radius:50%; background:#5a8099; top:2px; left:2px; transition:all .3s; }
+        .setup-wrap .tog-row.on .tog-sw { background:rgba(0,255,157,.2); border-color:#00ff9d; }
+        .setup-wrap .tog-row.on .tog-sw::after { left:22px; background:#00ff9d; }
+        .setup-wrap .tog-stat { font-family:'Share Tech Mono',monospace; font-size:.6rem; color:#5a8099; }
+        .setup-wrap .tog-row.on .tog-stat { color:#00ff9d; }
+        /* Lab feedback */
+        .setup-wrap .lab-fb { display:none; margin-top:14px; padding:12px 16px; border-left:3px solid; font-size:.83rem; line-height:1.55; }
+        .setup-wrap .lab-fb.show { display:block; }
+        .setup-wrap .lab-fb.ok  { border-color:#00ff9d; color:#00ff9d; background:rgba(0,255,157,.04); }
+        .setup-wrap .lab-fb.err { border-color:#ffb800; color:#c8e0f0; background:rgba(255,184,0,.04); }
+        .setup-wrap .verify-btn { font-family:'Share Tech Mono',monospace; font-size:.72rem; padding:8px 20px; border:1px solid #00c8ff; background:transparent; color:#00c8ff; cursor:pointer; letter-spacing:.08em; transition:all .2s; margin-top:14px; display:inline-block; }
+        .setup-wrap .verify-btn:hover { background:rgba(0,200,255,.1); }
+        /* Complete button */
+        .setup-wrap .complete-btn { margin-top:28px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+        .setup-wrap .btn-complete { font-family:'Rajdhani',sans-serif; font-size:.85rem; font-weight:700; letter-spacing:.1em; padding:12px 28px; border:1px solid #00ff9d; background:transparent; color:#00ff9d; cursor:pointer; text-transform:uppercase; transition:all .25s; position:relative; overflow:hidden; }
+        .setup-wrap .btn-complete::before { content:''; position:absolute; inset:0; background:#00ff9d; transform:translateX(-100%); transition:transform .25s ease; z-index:0; }
+        .setup-wrap .btn-complete:hover::before { transform:translateX(0); }
+        .setup-wrap .btn-complete:hover { color:#050a0f; }
+        .setup-wrap .btn-complete span  { position:relative; z-index:1; }
+        .setup-wrap .btn-complete.done  { border-color:#5a8099; color:#5a8099; cursor:default; }
+        .setup-wrap .btn-complete.done::before { display:none; }
+        .setup-wrap .completed-badge { display:none; align-items:center; gap:8px; font-family:'Share Tech Mono',monospace; font-size:.7rem; color:#00ff9d; padding:8px 14px; border:1px solid rgba(0,255,157,.3); background:rgba(0,255,157,.05); letter-spacing:.08em; }
+        .setup-wrap .completed-badge.show { display:flex; }
+        /* Final screen */
+        .setup-wrap .final-screen { display:none; text-align:center; padding:60px 20px; }
+        .setup-wrap .final-screen.show { display:block; animation:fadeIn .5s ease; }
+        .setup-wrap .final-icon  { font-size:4rem; margin-bottom:20px; }
+        .setup-wrap .final-title { font-family:'Rajdhani',sans-serif; font-size:2.2rem; font-weight:700; color:#00ff9d; letter-spacing:.05em; margin-bottom:8px; text-shadow:0 0 30px rgba(0,255,157,.4); }
+        .setup-wrap .final-sub   { font-family:'Share Tech Mono',monospace; font-size:.8rem; color:#5a8099; margin-bottom:30px; letter-spacing:.1em; }
+        .setup-wrap .restart-btn { font-family:'Rajdhani',sans-serif; font-size:.85rem; font-weight:700; letter-spacing:.1em; padding:14px 36px; border:1px solid #00ff9d; background:transparent; color:#00ff9d; cursor:pointer; text-transform:uppercase; transition:all .25s; }
+        .setup-wrap .restart-btn:hover { background:rgba(0,255,157,.1); }
+        @media(max-width:768px){ .sw-content-area{padding:20px} .sw-header{padding:20px} .sw-header h1{font-size:1.6rem} }
+
+        /* ═══════════════════════════════════════════
+           TAB 4 — SCENARIO QUIZ
+        ═══════════════════════════════════════════ */
+        .sq-outer      { max-width:1000px; margin:0 auto; padding:20px; }
+        .sq-container  { background:var(--bg-secondary); border-radius:12px; padding:28px; margin-bottom:24px; }
+        .sq-outer .scenario-text  { background:var(--bg-tertiary); padding:20px; border-radius:8px; border-left:4px solid var(--accent-warning); margin-bottom:24px; font-size:1.05em; line-height:1.7; }
+        .sq-outer .question-text  { font-size:1.1em; font-weight:600; color:var(--text-primary); margin-bottom:20px; }
+        .sq-outer .answers-grid   { display:grid; gap:12px; margin-bottom:20px; }
+        .sq-outer .answer-option  { background:var(--bg-tertiary); border:2px solid var(--border-color); padding:16px 20px; border-radius:8px; cursor:pointer; transition:all .2s; }
+        .sq-outer .answer-option:hover:not(.sq-disabled) { border-color:var(--accent-primary); transform:translateX(4px); }
+        .sq-outer .answer-option.sq-correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); }
+        .sq-outer .answer-option.sq-incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15); }
+        .sq-outer .answer-option.sq-disabled  { cursor:not-allowed; opacity:.75; }
+        .sq-outer .sq-feedback { background:var(--bg-primary); border-radius:8px; padding:20px; margin-top:20px; border-left:4px solid var(--accent-success); display:none; }
+        .sq-outer .sq-feedback.show { display:block; animation:slideIn .3s ease; }
+        .sq-outer .sq-feedback.incorrect-feedback { border-left-color:var(--accent-error); }
+        .sq-outer .sq-feedback-header { display:flex; align-items:center; gap:10px; font-size:1.15em; font-weight:700; margin-bottom:12px; }
+        .sq-outer .sq-feedback-icon { font-size:1.4em; }
+        .sq-outer .sq-feedback-expl { color:var(--text-secondary); line-height:1.7; margin-top:10px; }
+        .sq-outer .sq-feedback-expl strong { color:var(--text-primary); display:block; margin-top:10px; }
+        .sq-outer .sq-controls { display:flex; justify-content:center; margin-top:24px; padding-top:20px; border-top:1px solid var(--border-color); }
+        .sq-outer button { background:linear-gradient(135deg,var(--accent-warning),#f97316); color:#fff; border:none; padding:12px 28px; border-radius:8px; font-weight:600; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; font-size:.95em; }
+        .sq-outer button:hover { opacity:.9; transform:translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════════════ -->
+<div class="page-header">
+    <h1>🔒 Mod 11 – Security Best Practices</h1>
+    <p class="subtitle">CompTIA Tech+ Aligned &nbsp;|&nbsp; Interactive Learning Guide</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB NAVIGATION
+══════════════════════════════════════════════ -->
+<nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('instruction')">📖 Instruction (Pt 2)</button>
+    <button class="tab-btn"        onclick="switchTab('reinforcement')">🎯 Challenge Tasks (Pt 1)</button>
+    <button class="tab-btn"        onclick="switchTab('setup')">🛡️ Setup Lab (Pt A)</button>
+    <button class="tab-btn"        onclick="switchTab('quiz')">📊 Scenario Quiz</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     TAB 1: INSTRUCTION — PART 2
+     Lesson 8: Configuring Your Browser for Safety
+══════════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="instr-outer">
+    <div class="instr-main">
+        <div class="lesson" id="lesson8">
+            <h2>Lesson 8: Configuring Your Browser for Safety</h2>
+
+            <div class="key-concept">
+                <strong>Core Principle:</strong> A misconfigured browser is a security liability. Update it regularly, disable Autofill, enable security settings, and manage cookies properly to minimize risk.
+            </div>
+
+            <div class="problem-scenario">
+                <h3>📋 Scenario</h3>
+                <p>A user visits a malicious site that harvests the credit card and address info saved in their browser's Autofill. They also have dozens of third-party tracking cookies and outdated browser extensions. Review what browser security configurations should have been in place.</p>
+            </div>
+
+            <div class="visual-demo">
+                <h3>⚙️ Browser Security Checklist</h3>
+                <div class="data-structure">
+                    <div class="data-card">
+                        <h4>🔄 Keep Browser Updated</h4>
+                        <ul>
+                            <li>Enable automatic updates</li>
+                            <li>Update add-ons and extensions too</li>
+                            <li>Patches fix known security vulnerabilities</li>
+                            <li>Outdated browsers are primary attack vectors</li>
+                        </ul>
+                    </div>
+                    <div class="data-card">
+                        <h4>🚫 Disable Autofill</h4>
+                        <ul>
+                            <li>Autofill stores passwords, addresses, CC numbers</li>
+                            <li>Malicious sites can harvest saved form data</li>
+                            <li>Use a dedicated password manager instead</li>
+                            <li>Disable in Settings → Autofill settings</li>
+                        </ul>
+                    </div>
+                    <div class="data-card">
+                        <h4>🔒 Enable Security Settings</h4>
+                        <ul>
+                            <li>Enable pop-up blocking</li>
+                            <li>Enable safe browsing / phishing protection</li>
+                            <li>Block dangerous downloads</li>
+                            <li>Review and audit installed extensions</li>
+                        </ul>
+                    </div>
+                    <div class="data-card">
+                        <h4>🍪 Manage Cookies</h4>
+                        <ul>
+                            <li>Block third-party tracking cookies</li>
+                            <li>Clear cookies regularly</li>
+                            <li>Use private/incognito for sensitive browsing</li>
+                            <li>Don't accept all cookies by default</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="interactive-section">
+                <h3>🎯 Drag &amp; Drop: Configure the Browser</h3>
+                <p>Drag each browser setting to whether it should be <strong>ENABLED</strong> or <strong>DISABLED</strong> for security:</p>
+                <div class="matching-container">
+                    <div>
+                        <div class="drop-zone" data-correct="enable" style="min-height:110px;">
+                            <div class="drop-zone-label">✅ Should Be ENABLED</div>
+                        </div>
+                        <div class="drop-zone" data-correct="disable" style="min-height:110px;">
+                            <div class="drop-zone-label">❌ Should Be DISABLED</div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="drop-zone-label" style="margin-bottom:8px;">Drag settings ↓</p>
+                        <div class="draggable-items" id="browserItems">
+                            <div class="drag-item" draggable="true" data-bsetting="disable">💾 Autofill for credit cards</div>
+                            <div class="drag-item" draggable="true" data-bsetting="enable">🔄 Automatic browser updates</div>
+                            <div class="drag-item" draggable="true" data-bsetting="enable">🛡️ Safe browsing / phishing protection</div>
+                            <div class="drag-item" draggable="true" data-bsetting="disable">🍪 Accept all third-party cookies</div>
+                            <div class="drag-item" draggable="true" data-bsetting="enable">🚫 Pop-up blocker</div>
+                            <div class="drag-item" draggable="true" data-bsetting="disable">🔓 Allow extensions from any source</div>
+                        </div>
+                    </div>
+                </div>
+                <button id="checkBrowser" style="margin-top:12px;">Check Configuration</button>
+                <div class="feedback-box" id="feedbackB8"></div>
+            </div>
+
+            <div class="concept-check single-q" data-answer="3">
+                <h4>✅ Concept Check</h4>
+                <p><strong>Question:</strong> Why should browser Autofill be DISABLED as a security best practice?</p>
+                <div class="check-option">A) Autofill slows down the browser significantly</div>
+                <div class="check-option">B) Autofill only works on mobile devices</div>
+                <div class="check-option">C) Malicious websites can potentially harvest saved form data including passwords and credit card numbers</div>
+                <div class="check-option">D) Autofill prevents cookies from working properly</div>
+                <div class="explanation">
+                    <strong>Explanation:</strong> Autofill stores sensitive data (passwords, addresses, credit card numbers) that malicious scripts on compromised websites can harvest. Using a dedicated password manager is a more secure alternative that doesn't expose data to browser-based attacks.
+                </div>
+            </div>
+        </div><!-- end lesson -->
+    </div><!-- end instr-main -->
+</div><!-- end instr-outer -->
+</div><!-- end tab-instruction -->
+
+<!-- ══════════════════════════════════════════════
+     TAB 2: REINFORCEMENT — PART 1
+     Task 1: Classify Device Hardening Actions
+══════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div class="rein-wrapper">
+    <div class="rein-inner">
+
+        <div class="score-bar">
+            <div class="score-label">Tasks Completed</div>
+            <div class="score-value" id="reinScoreDisplay">0 / 1</div>
+            <div class="score-label" style="margin-left:20px;">Correct</div>
+            <div class="score-value" id="reinCorrectDisplay" style="color:var(--success)">0</div>
+            <div class="score-pips" id="reinPipRow">
+                <div class="pip" id="reinPip1" title="Task 1"></div>
+            </div>
+        </div>
+
+        <!-- TASK 1 -->
+        <div class="task-card" id="reinTask1">
+            <div class="task-header">
+                <span class="task-num">TASK 01</span>
+                <span class="task-title">Classify Device Hardening Actions</span>
+                <span class="task-objective">Obj 1: Device Hardening</span>
+                <span class="task-type">Drag &amp; Drop</span>
+            </div>
+            <div class="task-body">
+                <div class="scenario-box">
+                    <div class="sc-label">📋 Scenario</div>
+                    <p>You are deploying 20 new workstations at an accounting firm. Before connecting them to the corporate network, you must harden each device. Sort each action below — does it HARDEN the device or does it NOT harden the device? All 10 items must be placed.</p>
+                </div>
+                <p class="task-instructions">Drag each action from the pool to the correct category. All <strong>10 items</strong> must be placed before submitting.</p>
+
+                <!-- Chip pool -->
+                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;" id="reinT1Sources">
+                    <div class="drag-chip" draggable="true" data-val="harden">Apply all pending OS security patches</div>
+                    <div class="drag-chip" draggable="true" data-val="not">Change the desktop wallpaper to a company logo</div>
+                    <div class="drag-chip" draggable="true" data-val="harden">Change the default administrator password</div>
+                    <div class="drag-chip" draggable="true" data-val="harden">Disable AutoPlay for all removable media</div>
+                    <div class="drag-chip" draggable="true" data-val="harden">Enable the built-in software firewall</div>
+                    <div class="drag-chip" draggable="true" data-val="not">Install an additional media player app for users</div>
+                    <div class="drag-chip" draggable="true" data-val="harden">Install antivirus, antispam, and antispyware software</div>
+                    <div class="drag-chip" draggable="true" data-val="not">Leave the built-in Telnet service enabled for convenience</div>
+                    <div class="drag-chip" draggable="true" data-val="harden">Remove software and services that are not needed</div>
+                    <div class="drag-chip" draggable="true" data-val="harden">Research all software sources before downloading</div>
+                </div>
+
+                <!-- Drop zones -->
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+                    <div class="dz-row">
+                        <div class="dz-label-box">✅ HARDENS<br>the Device</div>
+                        <div class="dz-drop" data-accept="harden" id="reinT1Harden"></div>
+                    </div>
+                    <div class="dz-row">
+                        <div class="dz-label-box">❌ Does NOT<br>Harden</div>
+                        <div class="dz-drop" data-accept="not" id="reinT1Not"></div>
+                    </div>
+                </div>
+
+                <div class="task-actions">
+                    <button class="btn-submit" id="reinT1Submit">Submit Task 1</button>
+                    <button class="btn-reset"  id="reinT1Reset">↺ Reset</button>
+                </div>
+
+                <div class="feedback-panel" id="reinT1Feedback">
+                    <div class="fb-header"><span class="fb-icon"></span><span class="fb-verdict"></span></div>
+                    <div class="fb-body">
+                        <div class="fb-section">
+                            <div class="fb-section-title">✅ Hardening Actions Explained</div>
+                            <div class="fb-section-body">
+                                <strong>Apply OS patches:</strong> Closes known vulnerabilities — unpatched systems are the #1 target in most attacks.<br><br>
+                                <strong>Change default password:</strong> Default credentials like "admin/admin" are publicly documented; attackers try them first.<br><br>
+                                <strong>Disable AutoPlay:</strong> Stops removable media from automatically running code — prevents the "parking lot USB drop" attack.<br><br>
+                                <strong>Enable firewall:</strong> Blocks unauthorized inbound/outbound connections at the host level.<br><br>
+                                <strong>Install antimalware:</strong> Provides detection and removal of malware that gets through other defenses.<br><br>
+                                <strong>Remove unused software/services:</strong> Every extra program is a potential attack surface — minimize exposure.<br><br>
+                                <strong>Research software sources:</strong> Prevents installation of malware disguised as legitimate software.
+                            </div>
+                        </div>
+                        <div class="fb-section">
+                            <div class="fb-section-title">❌ Non-Hardening Actions</div>
+                            <div class="fb-section-body">
+                                <strong>Change desktop wallpaper:</strong> Purely cosmetic — zero security impact.<br><br>
+                                <strong>Install additional media player:</strong> Adding more software <em>increases</em> attack surface — opposite of hardening.<br><br>
+                                <strong>Leave Telnet enabled:</strong> Telnet transmits credentials in plaintext and is a known attack vector. Hardening requires disabling unused, insecure services.
+                            </div>
+                        </div>
+                        <div class="fb-tip"><strong>💡 Pro Tip:</strong> The core principle of device hardening is <em>attack surface reduction</em> — remove, disable, change, and protect everything a threat actor could exploit.</div>
+                    </div>
+                </div>
+            </div><!-- end task-body -->
+        </div><!-- end task-card -->
+
+        <!-- Completion Card -->
+        <div class="completion-card" id="reinCompletion">
+            <div class="comp-icon">🏁</div>
+            <div class="comp-title">Task Complete!</div>
+            <div class="comp-subtitle">You've finished the Device Hardening classification task.</div>
+            <div class="comp-stats">
+                <div class="comp-stat">
+                    <div class="comp-stat-val" id="reinCompCorrect">0</div>
+                    <div class="comp-stat-lbl">Correct</div>
+                </div>
+                <div class="comp-stat">
+                    <div class="comp-stat-val" id="reinCompPct">0%</div>
+                    <div class="comp-stat-lbl">Score</div>
+                </div>
+            </div>
+            <div class="comp-congrats">Review the feedback panel above for a full breakdown of each hardening action and why it does or does not reduce attack surface.</div>
+            <button class="comp-next" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Review Task</button>
+        </div>
+
+    </div><!-- end rein-inner -->
+</div><!-- end rein-wrapper -->
+</div><!-- end tab-reinforcement -->
+
+<!-- ══════════════════════════════════════════════
+     TAB 3: SETUP LAB — PART A
+     Task 01 of 15: Install & Configure Anti-Malware
+══════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-setup">
+<div class="setup-wrap">
+
+    <div class="sw-header">
+        <div class="sw-header-bg-text">M11-T01</div>
+        <div class="sw-header-badge"><span class="sw-dot-live"></span>COMPTIA TECH+ — MODULE 11 // TASK 01</div>
+        <h1>Security <span>Measures</span> Lab</h1>
+        <p class="sw-header-sub">TASK 01 OF 15 // INSTALL &amp; CONFIGURE ANTI-MALWARE</p>
+    </div>
+
+    <div class="sw-content-area">
+
+        <div class="task-header-row">
+            <div class="task-icon-box">🛡️</div>
+            <div class="task-meta">
+                <div class="task-num-label">TASK 01 OF 15</div>
+                <div class="task-title-label">Install &amp; Configure Anti-Malware</div>
+                <span class="task-cat">PROTECTION</span>
+            </div>
+        </div>
+
+        <div class="sw-section">
+            <div class="sw-section-label">Objective</div>
+            <div class="objective-box">Deploy and configure an endpoint anti-malware solution to detect, quarantine, and remove malicious software. This is a foundational layer of host-based security.</div>
+        </div>
+
+        <div class="sw-section">
+            <div class="sw-section-label">Scenario</div>
+            <div class="sw-scenario-box">A new workstation has been added to the network. Before deploying it, ensure it has active, up-to-date anti-malware protection configured with real-time scanning enabled.</div>
+        </div>
+
+        <div class="sw-section">
+            <div class="sw-section-label">Procedure</div>
+            <ul class="steps-list">
+                <li class="step-item">
+                    <div class="step-num-circle">01</div>
+                    <div class="step-content"><strong>Open Windows Security</strong> — Press Win + I &rarr; Settings &rarr; Privacy &amp; Security &rarr; Windows Security.</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-num-circle">02</div>
+                    <div class="step-content"><strong>Review Virus &amp; threat protection</strong> — Confirm Real-time protection is <em>On</em>.</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-num-circle">03</div>
+                    <div class="step-content"><strong>Update definitions</strong> — Click <em>Check for updates</em>. Definition files must be current.</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-num-circle">04</div>
+                    <div class="step-content"><strong>Enable Cloud-delivered protection</strong> — Toggle On. Sends suspicious samples to Microsoft for real-time analysis.</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-num-circle">05</div>
+                    <div class="step-content"><strong>Verify Quarantine</strong> — Under Protection history, review any quarantined items.</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="callout warn">
+            <div>⚠️ Anti-malware is only effective when its definition database is current. A signature that is weeks old may miss recently discovered malware variants.</div>
+        </div>
+
+        <!-- Lab area -->
+        <div class="lab-area">
+            <div class="lab-header">⚡ Windows Security — Virus &amp; Threat Protection</div>
+            <div class="lab-body">
+                <p class="lab-inst">Enable all required protections. Avoid settings that reduce scanning coverage.</p>
+                <div id="setupLabControls"></div>
+                <div class="lab-fb" id="setupLabFb"></div>
+                <button class="verify-btn" onclick="setupValidateLab()">[ VERIFY CONFIGURATION ]</button>
+            </div>
+        </div>
+
+        <!-- Complete button -->
+        <div class="complete-btn">
+            <button class="btn-complete" id="setupBtnComplete" onclick="setupMarkComplete()">
+                <span>Mark Task Complete</span>
+            </button>
+            <div class="completed-badge" id="setupCompletedBadge">&#10003; TASK 01 VERIFIED</div>
+        </div>
+
+        <!-- Final screen -->
+        <div class="final-screen" id="setupFinalScreen">
+            <div class="final-icon">🛡️</div>
+            <div class="final-title">Task Complete</div>
+            <div class="final-sub">MODULE 11 // TASK 01 // ANTI-MALWARE CONFIGURATION</div>
+            <p style="font-size:.85rem;color:#5a8099;max-width:480px;margin:0 auto 30px;line-height:1.7;">
+                Anti-malware is properly configured with real-time protection, cloud-delivered protection, automatic sample submission, and tamper protection all enabled — and no dangerous exclusions set.
+            </p>
+            <button class="restart-btn" onclick="setupRestartLab()">&#8634; Restart Task</button>
+        </div>
+
+    </div><!-- end sw-content-area -->
+</div><!-- end setup-wrap -->
+</div><!-- end tab-setup -->
+
+<!-- ══════════════════════════════════════════════
+     TAB 4: SCENARIO QUIZ
+     Password Reuse / Credential Stuffing
+══════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+<div class="sq-outer">
+    <div class="sq-container">
+
+        <div class="scenario-text">
+            A user's bank account was accessed without authorization. Investigation reveals: they used the password 'fluffy123' for their bank, email, and a pet forum. The pet forum suffered a breach 6 months ago and the stolen credentials were sold on the dark web.
+        </div>
+
+        <div class="question-text">Which password management failure was DIRECTLY exploited in this attack?</div>
+
+        <div class="answers-grid" id="quizAnswersGrid"></div>
+
+        <div class="sq-feedback" id="quizFeedbackBox">
+            <div class="sq-feedback-header">
+                <span class="sq-feedback-icon" id="quizFeedbackIcon"></span>
+                <span id="quizFeedbackHeader"></span>
+            </div>
+            <div class="sq-feedback-expl" id="quizFeedbackExpl"></div>
+        </div>
+
+        <div class="sq-controls">
+            <button onclick="quizReset()">🔀 Reset Question</button>
+        </div>
+
+    </div>
+</div>
+</div><!-- end tab-quiz -->
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════════════════════════ */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+    var tabMap = { instruction:0, reinforcement:1, setup:2, quiz:3 };
+    var btns = document.querySelectorAll('.tab-btn');
+    if (btns[tabMap[tabId]]) btns[tabMap[tabId]].classList.add('active');
+    var el = document.getElementById('tab-' + tabId);
+    if (el) el.classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ══════════════════════════════════════════════════════════
+   TAB 1 — INSTRUCTION: Browser Drag-Drop
+══════════════════════════════════════════════════════════ */
+(function(){
+    var draggedItem = null;
+
+    document.querySelectorAll('#browserItems .drag-item').forEach(function(item){
+        item.addEventListener('dragstart', function(){ draggedItem = this; this.classList.add('dragging'); });
+        item.addEventListener('dragend',   function(){ this.classList.remove('dragging'); });
+    });
+
+    document.querySelectorAll('#tab-instruction .drop-zone').forEach(function(zone){
+        zone.addEventListener('dragover',  function(e){ e.preventDefault(); this.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', function(){ this.classList.remove('drag-over'); });
+        zone.addEventListener('drop', function(e){
+            e.preventDefault(); this.classList.remove('drag-over');
+            if (draggedItem) this.appendChild(draggedItem);
+        });
+    });
+
+    document.getElementById('checkBrowser').addEventListener('click', function(){
+        var zones     = document.querySelectorAll('#tab-instruction .drop-zone');
+        var remaining = document.querySelectorAll('#browserItems .drag-item').length;
+        var allCorrect = (remaining === 0);
+
+        zones.forEach(function(zone){
+            zone.classList.remove('correct','incorrect');
+            var expected = zone.getAttribute('data-correct');
+            var items    = zone.querySelectorAll('.drag-item');
+            var zoneOk   = items.length > 0 && Array.from(items).every(function(item){
+                return item.getAttribute('data-bsetting') === expected;
+            });
+            if (!zoneOk) allCorrect = false;
+            zone.classList.add(zoneOk && items.length > 0 ? 'correct' : 'incorrect');
+        });
+
+        var fb = document.getElementById('feedbackB8');
+        if (allCorrect) {
+            fb.className = 'feedback-box success show';
+            fb.innerHTML = '✅ Correct configuration! Enable: auto-updates, safe browsing, pop-up blocker. Disable: Autofill for cards, accept-all cookies, extensions from any source.';
+        } else {
+            fb.className = 'feedback-box error show';
+            fb.innerHTML = '❌ Check your configuration. Make sure all 6 items are placed, and review which settings increase vs. decrease your security.';
+        }
+    });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   TAB 1 — INSTRUCTION: Single-Select Concept Check
+══════════════════════════════════════════════════════════ */
+(function(){
+    document.querySelectorAll('#tab-instruction .single-q').forEach(function(qBlock){
+        var answer  = qBlock.getAttribute('data-answer');
+        var options = qBlock.querySelectorAll('.check-option');
+        var expl    = qBlock.querySelector('.explanation');
+        options.forEach(function(opt, idx){
+            opt.addEventListener('click', function(){
+                if (opt.classList.contains('disabled')) return;
+                options.forEach(function(o){ o.classList.add('disabled'); });
+                if (String(idx + 1) === answer) {
+                    opt.classList.add('correct');
+                } else {
+                    opt.classList.add('incorrect');
+                    options[parseInt(answer) - 1].classList.add('correct');
+                }
+                if (expl) expl.classList.add('show');
+            });
+        });
+    });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   TAB 2 — REINFORCEMENT: Device Hardening DnD
+══════════════════════════════════════════════════════════ */
+(function(){
+    var reinState = { completed:0, correct:0, results:{} };
+    var TOTAL = 1;
+
+    function reinRecord(id, ok) {
+        if (reinState.results[id] !== undefined) return;
+        reinState.results[id] = ok;
+        reinState.completed++;
+        if (ok) reinState.correct++;
+        document.getElementById('reinScoreDisplay').textContent  = reinState.completed + ' / ' + TOTAL;
+        document.getElementById('reinCorrectDisplay').textContent = reinState.correct;
+        var pip = document.getElementById('reinPip' + id);
+        if (pip) pip.classList.add(ok ? 'correct' : 'incorrect');
+        if (reinState.completed === TOTAL) {
+            var card = document.getElementById('reinCompletion');
+            card.classList.add('show');
+            document.getElementById('reinCompCorrect').textContent = reinState.correct;
+            document.getElementById('reinCompPct').textContent = Math.round((reinState.correct / TOTAL) * 100) + '%';
+        }
+    }
+
+    function reinShowFb(panelId, ok, msg) {
+        var p   = document.getElementById(panelId);
+        p.classList.add('show');
+        var hdr = p.querySelector('.fb-header');
+        hdr.className = 'fb-header ' + (ok ? 'success' : 'error');
+        hdr.querySelector('.fb-icon').textContent    = ok ? '✅' : '❌';
+        hdr.querySelector('.fb-verdict').textContent = msg;
+    }
+
+    // DnD
+    var dragging = null;
+
+    document.querySelectorAll('#reinT1Sources .drag-chip').forEach(function(c){
+        c.addEventListener('dragstart', function(e){ dragging = e.currentTarget; e.currentTarget.classList.add('dragging'); });
+        c.addEventListener('dragend',   function(e){ e.currentTarget.classList.remove('dragging'); });
+    });
+
+    document.querySelectorAll('#reinTask1 .dz-drop').forEach(function(zone){
+        zone.addEventListener('dragover',  function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', function()  { zone.classList.remove('drag-over'); });
+        zone.addEventListener('drop', function(e){
+            e.preventDefault(); zone.classList.remove('drag-over');
+            if (dragging) zone.appendChild(dragging);
+        });
+    });
+
+    document.getElementById('reinT1Submit').addEventListener('click', function(){
+        var src       = document.getElementById('reinT1Sources');
+        var remaining = src.querySelectorAll('.drag-chip').length;
+        var ok        = (remaining === 0);
+
+        document.querySelectorAll('#reinTask1 .dz-drop').forEach(function(z){
+            z.classList.remove('correct-zone','incorrect-zone');
+            var exp   = z.getAttribute('data-accept');
+            var chips = z.querySelectorAll('.drag-chip');
+            var zOk   = chips.length > 0 && Array.from(chips).every(function(c){ return c.getAttribute('data-val') === exp; });
+            z.classList.add(zOk ? 'correct-zone' : 'incorrect-zone');
+            if (!zOk) ok = false;
+        });
+
+        reinRecord(1, ok);
+        reinShowFb('reinT1Feedback', ok,
+            ok ? '✓ All hardening actions correctly classified!' :
+                 '✗ Some items are misclassified — review the explanations below.');
+        document.getElementById('reinT1Submit').disabled = true;
+    });
+
+    document.getElementById('reinT1Reset').addEventListener('click', function(){
+        var src = document.getElementById('reinT1Sources');
+        document.querySelectorAll('#reinTask1 .dz-drop .drag-chip').forEach(function(c){ src.appendChild(c); });
+        document.querySelectorAll('#reinTask1 .dz-drop').forEach(function(z){ z.classList.remove('correct-zone','incorrect-zone'); });
+        document.getElementById('reinT1Feedback').classList.remove('show');
+        if (reinState.results[1] === undefined) document.getElementById('reinT1Submit').disabled = false;
+    });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   TAB 3 — SETUP LAB: Anti-Malware Toggles
+══════════════════════════════════════════════════════════ */
+var setupLabItems = [
+    {id:'rtp', lbl:'Real-time protection',       sub:'Scans files as they are accessed or executed',                        req:true,  danger:false},
+    {id:'cdp', lbl:'Cloud-delivered protection', sub:'Sends suspicious samples to Microsoft cloud for real-time analysis', req:true,  danger:false},
+    {id:'asm', lbl:'Automatic sample submission',sub:'Automatically submits samples when threats are detected',             req:true,  danger:false},
+    {id:'tpr', lbl:'Tamper protection',          sub:'Prevents malicious apps from disabling Windows Security',             req:true,  danger:false},
+    {id:'exc', lbl:'Exclusion: Downloads folder',sub:'Excludes Downloads from scanning — NOT recommended',                  req:false, danger:true}
+];
+var setupLabState = {};
+
+function setupBuildToggles() {
+    var lc = document.getElementById('setupLabControls');
+    if (!lc) return;
+    setupLabItems.forEach(function(item){
+        setupLabState[item.id] = false;
+        var row = document.createElement('div');
+        row.className = 'tog-row';
+        row.innerHTML =
+            '<div>' +
+            '<div class="tog-lbl">' + item.lbl +
+            (item.danger ? ' <span style="color:#ff3d5a;font-size:.7rem;">[&#9888; NOT RECOMMENDED]</span>' : '') +
+            '</div>' +
+            '<div class="tog-sub">' + item.sub + '</div></div>' +
+            '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<span class="tog-stat">OFF</span><div class="tog-sw"></div></div>';
+        row.addEventListener('click', function(){
+            setupLabState[item.id] = !setupLabState[item.id];
+            row.classList.toggle('on', setupLabState[item.id]);
+            row.querySelector('.tog-stat').textContent = setupLabState[item.id] ? 'ON' : 'OFF';
+        });
+        lc.appendChild(row);
+    });
+}
+
+function setupValidateLab() {
+    var ok = setupLabState.rtp && setupLabState.cdp && setupLabState.asm && setupLabState.tpr && !setupLabState.exc;
+    var fb = document.getElementById('setupLabFb');
+    fb.className = 'lab-fb show ' + (ok ? 'ok' : 'err');
+    fb.textContent = ok
+        ? '✓ Correct! All four protections are enabled and the dangerous Downloads exclusion is not set. This workstation is properly protected.'
+        : 'All four protection toggles must be ON. The Downloads folder exclusion creates a blind spot and must NOT be enabled.';
+}
+
+function setupMarkComplete() {
+    var btn = document.getElementById('setupBtnComplete');
+    btn.className = 'btn-complete done';
+    btn.innerHTML = '<span>&#10003; Task Completed</span>';
+    document.getElementById('setupCompletedBadge').classList.add('show');
+    setTimeout(function(){ setupShowFinal(); }, 800);
+}
+
+function setupShowFinal() {
+    var fs = document.getElementById('setupFinalScreen');
+    fs.classList.add('show');
+    fs.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function setupRestartLab() {
+    Object.keys(setupLabState).forEach(function(k){ setupLabState[k] = false; });
+    document.querySelectorAll('#tab-setup .tog-row').forEach(function(row){
+        row.classList.remove('on');
+        row.querySelector('.tog-stat').textContent = 'OFF';
+    });
+    var fb = document.getElementById('setupLabFb');
+    fb.className = 'lab-fb'; fb.textContent = '';
+    var btn = document.getElementById('setupBtnComplete');
+    btn.className = 'btn-complete';
+    btn.innerHTML = '<span>Mark Task Complete</span>';
+    document.getElementById('setupCompletedBadge').classList.remove('show');
+    document.getElementById('setupFinalScreen').classList.remove('show');
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ══════════════════════════════════════════════════════════
+   TAB 4 — SCENARIO QUIZ: Password Reuse
+══════════════════════════════════════════════════════════ */
+var quizAnswers = [
+    { text:'The user did not change their password frequently enough', correct:false },
+    { text:'Password reuse across multiple sites', correct:true },
+    { text:"The password contained the user's pet's name, which was guessed by social engineering", correct:false },
+    { text:'The user wrote the password on a sticky note visible to coworkers', correct:false }
+];
+var quizExplanation = '<strong>Correct Answer: Password reuse across multiple sites — a credential stuffing attack succeeded because one breach compromised all accounts using that password</strong><br><br>Credential stuffing attacks use credentials stolen from one breach to attempt logins across many other sites. When passwords are reused, a single breach propagates to every service using that password. Best practice: use a unique, complex password for every site/service. This limits blast radius — one compromise affects only one account.';
+var quizAnswered   = false;
+var quizShuffled   = [];
+
+function quizShuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+}
+
+function quizRender() {
+    var grid = document.getElementById('quizAnswersGrid');
+    grid.innerHTML = quizShuffled.map(function(ans, i){
+        return '<div class="answer-option" id="quizOpt' + i + '" onclick="quizSelect(' + i + ')">' + ans.text + '</div>';
+    }).join('');
+}
+
+function quizSelect(index) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    var chosen = quizShuffled[index];
+
+    quizShuffled.forEach(function(ans, i){
+        var el = document.getElementById('quizOpt' + i);
+        el.classList.add('sq-disabled');
+        if (ans.correct)            el.classList.add('sq-correct');
+        if (i === index && !ans.correct) el.classList.add('sq-incorrect');
+    });
+
+    var fb   = document.getElementById('quizFeedbackBox');
+    var icon = document.getElementById('quizFeedbackIcon');
+    var hdr  = document.getElementById('quizFeedbackHeader');
+    var expl = document.getElementById('quizFeedbackExpl');
+
+    if (chosen.correct) {
+        fb.classList.remove('incorrect-feedback');
+        icon.textContent = '✅';
+        hdr.textContent  = 'Correct!';
+    } else {
+        fb.classList.add('incorrect-feedback');
+        icon.textContent = '❌';
+        hdr.textContent  = 'Incorrect';
+    }
+    expl.innerHTML = quizExplanation;
+    fb.classList.add('show');
+}
+
+function quizReset() {
+    quizAnswered = false;
+    quizShuffled = quizShuffle(quizAnswers);
+    document.getElementById('quizFeedbackBox').classList.remove('show','incorrect-feedback');
+    quizRender();
+}
+
+/* ══════════════════════════════════════════════════════════
+   INITIALIZATION
+══════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function(){
+    setupBuildToggles();
+    quizShuffled = quizShuffle(quizAnswers);
+    quizRender();
+});
+</script>
+</body>
+</html>

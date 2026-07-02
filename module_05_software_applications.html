@@ -1,0 +1,937 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod 5 – Software Applications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           RESET & ROOT VARIABLES
+        ═══════════════════════════════════════════ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary:#1a1d29; --bg-secondary:#242938; --bg-tertiary:#2d3348;
+            --accent-primary:#6366f1; --accent-secondary:#8b5cf6;
+            --accent-success:#10b981; --accent-warning:#f59e0b; --accent-error:#ef4444;
+            --text-primary:#f3f4f6; --text-secondary:#9ca3af; --border-color:#374151;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════════ */
+        @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(-8px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes popIn   { from{opacity:0;transform:scale(0.95)}       to{opacity:1;transform:scale(1)} }
+        @keyframes shake   { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+        /* ═══════════════════════════════════════════
+           PAGE HEADER
+        ═══════════════════════════════════════════ */
+        .page-header {
+            text-align:center; padding:36px 20px;
+            background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
+        }
+        .page-header h1 { font-size:2.3em; font-weight:700; margin-bottom:8px; }
+        .page-header .subtitle { font-size:1.05em; opacity:0.9; }
+
+        /* ═══════════════════════════════════════════
+           TAB NAVIGATION
+        ═══════════════════════════════════════════ */
+        .tab-nav {
+            display:flex; gap:6px; padding:14px 20px;
+            background:var(--bg-secondary); border-bottom:2px solid var(--border-color);
+            overflow-x:auto; flex-wrap:wrap; position:sticky; top:0; z-index:200;
+        }
+        .tab-btn {
+            background:var(--bg-tertiary); color:var(--text-secondary);
+            border:2px solid var(--border-color); padding:9px 18px;
+            border-radius:8px; font-weight:600; cursor:pointer;
+            transition:all .2s; font-family:'Inter',sans-serif; font-size:.88em;
+            white-space:nowrap;
+        }
+        .tab-btn:hover { border-color:var(--accent-primary); color:var(--text-primary); transform:translateY(-1px); }
+        .tab-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           TAB CONTENT
+        ═══════════════════════════════════════════ */
+        .tab-content { display:none; }
+        .tab-content.active { display:block; animation:fadeIn .3s ease; }
+
+        /* ═══════════════════════════════════════════
+           GLOBAL BUTTON
+        ═══════════════════════════════════════════ */
+        button {
+            background:var(--accent-primary); color:#fff; border:none; padding:11px 22px;
+            border-radius:6px; font-weight:600; cursor:pointer; transition:all .25s;
+            font-family:'Inter',sans-serif; font-size:.95em; margin:5px 5px 5px 0;
+        }
+        button:hover { background:var(--accent-secondary); transform:translateY(-2px); }
+        button.secondary { background:var(--bg-tertiary); color:var(--text-primary); border:2px solid var(--border-color); }
+        button.secondary:hover { background:var(--bg-primary); border-color:var(--accent-primary); }
+
+        /* ═══════════════════════════════════════════
+           SHARED COMPONENTS
+        ═══════════════════════════════════════════ */
+        .container { max-width:960px; margin:0 auto; padding:20px; }
+        .main-content { background:var(--bg-secondary); border-radius:12px; padding:30px; }
+        .lesson h2 { color:var(--accent-primary); font-size:1.9em; margin-bottom:14px; }
+
+        .problem-scenario { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; border-left:4px solid var(--accent-warning); }
+        .problem-scenario h3 { color:var(--accent-warning); margin-bottom:8px; }
+
+        .visual-demo { background:var(--bg-primary); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--border-color); }
+        .visual-demo h3 { margin-bottom:12px; }
+
+        .key-concept { background:rgba(99,102,241,.1); padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid var(--accent-primary); }
+        .key-concept strong { color:var(--accent-primary); }
+
+        .interactive-section { background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.1)); padding:22px; border-radius:8px; margin:22px 0; border:2px solid var(--accent-primary); }
+        .interactive-section h3 { color:var(--accent-primary); margin-bottom:12px; }
+
+        .concept-check { background:var(--bg-tertiary); padding:18px; border-radius:8px; margin:18px 0; }
+        .concept-check h4 { color:var(--accent-warning); margin-bottom:12px; }
+        .check-option { padding:11px 14px; margin:7px 0; background:var(--bg-primary); border-radius:6px; border:2px solid var(--border-color); cursor:pointer; transition:all .25s; }
+        .check-option:hover { border-color:var(--accent-primary); }
+        .check-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.12); }
+        .check-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.12); }
+        .check-option.disabled  { pointer-events:none; }
+
+        .explanation { background:rgba(139,92,246,.1); padding:14px; border-radius:8px; margin-top:8px; border-left:4px solid var(--accent-secondary); display:none; }
+        .explanation.show { display:block; animation:fadeIn .3s ease; }
+
+        /* Generic feedback (tabs 1 & 2) */
+        .feedback { margin-top:14px; padding:14px; border-radius:8px; display:none; font-size:.93em; animation:slideIn .3s ease; }
+        .feedback.show    { display:block; }
+        .feedback.success { background:rgba(16,185,129,.15); border-left:4px solid var(--accent-success); }
+        .feedback.error   { background:rgba(239,68,68,.15);  border-left:4px solid var(--accent-error); }
+
+        /* ═══════════════════════════════════════════
+           TAB 1 — INSTRUCTION
+        ═══════════════════════════════════════════ */
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th,td { padding:11px; text-align:left; border-bottom:1px solid var(--border-color); }
+        th { background:var(--accent-primary); color:#fff; font-weight:600; }
+        tr:hover { background:var(--bg-tertiary); }
+
+        .matching-container { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:18px 0; }
+        .draggable-items    { display:flex; flex-direction:column; gap:10px; }
+        .drag-item { background:var(--bg-tertiary); padding:14px; border-radius:8px; border:2px solid var(--border-color); cursor:move; transition:all .25s; user-select:none; }
+        .drag-item:hover { border-color:var(--accent-primary); }
+        .drag-item.dragging { opacity:0.5; }
+
+        .drop-zone { background:var(--bg-primary); padding:14px; border-radius:8px; border:2px dashed var(--border-color); min-height:60px; margin-bottom:10px; transition:all .25s; }
+        .drop-zone.drag-over { border-color:var(--accent-primary); background:rgba(99,102,241,.1); }
+        .drop-zone.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.1); }
+        .drop-zone.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.1); }
+        .drop-zone-label { font-weight:600; color:var(--accent-secondary); margin-bottom:8px; }
+
+        /* ═══════════════════════════════════════════
+           TAB 2 — REINFORCEMENT PT 2
+        ═══════════════════════════════════════════ */
+        .scenario-box { background:var(--bg-secondary); border-radius:12px; padding:22px; margin-bottom:25px; border-left:5px solid var(--accent-warning); }
+        .scenario-box h2 { color:var(--accent-warning); margin-bottom:10px; font-size:1.3em; }
+
+        .task-container { background:var(--bg-secondary); border-radius:12px; padding:25px; margin-bottom:28px; }
+        .task-header    { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+        .task-header h3 { font-size:1.25em; color:var(--text-primary); }
+        .task-number    { background:var(--accent-primary); color:#fff; padding:6px 16px; border-radius:20px; font-weight:700; font-size:.9em; }
+
+        .instructions { background:rgba(99,102,241,.1); padding:14px 16px; border-radius:8px; margin:14px 0; border-left:4px solid var(--accent-primary); font-size:.93em; }
+        .instructions ul { margin-left:20px; margin-top:8px; }
+        .instructions li { margin:5px 0; }
+
+        .browser-interface { background:var(--bg-tertiary); border-radius:8px; padding:20px; margin:20px 0; border:2px solid var(--border-color); }
+        .browser-menubar   { background:var(--bg-primary); padding:15px; border-radius:6px; margin-bottom:15px; font-family:'JetBrains Mono',monospace; font-size:.9em; }
+
+        .browser-setting {
+            background:var(--bg-secondary); padding:12px; margin:8px 0; border-radius:6px;
+            border:2px solid var(--border-color); cursor:pointer; transition:all .25s;
+            display:flex; justify-content:space-between; align-items:center;
+        }
+        .browser-setting:hover  { border-color:var(--accent-primary); }
+        .browser-setting.enabled{ border-color:var(--accent-success); background:rgba(16,185,129,.1); }
+
+        .toggle-btn { background:var(--border-color); width:50px; height:26px; border-radius:13px; position:relative; transition:all .25s; cursor:pointer; }
+        .toggle-btn.on { background:var(--accent-success); }
+        .toggle-btn::after { content:''; position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; left:3px; transition:all .25s; }
+        .toggle-btn.on::after { left:27px; }
+
+        /* ═══════════════════════════════════════════
+           TAB 3 — EXECUTABLE FILE EXTENSIONS
+        ═══════════════════════════════════════════ */
+        .exer-wrapper { padding:20px; max-width:1160px; margin:0 auto; }
+
+        .ref-panel  { background:var(--bg-secondary); border:2px solid var(--border-color); border-radius:12px; margin-bottom:22px; overflow:hidden; }
+        .ref-header { display:flex; justify-content:space-between; align-items:center; padding:16px 22px; cursor:pointer; background:var(--bg-tertiary); font-weight:700; font-size:1em; color:var(--text-primary); user-select:none; transition:background .2s; }
+        .ref-header:hover { background:var(--bg-primary); }
+        .ref-toggle { color:var(--accent-primary); font-size:.85em; font-weight:700; white-space:nowrap; }
+        .ref-body   { padding:18px 22px; overflow-x:auto; }
+        .ref-body.hidden { display:none; }
+
+        .ref-table { width:100%; border-collapse:collapse; font-size:.88em; }
+        .ref-table th { background:var(--bg-tertiary); color:var(--accent-primary); padding:10px 14px; text-align:left; font-weight:700; letter-spacing:.04em; font-size:.82em; text-transform:uppercase; border-bottom:2px solid var(--border-color); }
+        .ref-table td { padding:10px 14px; border-bottom:1px solid var(--border-color); color:var(--text-secondary); vertical-align:top; }
+        .ref-table tr:last-child td { border-bottom:none; }
+        .ref-table tr:hover td { background:rgba(99,102,241,.06); color:var(--text-primary); }
+        .ref-table .ext-name { color:var(--text-primary); font-weight:700; font-family:'JetBrains Mono',monospace; font-size:1em; letter-spacing:.04em; }
+        .ref-table .plat-win  { color:#60a5fa; font-size:.82em; font-weight:700; }
+        .ref-table .plat-mac  { color:#a78bfa; font-size:.82em; font-weight:700; }
+        .ref-table .plat-both { color:#34d399; font-size:.82em; font-weight:700; }
+        .ref-note { margin-top:12px; font-size:.82em; color:var(--text-secondary); font-style:italic; }
+
+        .quiz-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
+
+        .scenario-card { background:var(--bg-secondary); border-radius:12px; padding:26px; border:2px solid var(--border-color); }
+        .scenario-tag  { display:inline-flex; align-items:center; gap:7px; background:rgba(99,102,241,.15); color:var(--accent-primary); font-size:.82em; font-weight:600; padding:4px 11px; border-radius:20px; margin-bottom:14px; width:fit-content; }
+        .scenario-tag .dot { width:7px; height:7px; border-radius:50%; background:var(--accent-primary); }
+        .scenario-desc { color:var(--text-secondary); font-size:.95em; line-height:1.7; }
+
+        .hint-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,.15); border:2px solid var(--accent-warning); color:var(--accent-warning); font-size:.85em; font-weight:600; padding:8px 14px; border-radius:6px; cursor:pointer; transition:all .2s; margin-top:14px; }
+        .hint-btn:hover { background:rgba(245,158,11,.25); transform:translateY(-1px); }
+        .hint-reveal { background:var(--bg-tertiary); border-radius:8px; padding:14px 16px; border-left:4px solid var(--accent-warning); margin-top:0; max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease, opacity .3s ease, margin-top .4s ease; }
+        .hint-reveal.show { max-height:200px; opacity:1; margin-top:12px; }
+        .hint-reveal strong { color:var(--accent-warning); }
+
+        .feedback-strip { display:flex; align-items:flex-start; gap:12px; padding:13px 18px; border-radius:8px; font-size:.93em; font-weight:600; margin-top:14px; animation:slideIn .3s ease; }
+        .feedback-strip.correct   { background:rgba(16,185,129,.18); border:1px solid rgba(16,185,129,.35); color:var(--accent-success); }
+        .feedback-strip.incorrect { background:rgba(239,68,68,.18);  border:1px solid rgba(239,68,68,.35);  color:var(--accent-error); }
+        .feedback-strip .icon     { font-size:1.3em; flex-shrink:0; margin-top:2px; }
+        .feedback-strip .explain  { color:var(--text-secondary); font-weight:400; font-size:.92em; margin-top:3px; }
+
+        .explain-reveal { background:var(--bg-primary); border:2px solid var(--border-color); border-radius:10px; overflow:hidden; margin-top:14px; max-height:0; transition:max-height .5s cubic-bezier(.4,0,.2,1), opacity .35s ease; opacity:0; }
+        .explain-reveal.show { max-height:500px; opacity:1; }
+        .explain-reveal-header { display:flex; align-items:center; gap:10px; padding:11px 16px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); }
+        .explain-reveal-header .icon { font-size:1.1em; }
+        .explain-reveal-header span  { font-size:.88em; font-weight:600; color:var(--accent-primary); }
+        .explain-block { padding:16px; font-size:.9em; line-height:1.8; color:var(--text-secondary); overflow-y:auto; max-height:380px; }
+        .explain-block .label { color:var(--accent-success); font-weight:700; }
+
+        .commands-col { background:var(--bg-secondary); border-radius:12px; padding:20px; border:2px solid var(--border-color); height:fit-content; position:sticky; top:80px; }
+        .commands-header { font-size:.88em; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.08em; padding-bottom:12px; border-bottom:2px solid var(--border-color); margin-bottom:14px; text-align:center; }
+        .cmd-btn { display:block; width:100%; text-align:left; background:var(--bg-tertiary); border:2px solid var(--border-color); color:var(--text-primary); font-family:'JetBrains Mono',monospace; font-size:1em; font-weight:700; padding:13px 18px; border-radius:7px; cursor:pointer; transition:all .2s; margin-bottom:8px; letter-spacing:.04em; }
+        .cmd-btn:last-of-type { margin-bottom:0; }
+        .cmd-btn:hover:not(:disabled) { border-color:var(--accent-primary); background:rgba(99,102,241,.1); color:#fff; }
+        .cmd-btn.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); color:var(--accent-success); }
+        .cmd-btn.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15);  color:var(--accent-error); }
+        .cmd-btn:disabled  { pointer-events:none; }
+        .cmd-btn.correct:disabled, .cmd-btn.incorrect:disabled { opacity:1; }
+        .cmd-btn:disabled:not(.correct):not(.incorrect) { opacity:.4; }
+
+        .reset-wrap { text-align:center; margin-top:22px; padding-top:18px; border-top:1px solid var(--border-color); }
+        .btn-reset  { background:var(--bg-tertiary); color:var(--accent-warning); border:1px solid var(--accent-warning); padding:11px 28px; border-radius:7px; font-weight:600; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; font-size:.93em; }
+        .btn-reset:hover { background:rgba(245,158,11,.12); }
+
+        @media(max-width:820px) {
+            .quiz-grid     { grid-template-columns:1fr; }
+            .commands-col  { position:static; }
+        }
+
+        /* ═══════════════════════════════════════════
+           TAB 4 — SCENARIO QUIZ
+        ═══════════════════════════════════════════ */
+        .quiz-container   { background:var(--bg-secondary); border-radius:12px; padding:28px; margin-bottom:24px; }
+        .scenario-text    { background:var(--bg-tertiary); padding:20px; border-radius:8px; border-left:4px solid var(--accent-warning); margin-bottom:24px; font-size:1.05em; line-height:1.7; }
+        .question-text    { font-size:1.1em; font-weight:600; color:var(--text-primary); margin-bottom:20px; }
+        .answers-grid     { display:grid; gap:12px; margin-bottom:20px; }
+        .answer-option    { background:var(--bg-tertiary); border:2px solid var(--border-color); padding:16px 20px; border-radius:8px; cursor:pointer; transition:all .2s; }
+        .answer-option:hover:not(.disabled) { border-color:var(--accent-primary); transform:translateX(4px); }
+        .answer-option.correct   { border-color:var(--accent-success); background:rgba(16,185,129,.15); }
+        .answer-option.incorrect { border-color:var(--accent-error);   background:rgba(239,68,68,.15); }
+        .answer-option.disabled  { cursor:not-allowed; opacity:.7; }
+
+        .feedback-box { background:var(--bg-primary); border-radius:8px; padding:20px; margin-top:20px; border-left:4px solid var(--accent-success); display:none; animation:slideIn .3s ease; }
+        .feedback-box.show { display:block; }
+        .feedback-box.incorrect-feedback { border-left-color:var(--accent-error); }
+        .feedback-header { display:flex; align-items:center; gap:10px; font-size:1.2em; font-weight:700; margin-bottom:12px; }
+        .feedback-icon   { font-size:1.4em; }
+        .feedback-explanation { color:var(--text-secondary); line-height:1.7; margin-top:12px; }
+
+        .quiz-controls  { display:flex; justify-content:center; margin-top:24px; padding-top:20px; border-top:1px solid var(--border-color); }
+        .quiz-reset-btn { background:var(--accent-warning); color:#1a1d29; }
+        .quiz-reset-btn:hover { background:#d97706; }
+
+    </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     PAGE HEADER
+════════════════════════════════════════ -->
+<div class="page-header">
+    <h1>💾 Mod 5 – Software Applications</h1>
+    <p class="subtitle">CompTIA Tech+ FC0-U71 Aligned | Full Module</p>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB NAVIGATION
+════════════════════════════════════════ -->
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('instruction')">📚 Instruction</button>
+    <button class="tab-btn"        onclick="switchTab('reinforcement')">⚡ Challenge Tasks Pt 2</button>
+    <button class="tab-btn"        onclick="switchTab('exercise')">📂 File Extensions</button>
+    <button class="tab-btn"        onclick="switchTab('quiz')">📝 Scenario Quiz</button>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     TAB 1 — INSTRUCTION
+════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-instruction">
+<div class="container">
+    <div class="main-content">
+        <div class="lesson" id="lesson4">
+
+            <div class="key-concept">
+                <strong>Utility Software:</strong> Programs designed to help manage, maintain, and protect your computer system. These tools perform specific tasks that keep your system running smoothly and securely.
+            </div>
+
+            <div class="problem-scenario">
+                <h3>📋 Scenario</h3>
+                <p>A client's computer is running slowly and they've received suspicious emails. They also need to access a PDF document, compress large files for email, and remotely troubleshoot a colleague's computer. What utility software should they use for each task?</p>
+            </div>
+
+            <div class="visual-demo">
+                <h3>Common Types of Utility Software</h3>
+                <table>
+                    <tr>
+                        <th>Utility Type</th>
+                        <th>Purpose</th>
+                        <th>Examples</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Antimalware</strong></td>
+                        <td>Detect and remove viruses, malware, spyware</td>
+                        <td>Windows Defender, Norton, McAfee, Malwarebytes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Software Firewalls</strong></td>
+                        <td>Block unauthorized network access</td>
+                        <td>Windows Firewall, ZoneAlarm, GlassWire</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Instant Messaging</strong></td>
+                        <td>Real-time text communication</td>
+                        <td>WhatsApp, Telegram, Signal, Slack</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Remote Support</strong></td>
+                        <td>Control another computer remotely</td>
+                        <td>TeamViewer, AnyDesk, Chrome Remote Desktop</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Compression Utilities</strong></td>
+                        <td>Reduce file size for storage/transfer</td>
+                        <td>WinZip, 7-Zip, WinRAR</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PDF Readers</strong></td>
+                        <td>View and annotate PDF documents</td>
+                        <td>Adobe Acrobat Reader, Foxit Reader, PDF-XChange</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="interactive-section">
+                <h3>🔗 Match Utilities to Their Functions</h3>
+                <p>Drag each scenario to the correct utility software type:</p>
+                <div class="matching-container">
+                    <div>
+                        <div class="drop-zone" data-correct="antimalware">
+                            <div class="drop-zone-label">Antimalware:</div>
+                        </div>
+                        <div class="drop-zone" data-correct="firewall">
+                            <div class="drop-zone-label">Software Firewall:</div>
+                        </div>
+                        <div class="drop-zone" data-correct="compression">
+                            <div class="drop-zone-label">Compression Utility:</div>
+                        </div>
+                        <div class="drop-zone" data-correct="remote">
+                            <div class="drop-zone-label">Remote Support:</div>
+                        </div>
+                        <div class="drop-zone" data-correct="pdf">
+                            <div class="drop-zone-label">PDF Reader:</div>
+                        </div>
+                    </div>
+                    <div class="draggable-items" id="utilityItems">
+                        <div class="drag-item" draggable="true" data-component="antimalware">Scan system for viruses and malware</div>
+                        <div class="drag-item" draggable="true" data-component="firewall">Block suspicious incoming connections</div>
+                        <div class="drag-item" draggable="true" data-component="compression">Reduce large file size for email</div>
+                        <div class="drag-item" draggable="true" data-component="remote">Troubleshoot a colleague's PC remotely</div>
+                        <div class="drag-item" draggable="true" data-component="pdf">View and print a PDF document</div>
+                    </div>
+                </div>
+                <button id="checkUtility" style="margin-top:14px;">Check Answer</button>
+                <div class="feedback" id="feedback4"></div>
+            </div>
+
+            <div class="concept-check single-q" data-answer="1">
+                <h4>✅ Concept Check</h4>
+                <p><strong>Question:</strong> What type of utility software would you use to create a ZIP file containing multiple documents?</p>
+                <div class="check-option">A) Compression utility</div>
+                <div class="check-option">B) PDF reader</div>
+                <div class="check-option">C) Antimalware software</div>
+                <div class="check-option">D) Remote support tool</div>
+                <div class="explanation">
+                    <strong>Explanation:</strong> Compression utilities (like WinZip or 7-Zip) are designed to compress multiple files into a single archive file (like .zip or .rar), reducing file size and making it easier to share multiple files as one package.
+                </div>
+            </div>
+
+        </div><!-- /lesson4 -->
+    </div><!-- /main-content -->
+</div><!-- /container -->
+</div><!-- /tab-instruction -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 2 — REINFORCEMENT PT 2
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-reinforcement">
+<div class="container">
+
+    <div class="scenario-box" style="margin-top:20px;">
+        <h2>📋 Scenario</h2>
+        <p>You continue your work as an IT support specialist. Complete these software configuration, installation, and troubleshooting tasks to help your company optimize their software deployment and user experience.</p>
+    </div>
+
+    <!-- TASK 1: BROWSER CONFIGURATION -->
+    <div class="task-container">
+        <div class="task-header">
+            <h3>Task 1: Configure Web Browser Settings</h3>
+            <span class="task-number">PBQ 1 of 1</span>
+        </div>
+
+        <div class="instructions">
+            <strong>Scenario:</strong> A user reports their browser is slow, shows many ads, and they want their bookmarks synced across devices. Configure the appropriate browser settings by toggling them ON.
+            <ul>
+                <li>Enable settings that address the user's issues</li>
+                <li>Click each toggle to turn settings ON or OFF</li>
+            </ul>
+        </div>
+
+        <div class="browser-interface">
+            <div class="browser-menubar">Chrome Settings &gt; Privacy and security</div>
+
+            <div class="browser-setting" onclick="toggleBrowserSetting(this, false)">
+                <span>Allow all cookies</span>
+                <div class="toggle-btn"></div>
+            </div>
+            <div class="browser-setting" onclick="toggleBrowserSetting(this, true)">
+                <span>Block pop-ups and redirects</span>
+                <div class="toggle-btn"></div>
+            </div>
+            <div class="browser-setting" onclick="toggleBrowserSetting(this, true)">
+                <span>Clear cached images and files</span>
+                <div class="toggle-btn"></div>
+            </div>
+            <div class="browser-setting" onclick="toggleBrowserSetting(this, false)">
+                <span>Disable JavaScript</span>
+                <div class="toggle-btn"></div>
+            </div>
+
+            <div class="browser-menubar" style="margin-top:20px;">Chrome Settings &gt; You and Google</div>
+
+            <div class="browser-setting" onclick="toggleBrowserSetting(this, true)">
+                <span>Sync bookmarks and settings</span>
+                <div class="toggle-btn"></div>
+            </div>
+            <div class="browser-setting" onclick="toggleBrowserSetting(this, false)">
+                <span>Send usage statistics to Google</span>
+                <div class="toggle-btn"></div>
+            </div>
+        </div>
+
+        <button onclick="checkTask1()">Submit Task 1</button>
+        <button class="secondary" onclick="resetTask1()">Reset Settings</button>
+        <div class="feedback" id="feedback1"></div>
+    </div>
+
+</div><!-- /container -->
+</div><!-- /tab-reinforcement -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 3 — EXECUTABLE FILE EXTENSIONS
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-exercise">
+<div class="exer-wrapper">
+
+    <!-- Reference Table -->
+    <div class="ref-panel">
+        <div class="ref-header" onclick="toggleRef()">
+            <span>📋 Executable Extensions Reference Guide — Study this before you begin</span>
+            <span class="ref-toggle" id="refToggle">▲ Hide Table</span>
+        </div>
+        <div class="ref-body" id="refBody">
+            <table class="ref-table">
+                <thead>
+                    <tr>
+                        <th>Extension</th>
+                        <th>Platform</th>
+                        <th>Type</th>
+                        <th>Key Characteristics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="ext-name">.app</span></td>
+                        <td><span class="plat-mac">macOS</span></td>
+                        <td>Application Bundle</td>
+                        <td>A directory (folder) that macOS presents as a single clickable item; contains the compiled binary, resources, and metadata inside a structured bundle; dragging to Applications folder installs it; cannot run on Windows</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ext-name">.bat</span></td>
+                        <td><span class="plat-win">Windows</span></td>
+                        <td>Batch Script</td>
+                        <td>A plain text file containing a sequence of Windows Command Prompt (CMD) commands executed line by line; no compilation required; source code is visible in any text editor; used for automation, deployment scripts, and repetitive task execution</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ext-name">.exe</span></td>
+                        <td><span class="plat-win">Windows</span></td>
+                        <td>Compiled Executable</td>
+                        <td>A compiled binary file that Windows executes directly; can be a standalone application or an installation wizard; the most common Windows executable format; source code is not visible; may trigger a UAC prompt if it requests elevated privileges</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ext-name">.msi</span></td>
+                        <td><span class="plat-win">Windows</span></td>
+                        <td>Windows Installer Package</td>
+                        <td>A structured installation package used by the Windows Installer service; supports rollback on failure, repair, logging, and silent/unattended installation via command-line switches; the standard format for enterprise software deployment via Group Policy or SCCM</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ext-name">.scexe</span></td>
+                        <td><span class="plat-both">Windows (vendor-specific)</span></td>
+                        <td>Self-Contained Executable</td>
+                        <td>A single self-extracting executable that bundles a compressed payload (drivers, firmware, utilities) and extracts it at runtime before executing; commonly used by HP for hardware driver and firmware updates; simplifies distribution as one file requires no separate extraction step</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="ref-note">💡 Tip: Know the platform first — .app is macOS only; .bat, .exe, .msi, and .scexe are Windows. Then know the type — .exe is a compiled binary; .bat is a readable script; .msi is a structured installer with rollback and enterprise deployment support; .scexe is a self-contained single-file package that extracts its own payload. Never run any of these from an untrusted source — all executable types can carry malware.</p>
+        </div>
+    </div>
+
+    <!-- PBQ -->
+    <div class="quiz-grid">
+
+        <!-- Scenario column -->
+        <div>
+            <div class="scenario-card">
+                <div class="scenario-tag"><span class="dot"></span>Performance-Based Question</div>
+                <p class="scenario-desc">A software vendor releases a small utility that checks whether a workstation meets the hardware requirements for an upcoming application deployment. The utility is a single compiled file — no installation required, no setup wizard, no supporting files needed. A technician simply copies it to any Windows workstation, double-clicks it, and the tool runs its checks and displays results immediately.</p>
+
+                <button class="hint-btn" onclick="toggleHint()"><span>💡</span> Need a hint?</button>
+                <div class="hint-reveal" id="hintReveal">
+                    <strong>Hint:</strong> Focus on &ldquo;no installation required, no setup wizard, no supporting files needed.&rdquo;
+                </div>
+
+                <!-- Feedback + explanation injected here -->
+                <div id="feedbackArea"></div>
+
+                <div class="explain-reveal" id="explainReveal">
+                    <div class="explain-reveal-header">
+                        <span class="icon">🔍</span>
+                        <span>.exe — Portable Standalone Utility</span>
+                    </div>
+                    <div class="explain-block">
+                        <pre style="white-space:pre-wrap;font-family:inherit;"><span class="label">Platform:</span> Windows
+<span class="label">Type:</span> Compiled binary — portable; no installation or Windows Installer service required
+<span class="label">In this scenario:</span> Single file, no install needed, runs anywhere = portable .exe.
+<span class="label">Key distinction:</span> A portable .exe needs no installation. A .msi always requires the Windows Installer service. A .bat needs no compilation but requires CMD commands. Only .exe can be a portable compiled tool.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Answer choices column -->
+        <div class="commands-col">
+            <div class="commands-header">File Extensions</div>
+            <div id="choicesArea">
+                <button class="cmd-btn" onclick="exerSelectAnswer('.app')">.app</button>
+                <button class="cmd-btn" onclick="exerSelectAnswer('.bat')">.bat</button>
+                <button class="cmd-btn" onclick="exerSelectAnswer('.exe')">.exe</button>
+                <button class="cmd-btn" onclick="exerSelectAnswer('.msi')">.msi</button>
+                <button class="cmd-btn" onclick="exerSelectAnswer('.scexe')">.scexe</button>
+            </div>
+        </div>
+
+    </div><!-- /quiz-grid -->
+
+    <div class="reset-wrap">
+        <button class="btn-reset" onclick="resetPBQ()">↺ Reset</button>
+    </div>
+
+</div><!-- /exer-wrapper -->
+</div><!-- /tab-exercise -->
+
+
+<!-- ════════════════════════════════════════
+     TAB 4 — SCENARIO QUIZ
+════════════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+<div style="max-width:1000px;margin:0 auto;padding:20px;">
+
+    <div class="quiz-container">
+        <div class="scenario-text">
+            A technician connects a new USB graphics tablet to a Windows workstation. Device Manager shows
+            the device with a yellow warning icon, and the drawing application cannot detect the tablet at all.
+        </div>
+
+        <div class="question-text">
+            What type of software is required to allow the operating system to communicate with this hardware device?
+        </div>
+
+        <div class="answers-grid" id="answersGrid">
+            <div class="answer-option" onclick="quizSelectAnswer(this, false)">Application software</div>
+            <div class="answer-option" onclick="quizSelectAnswer(this, true)">Device driver</div>
+            <div class="answer-option" onclick="quizSelectAnswer(this, false)">Operating system update</div>
+            <div class="answer-option" onclick="quizSelectAnswer(this, false)">Utility software</div>
+        </div>
+
+        <div class="feedback-box" id="feedbackBox">
+            <div class="feedback-header">
+                <span class="feedback-icon" id="feedbackIcon"></span>
+                <span id="feedbackTitle"></span>
+            </div>
+            <div class="feedback-explanation" id="feedbackExplanation"></div>
+        </div>
+    </div>
+
+    <div class="quiz-controls">
+        <button class="quiz-reset-btn" onclick="resetQuizQuestion()">🔄 Reset Question</button>
+    </div>
+
+</div>
+</div><!-- /tab-quiz -->
+
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────
+   TAB SWITCHING
+───────────────────────────────────────── */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    var activeTab = document.getElementById('tab-' + tabId);
+    if (activeTab) activeTab.classList.add('active');
+    var btns = document.querySelectorAll('.tab-btn');
+    var map  = { instruction:0, reinforcement:1, exercise:2, quiz:3 };
+    if (map[tabId] !== undefined && btns[map[tabId]]) btns[map[tabId]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 1: INSTRUCTION — Drag-Drop Matching
+───────────────────────────────────────── */
+(function () {
+    var draggedItem = null;
+    var items = document.querySelectorAll('#utilityItems .drag-item');
+    var zones = document.querySelectorAll('#lesson4 .matching-container .drop-zone');
+
+    items.forEach(function (item) {
+        item.addEventListener('dragstart', function (e) {
+            draggedItem = this;
+            this.classList.add('dragging');
+        });
+        item.addEventListener('dragend', function () {
+            this.classList.remove('dragging');
+        });
+    });
+
+    zones.forEach(function (zone) {
+        zone.addEventListener('dragover', function (e) { e.preventDefault(); });
+        zone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            if (draggedItem) { this.appendChild(draggedItem); }
+        });
+    });
+
+    document.getElementById('checkUtility').addEventListener('click', function () {
+        var correct = true;
+        zones.forEach(function (zone) {
+            var expectedType = zone.getAttribute('data-correct');
+            var droppedItem  = zone.querySelector('.drag-item');
+            if (!droppedItem || droppedItem.getAttribute('data-component') !== expectedType) {
+                correct = false;
+                zone.classList.add('incorrect');
+                zone.classList.remove('correct');
+            } else {
+                zone.classList.add('correct');
+                zone.classList.remove('incorrect');
+            }
+        });
+        var fb = document.getElementById('feedback4');
+        if (correct) {
+            fb.className = 'feedback success show';
+            fb.innerHTML = '✅ Excellent! You correctly matched all utility types: Antimalware scans for viruses, firewalls block connections, compression reduces file size, remote support provides remote access, and PDF readers view documents.';
+        } else {
+            fb.className = 'feedback error show';
+            fb.innerHTML = '❌ Review utility software functions. Each utility serves a specific system management, security, or file handling purpose.';
+        }
+    });
+})();
+
+
+/* ─────────────────────────────────────────
+   TAB 1: INSTRUCTION — Single-Select Concept Check
+───────────────────────────────────────── */
+(function () {
+    document.querySelectorAll('.single-q').forEach(function (qBlock) {
+        var answer      = qBlock.getAttribute('data-answer');
+        var options     = qBlock.querySelectorAll('.check-option');
+        var explanation = qBlock.querySelector('.explanation');
+
+        options.forEach(function (opt, idx) {
+            opt.addEventListener('click', function () {
+                if (this.classList.contains('disabled')) return;
+                options.forEach(function (o) { o.classList.add('disabled'); });
+                var chosen = idx + 1;
+                if (String(chosen) === answer) {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    options[parseInt(answer) - 1].classList.add('correct');
+                }
+                if (explanation) { explanation.classList.add('show'); }
+            });
+        });
+    });
+})();
+
+
+/* ─────────────────────────────────────────
+   TAB 2: REINFORCEMENT — Browser Settings
+───────────────────────────────────────── */
+var browserSettings = {};
+
+function toggleBrowserSetting(element, shouldEnable) {
+    var toggleBtn = element.querySelector('.toggle-btn');
+    var isEnabled = toggleBtn.classList.contains('on');
+    if (isEnabled) {
+        toggleBtn.classList.remove('on');
+        element.classList.remove('enabled');
+        browserSettings[element.textContent.trim()] = false;
+    } else {
+        toggleBtn.classList.add('on');
+        element.classList.add('enabled');
+        browserSettings[element.textContent.trim()] = { enabled: true, correct: shouldEnable };
+    }
+}
+
+function checkTask1() {
+    var settings = document.querySelectorAll('#tab-reinforcement .browser-setting');
+    var correct  = 0;
+    var enabled  = 0;
+
+    settings.forEach(function (setting) {
+        var toggleBtn = setting.querySelector('.toggle-btn');
+        var isEnabled = toggleBtn.classList.contains('on');
+        if (isEnabled) {
+            enabled++;
+            var correctState = setting.getAttribute('onclick').includes('true');
+            if (correctState) {
+                correct++;
+                setting.style.borderColor = 'var(--accent-success)';
+            } else {
+                setting.style.borderColor = 'var(--accent-error)';
+            }
+        }
+    });
+
+    var feedback   = document.getElementById('feedback1');
+    var isCorrect  = (correct === 3 && enabled === 3);
+    feedback.className = 'feedback show ' + (isCorrect ? 'success' : 'error');
+
+    if (isCorrect) {
+        feedback.innerHTML =
+            '<strong>✓ Perfect! Browser configured correctly for optimal performance and sync.</strong><br><br>' +
+            '<strong>Detailed Explanation:</strong><br>' +
+            '<strong>ENABLED Settings (Correct):</strong><br>' +
+            '• <strong>Block pop-ups and redirects</strong> — Prevents intrusive ads and unwanted windows that slow browsing<br>' +
+            '• <strong>Clear cached images and files</strong> — Removes stored website data causing slow loading and outdated content display<br>' +
+            '• <strong>Sync bookmarks and settings</strong> — Enables cross-device synchronization so bookmarks appear on all computers<br><br>' +
+            '<strong>DISABLED Settings (Correct):</strong><br>' +
+            '• <strong>Allow all cookies</strong> — Should stay OFF to improve privacy (only allow necessary cookies)<br>' +
+            '• <strong>Disable JavaScript</strong> — Should stay OFF as many websites require JavaScript to function<br>' +
+            '• <strong>Send usage statistics</strong> — Should stay OFF for privacy (not required for functionality)<br><br>' +
+            '<strong>Why These Solutions Work:</strong><br>' +
+            '<strong>Problem: Slow browser</strong> → <strong>Clear cache</strong> — Cached files can become corrupted or excessive, slowing performance<br>' +
+            '<strong>Problem: Many ads</strong> → <strong>Block pop-ups</strong> — Pop-up blocker prevents advertising windows from opening automatically<br>' +
+            '<strong>Problem: Bookmarks not synced</strong> → <strong>Enable sync</strong> — Syncs bookmarks, passwords, history across all devices using same account<br><br>' +
+            '<em>Pro Tip: Regular cache clearing (weekly) prevents many browsing issues. For persistent problems, try disabling extensions one by one to identify conflicts.</em>';
+    } else {
+        feedback.innerHTML =
+            '<strong>You enabled ' + enabled + ' settings, ' + correct + ' correctly.</strong><br><br>' +
+            '<strong>User\'s Problems:</strong><br>' +
+            '1. Browser is SLOW → <strong>Enable: Clear cached images and files</strong><br>' +
+            '2. Shows many ADS → <strong>Enable: Block pop-ups and redirects</strong><br>' +
+            '3. Wants bookmarks SYNCED → <strong>Enable: Sync bookmarks and settings</strong><br><br>' +
+            '<strong>Settings to DISABLE:</strong><br>' +
+            '• "Allow all cookies" — Keep OFF for privacy<br>' +
+            '• "Disable JavaScript" — Keep OFF (breaks most websites)<br>' +
+            '• "Send usage statistics" — Keep OFF for privacy<br><br>' +
+            '<strong>Review:</strong> Enable only the three settings that directly solve the user\'s problems. Incorrectly enabled settings are marked in red.';
+    }
+}
+
+function resetTask1() {
+    var settings = document.querySelectorAll('#tab-reinforcement .browser-setting');
+    settings.forEach(function (setting) {
+        var toggleBtn = setting.querySelector('.toggle-btn');
+        toggleBtn.classList.remove('on');
+        setting.classList.remove('enabled');
+        setting.style.borderColor = '';
+    });
+    browserSettings = {};
+    document.getElementById('feedback1').className = 'feedback';
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 3: FILE EXTENSIONS EXERCISE
+───────────────────────────────────────── */
+var EXER_CORRECT  = '.exe';
+var exerAnswered  = false;
+
+function toggleRef() {
+    var body   = document.getElementById('refBody');
+    var toggle = document.getElementById('refToggle');
+    body.classList.toggle('hidden');
+    toggle.textContent = body.classList.contains('hidden') ? '▼ Show Table' : '▲ Hide Table';
+}
+
+function toggleHint() {
+    document.getElementById('hintReveal').classList.toggle('show');
+}
+
+function exerSelectAnswer(picked) {
+    if (exerAnswered) return;
+    exerAnswered = true;
+
+    var correct = (picked === EXER_CORRECT);
+    var buttons = document.querySelectorAll('.cmd-btn');
+
+    buttons.forEach(function (btn) {
+        btn.disabled = true;
+        var label = btn.textContent.trim();
+        if (label === EXER_CORRECT)               btn.classList.add('correct');
+        if (label === picked && !correct)          btn.classList.add('incorrect');
+    });
+
+    var feedbackArea = document.getElementById('feedbackArea');
+    var icon    = correct ? '✅' : '❌';
+    var cls     = correct ? 'correct' : 'incorrect';
+    var msg     = correct
+        ? 'Correct!'
+        : 'Incorrect — the correct answer is highlighted in green.';
+    var explain = 'Portable applications — .exe files that run without installation — are a common format for small utilities and diagnostic tools. The compiled binary is self-contained: all required logic is compiled into the single file, no installer is needed, and the tool can be copied to a USB drive and run on any Windows machine. This portability is a characteristic of compiled .exe files that .msi packages (which require the Windows Installer service) do not offer.';
+
+    feedbackArea.innerHTML =
+        '<div class="feedback-strip ' + cls + '">' +
+        '<span class="icon">' + icon + '</span>' +
+        '<div><div>' + msg + '</div>' +
+        '<div class="explain">' + explain + '</div>' +
+        '</div></div>';
+
+    document.getElementById('explainReveal').classList.add('show');
+}
+
+function resetPBQ() {
+    exerAnswered = false;
+    document.getElementById('feedbackArea').innerHTML  = '';
+    document.getElementById('explainReveal').classList.remove('show');
+    document.getElementById('hintReveal').classList.remove('show');
+    var buttons = document.querySelectorAll('.cmd-btn');
+    buttons.forEach(function (btn) {
+        btn.disabled = false;
+        btn.classList.remove('correct', 'incorrect');
+    });
+}
+
+
+/* ─────────────────────────────────────────
+   TAB 4: SCENARIO QUIZ
+───────────────────────────────────────── */
+var quizAnswered = false;
+
+var quizExplanation =
+    '<strong>Correct Answer: Device driver</strong><br><br>' +
+    'A device driver is software that enables the operating system to communicate with a specific hardware ' +
+    'device. Every hardware component — printers, webcams, graphics tablets, network adapters — requires a ' +
+    'driver that translates general OS commands into instructions that the specific hardware can understand. ' +
+    'Without the correct driver, the OS cannot use the device, which is why Device Manager displays a yellow ' +
+    'warning icon indicating a driver problem.' +
+    '<strong>Where to get drivers:</strong> ' +
+    '(1) <strong>Manufacturer\'s website (preferred):</strong> Always the most current and compatible driver ' +
+    'for your exact model, ' +
+    '(2) <strong>Windows Update:</strong> Automatically installs drivers for many common devices, ' +
+    '(3) <strong>Installation media:</strong> Discs or USB drives included with some devices.' +
+    '<strong>Driver troubleshooting steps:</strong> ' +
+    '(1) Identify the device model, ' +
+    '(2) Visit the manufacturer\'s support page, ' +
+    '(3) Download the driver matching your OS version, ' +
+    '(4) Run the installer. ' +
+    'Drivers must match both the device model and the operating system version — a Windows 10 driver may ' +
+    'not work on Windows 11, and vice versa. Application software, utilities, and OS updates do not ' +
+    'substitute for a device-specific driver.';
+
+function quizSelectAnswer(el, isCorrect) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+
+    document.querySelectorAll('.answer-option').forEach(function (opt) {
+        opt.classList.add('disabled');
+        opt.onclick = null;
+    });
+
+    var feedbackBox  = document.getElementById('feedbackBox');
+    var feedbackIcon = document.getElementById('feedbackIcon');
+    var feedbackTitle= document.getElementById('feedbackTitle');
+    var feedbackExpl = document.getElementById('feedbackExplanation');
+
+    if (isCorrect) {
+        el.classList.add('correct');
+        feedbackBox.classList.remove('incorrect-feedback');
+        feedbackIcon.textContent  = '✅';
+        feedbackTitle.textContent = 'Correct!';
+    } else {
+        el.classList.add('incorrect');
+        document.querySelectorAll('.answer-option').forEach(function (opt) {
+            if (opt.textContent.trim() === 'Device driver') opt.classList.add('correct');
+        });
+        feedbackBox.classList.add('incorrect-feedback');
+        feedbackIcon.textContent  = '❌';
+        feedbackTitle.textContent = 'Incorrect';
+    }
+
+    feedbackExpl.innerHTML = quizExplanation;
+    feedbackBox.classList.add('show');
+}
+
+function resetQuizQuestion() {
+    quizAnswered = false;
+    document.querySelectorAll('.answer-option').forEach(function (opt) {
+        opt.classList.remove('correct', 'incorrect', 'disabled');
+    });
+
+    // Re-attach click handlers
+    var options = document.querySelectorAll('.answer-option');
+    var correctAnswers = ['Device driver'];
+    options.forEach(function (opt) {
+        var isCorrect = correctAnswers.includes(opt.textContent.trim());
+        opt.onclick = function () { quizSelectAnswer(this, isCorrect); };
+    });
+
+    var feedbackBox = document.getElementById('feedbackBox');
+    feedbackBox.classList.remove('show', 'incorrect-feedback');
+}
+
+</script>
+</body>
+</html>
